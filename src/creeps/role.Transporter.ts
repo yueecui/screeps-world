@@ -1,4 +1,7 @@
-import { ENERGY_NEED, ENERGY_ENOUGH, WORK_IDLE, WORK_TRANSPORTER_SPAWN, WORK_TRANSPORTER_TOWER, WORK_TRANSPORTER_STORAGE } from '@/constant';
+import {
+    ENERGY_NEED, ENERGY_ENOUGH,
+    WORK_IDLE, WORK_TRANSPORTER_SPAWN, WORK_TRANSPORTER_TOWER, WORK_TRANSPORTER_STORAGE
+} from '@/constant';
 
 const CONTAINER_TO_STORAGE_MIN = 1500;
 
@@ -7,25 +10,26 @@ const IDLE_POS = { x: 28, y: 27 }
 export const roleTransporter: Transporter = {
     run: function(creep: Creep) {
         creep.recycleNearby(); // 回收周围的能量
-        this.updateEnergy(creep);
+        creep.updateEnergyStatus();
         this.updateStatus(creep);
         this.execute(creep);
     },
     // 判断能量需求状况
-    updateEnergy: function(creep){
-        if (creep.memory.e == ENERGY_NEED){
-            if (creep.store.getFreeCapacity() == 0){
-                creep.memory.e = ENERGY_ENOUGH;
-            }else{
-                const target =  creep.getTarget();
-                if (target && target.store[RESOURCE_ENERGY] == 0){
-                    creep.memory.e = ENERGY_ENOUGH;
-                }
-            }
-        }else if (creep.memory.e == ENERGY_ENOUGH && creep.store[RESOURCE_ENERGY] == 0){
-            creep.memory.e = ENERGY_NEED;
-        }
-    },
+    // updateEnergy: function(creep){
+    //     if (creep.memory.e == ENERGY_NEED){
+    //         if (creep.store.getFreeCapacity() == 0){
+    //             creep.memory.e = ENERGY_ENOUGH;
+    //         }else{
+    //             const target =  creep.getTarget();
+    //             if (target && target.store[RESOURCE_ENERGY] == 0){
+    //                 creep.memory.e = ENERGY_ENOUGH;
+    //                 creep.clearTarget();
+    //             }
+    //         }
+    //     }else if (creep.memory.e == ENERGY_ENOUGH && creep.store[RESOURCE_ENERGY] == 0){
+    //         creep.memory.e = ENERGY_NEED;
+    //     }
+    // },
     // 判断工作模式
     updateStatus: function(creep){
         // 判断是否需要给巢穴补充能量

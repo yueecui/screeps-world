@@ -1,3 +1,13 @@
+type BodyConfig = Array<BodyPartConstant>;
+
+interface RoleConfig{
+  basename?: string;
+  body: BodyConfig | null;
+  amount: number;
+  aheadTime?: number;
+  memory: CreepMemory;
+}
+
 type AnyRoleName =
     | RoleNameHarvester
     | RoleNameTransporter
@@ -26,7 +36,7 @@ interface Harvester extends CreepRole{
 }
 
 interface Transporter extends CreepRole{
-  updateEnergy(creep: Creep): void;
+  // updateEnergy(creep: Creep): void;
   updateStatus(creep: Creep): void;
   execute(creep: Creep): void;
   obtainEnergy(creep: Creep): void;

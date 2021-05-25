@@ -2,7 +2,12 @@ import { roleHarvester } from '@/creeps/role.Harvester';
 import { roleTransporter } from '@/creeps/role.Transporter';
 import { roleBuilder } from '@/creeps/role.Builder';
 import { roleUpgrader } from '@/creeps/role.Upgrader';
-import { RoleNameHarvester } from '@/constant';
+
+import {
+    RoleNameHarvester,
+    ENERGY_NEED, ENERGY_ENOUGH,
+} from '@/constant';
+
 
 const roleMap: Record<AnyRoleName, AnyRole> = {
     '采集': roleHarvester,
@@ -36,13 +41,13 @@ export const creepExtension = function () {
             return true;
         }else{
             this.baseName = '未知';
-            this.index = 0;
+            this.index = -1;
             return false;
         }
     }
 
     Creep.prototype.getBasename = function () {
-        if (this.baseName == null){
+        if (this.baseName == ''){
             this.analyzeName();
         }
         return this.baseName;
@@ -51,14 +56,12 @@ export const creepExtension = function () {
     Creep.prototype.getRole = function(){
         if (this.memory.r){
             return this.memory.r;
-        }else if (this.memory.role){
-            return this.memory.role;
         }else{
             return RoleNameHarvester;
         }
     }
     Creep.prototype.getIndex = function(){
-        if (this.index == null){
+        if (this.index == 0){
             this.analyzeName();
         }
         return this.index;
@@ -67,6 +70,29 @@ export const creepExtension = function () {
     Creep.prototype.getTarget = function(){
         return this.memory.t ? Game.getObjectById(this.memory.t) : null;
     }
+
+    Creep.prototype.clearTarget = function(){
+        this.memory.t = null;
+    }
+
+    /**
+     * 更新虫子当前的能量状态
+     */
+    Creep.prototype.updateEnergyStatus = function(){
+        if (this.memory.e == ENERGY_NEED){
+            if (this.store.getFreeCapacity() == 0){
+                this.memory.e = ENERGY_ENOUGH;
+            }else{
+                const target =  this.getTarget() as StructureContainer | StructureStorage;
+                if (target && target.store[RESOURCE_ENERGY] == 0){
+                    this.memory.e = ENERGY_ENOUGH;
+                    this.clearTarget();
+                }
+            }
+        }else if (this.memory.e == ENERGY_ENOUGH && this.store[RESOURCE_ENERGY] == 0){
+            this.memory.e = ENERGY_NEED;
+        }
+    },
 
     // 拾取虫子周围掉落的能量
     // 返回值

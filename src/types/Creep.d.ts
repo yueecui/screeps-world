@@ -16,11 +16,6 @@ interface CreepMemory {
    */
   t: Id<any> | null;
 
-
-  /**
-   * 临时：Creep的职责(Role)（老版本）
-   */
-   role: AnyRoleName;
   /**
    * 临时：采集者记录采集点编号
    */
@@ -35,6 +30,10 @@ interface CreepMemory {
 // 扩展原型的接口
 interface Creep {
   /**
+   * 根据Creep的Role执行不同的运行脚本
+   */
+   run(): void;
+  /**
    * Creep的基础名称
    *
    * 例如“ABC1”中“ABC”就是基础名称，1是编号
@@ -46,14 +45,6 @@ interface Creep {
    * 例如“ABC1”中“ABC”就是基础名称，1是编号
    */
   index: number;
-  /**
-   * 本回合执行recycleNearby是否成功的标记
-   */
-  recycling: boolean;
-  /**
-   * 根据Creep的Role执行不同的运行脚本
-   */
-  run(): void;
   /**
    * 根据虫子的name解析出自定属性基础名称(baseName)和编号(index)
    */
@@ -76,7 +67,21 @@ interface Creep {
    * 由于不确认缓存的目标是什么，请注意安全
    */
   getTarget(): any;
+  /**
+   * 清除当前缓存的目标object ID
+   */
+  clearTarget(): void;
+  /**
+   * 更新Creep的能量状态（仅对有CARRY部件的creep有效）
+   */
+  updateEnergyStatus(): void;
 
+
+
+  /**
+   * 本回合执行recycleNearby是否成功的标记
+   */
+  recycling: boolean;
   recycleNearby(res_type?: ResourceConstant): ScreepsReturnCode;
   isRecycling(): boolean;
   obtainEnergyFromNearestContainer(capacity_min: number): void;

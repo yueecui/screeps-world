@@ -1,7 +1,12 @@
+// Creep的角色名
+
 export const RoleNameHarvester: RoleNameHarvester = '采集';
 export const RoleNameTransporter: RoleNameTransporter = '运输';
 export const RoleNameBuilder: RoleNameBuilder = '建造';
 export const RoleNameUpgrader: RoleNameUpgrader = '升级';
+
+
+// Creep工作进程的状态码
 
 /**
  * 当前Creep需要补充能量
