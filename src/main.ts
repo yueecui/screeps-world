@@ -1,43 +1,47 @@
+import { Mount } from 'mount/mount';
+// 对原型进行扩展
+Mount.init();
+
 import { ErrorMapper } from "utils/ErrorMapper";
-
-declare global {
-  /*
-    Example types, expand on these or remove them and add your own.
-    Note: Values, properties defined here do no fully *exist* by this type definiton alone.
-          You must also give them an implemention if you would like to use them. (ex. actually setting a `role` property in a Creeps memory)
-
-    Types added in this `global` block are in an ambient, global context. This is needed because `main.ts` is a module file (uses import or export).
-    Interfaces matching on name from @types/screeps will be merged. This is how you can extend the 'built-in' interfaces from @types/screeps.
-  */
-  // Memory extension samples
-  interface Memory {
-    uuid: number;
-    log: any;
-  }
-
-  interface CreepMemory {
-    role: string;
-    room: string;
-    working: boolean;
-  }
-
-  // Syntax for adding proprties to `global` (ex "global.log")
-  namespace NodeJS {
-    interface Global {
-      log: any;
-    }
-  }
-}
+import { Automatic } from 'utils/Automatic';
+import { ManagerCreeps } from 'manager.Creeps';
 
 // When compiling TS to JS and bundling with rollup, the line numbers and file names in error messages change
 // This utility uses source maps to get the line numbers and file names of the original, TS source code
-export const loop = ErrorMapper.wrapLoop(() => {
+module.exports.loop = ErrorMapper.wrapLoop(() => {
   console.log(`Current game tick is ${Game.time}`);
 
-  // Automatically delete memory of missing creeps
-  for (const name in Memory.creeps) {
-    if (!(name in Game.creeps)) {
-      delete Memory.creeps[name];
+  // 自动事务
+  Automatic.run();
+
+  // 修改原型
+  // prototypeMain.init();
+
+  // 保存bucket
+  if (Game.cpu.bucket == 10000){
+    Game.cpu.generatePixel();
+  }
+
+  // 小虫管理器检查当前单位数量是否正常
+  ManagerCreeps.check();
+
+  // 运转所有小虫
+  for(var name in Game.creeps) {
+    Game.creeps[name].run();
+  }
+
+  // 临时运转塔
+  var tower = Game.getObjectById('60abc165b225d38453b62cde' as Id<StructureTower>);
+  if(tower) {
+    // var closestDamagedStructure = tower.pos.findClosestByRange(FIND_STRUCTURES, {
+    //   filter: (structure) => structure.hits < structure.hitsMax
+    // });
+    // if(closestDamagedStructure) {
+    //   tower.repair(closestDamagedStructure);
+    // }
+    var closestHostile = tower.pos.findClosestByRange(FIND_HOSTILE_CREEPS);
+    if(closestHostile) {
+      tower.attack(closestHostile);
     }
   }
 });
