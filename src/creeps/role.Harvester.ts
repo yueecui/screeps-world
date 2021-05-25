@@ -21,7 +21,7 @@ export const roleHarvester: Harvester = {
         }
     },
     execute: function(creep){
-        console.log(JSON.stringify(creep.memory));
+        // console.log(JSON.stringify(creep.memory));
         var container = Game.getObjectById(SOURCE_NODES[creep.memory.node].container as Id<StructureContainer>);
         if (creep.pos.getRangeTo(container!) == 0){
             creep.drop(RESOURCE_ENERGY);

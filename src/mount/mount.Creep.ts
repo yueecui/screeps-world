@@ -1,7 +1,8 @@
-import { roleHarvester } from '@/creeps/role.Harvester'
-import { roleTransporter } from '@/creeps/role.Transporter'
-import { roleBuilder } from '@/creeps/role.Builder'
-import { roleUpgrader } from '@/creeps/role.Upgrader'
+import { roleHarvester } from '@/creeps/role.Harvester';
+import { roleTransporter } from '@/creeps/role.Transporter';
+import { roleBuilder } from '@/creeps/role.Builder';
+import { roleUpgrader } from '@/creeps/role.Upgrader';
+import { RoleNameHarvester } from '@/constant';
 
 const roleMap: Record<AnyRoleName, AnyRole> = {
     '采集': roleHarvester,
@@ -19,7 +20,7 @@ export const creepExtension = function () {
         // if (this.getRole() == 'Upgrader'){
         //     return roleMap['Builder'].run(this);
         // }
-        console.log(this.getRole());
+        // console.log(this.getRole());
         if (roleMap[this.getRole()]){
             roleMap[this.getRole()].run(this);
         }else{
@@ -53,7 +54,7 @@ export const creepExtension = function () {
         }else if (this.memory.role){
             return this.memory.role;
         }else{
-            return '采集';
+            return RoleNameHarvester;
         }
     }
     Creep.prototype.getIndex = function(){
@@ -95,7 +96,7 @@ export const creepExtension = function () {
         const find_dropped = this.room.find(FIND_DROPPED_RESOURCES, { filter: (obj) => { return obj.resourceType == res_type && this.pos.isNearTo(obj); } });
         for (const find of find_dropped){
             // 采集者不拿已经堆满的container上的掉落能量
-            if (this.memory.r == "采集"){
+            if (this.memory.r == RoleNameHarvester){
                 const lookfor_container = this.room.lookAt(find).filter((r) => {
                     return (r.type == 'structure'
                             && (r.structure as StructureContainer).structureType == STRUCTURE_CONTAINER

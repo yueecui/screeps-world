@@ -1,4 +1,4 @@
-
+import { ENERGY_NEED, ENERGY_ENOUGH, WORK_IDLE, WORK_TRANSPORTER_SPAWN, WORK_TRANSPORTER_TOWER, WORK_TRANSPORTER_STORAGE } from '@/constant';
 
 const CONTAINER_TO_STORAGE_MIN = 1500;
 
@@ -45,7 +45,7 @@ export const roleTransporter: Transporter = {
             const find_tower = creep.room.find(FIND_MY_STRUCTURES, {filter: (structure) => {
                 return structure.structureType == STRUCTURE_TOWER && structure.store[RESOURCE_ENERGY] < 1000;
             }});
-            console.log(JSON.stringify(find_tower));
+            // console.log(JSON.stringify(find_tower));
             if (find_tower.length){
                 creep.memory.t = find_tower[0].id;
                 creep.memory.w = WORK_TRANSPORTER_TOWER;

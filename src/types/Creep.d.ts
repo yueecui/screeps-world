@@ -82,42 +82,12 @@ interface Creep {
   obtainEnergyFromNearestContainer(capacity_min: number): void;
 }
 
-
-
-/**
- * 当前Creep需要补充能量
- */
-declare const ENERGY_NEED: ENERGY_NEED;
-/**
- * 当前Creep的能量足够，不需要补充
- */
-declare const ENERGY_ENOUGH: ENERGY_ENOUGH;
-
 type ENERGY_STATUS =
     | ENERGY_NEED
     | ENERGY_ENOUGH;
 
 type ENERGY_NEED = 0;
 type ENERGY_ENOUGH = 1;
-
-
-/**
- * 当前Creep正在空闲，等待新的指令
- */
-declare const WORK_IDLE: WORK_IDLE;
-/**
- * 当前Creep正在担任运输者职责，补充母巢或是扩展的能量
- */
-declare const WORK_TRANSPORTER_SPAWN: WORK_TRANSPORTER_SPAWN;
-/**
- * 当前Creep正在担任运输者职责，补充塔的能量
- */
-declare const WORK_TRANSPORTER_TOWER: WORK_TRANSPORTER_TOWER;
-/**
- * 当前Creep正在担任运输者职责，将当前房间的container里多余的能量带到storage
- */
-declare const WORK_TRANSPORTER_STORAGE: WORK_TRANSPORTER_STORAGE;
-
 
 type WORK_STATUS =
      | WORK_IDLE

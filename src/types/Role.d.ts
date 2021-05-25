@@ -4,11 +4,6 @@ type AnyRoleName =
     | RoleNameBuilder
     | RoleNameUpgrader;
 
-declare const RoleNameHarvester: RoleNameHarvester;
-declare const RoleNameTransporter: RoleNameTransporter;
-declare const RoleNameBuilder: RoleNameBuilder;
-declare const RoleNameUpgrader: RoleNameUpgrader;
-
 type RoleNameHarvester = '采集';
 type RoleNameTransporter = '运输';
 type RoleNameBuilder = '建造';
