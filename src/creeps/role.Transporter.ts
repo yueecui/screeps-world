@@ -32,16 +32,10 @@ export const roleTransporter: Transporter = {
     // },
     // 判断工作模式
     updateStatus: function(creep){
-        // 判断是否需要给巢穴补充能量
         // 优先级最高任务
-        if (creep.room.controller && creep.room.controller.my){
-            if (creep.room.energyAvailable < creep.room.energyCapacityAvailable){
-                creep.memory.w = WORK_TRANSPORTER_SPAWN;
-                return;
-            }else if (creep.memory.w == WORK_TRANSPORTER_SPAWN){
-                creep.memory.w = WORK_IDLE;
-            }
-        }
+        // 判断是否需要补充孵化能量
+        // 会中断其他工作优先进行本工作
+        creep.checkWorkTransporterSpawn();
 
         // 空闲下才会执行的任务
         if (creep.memory.w == WORK_IDLE){

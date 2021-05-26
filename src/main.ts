@@ -25,8 +25,17 @@ module.exports.loop = ErrorMapper.wrapLoop(() => {
   // 小虫管理器检查当前单位数量是否正常
   ManagerCreeps.check();
 
+  // 检查所有自己的房间
+  for(const name in Game.rooms) {
+    const room = Game.rooms[name];
+    if (room.controller && room.controller.my){
+      room.periodicInspection();
+    }
+  }
+
+
   // 运转所有小虫
-  for(var name in Game.creeps) {
+  for(const name in Game.creeps) {
     Game.creeps[name].run();
   }
 

@@ -75,7 +75,11 @@ interface Creep {
    * 更新Creep的能量状态（仅对有CARRY部件的creep有效）
    */
   updateEnergyStatus(): void;
-
+  /**
+   * 检查房间的孵化能量是否足够，
+   * 不足的情况下会设工作状态为WORK_TRANSPORTER_SPAWN
+   */
+   checkWorkTransporterSpawn(): void;
 
 
   /**

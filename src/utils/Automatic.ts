@@ -8,7 +8,7 @@ const cleanCreepsMemory = function() : void{
     console.log(`[${Game.time}]Memory清理完成！`);
 }
 
-// 定期自动事务
+// 全局定期自动事务
 export const Automatic = {
     run: function(): void{
         if (Game.time % 100 == 0){

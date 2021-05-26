@@ -5,7 +5,7 @@ import { roleUpgrader } from '@/creeps/role.Upgrader';
 
 import {
     RoleNameHarvester,
-    ENERGY_NEED, ENERGY_ENOUGH,
+    ENERGY_NEED, ENERGY_ENOUGH, WORK_TRANSPORTER_SPAWN,
 } from '@/constant';
 
 
@@ -25,12 +25,8 @@ export const creepExtension = function () {
         // if (this.getRole() == 'Upgrader'){
         //     return roleMap['Builder'].run(this);
         // }
-        // console.log(this.getRole());
-        if (roleMap[this.getRole()]){
-            roleMap[this.getRole()].run(this);
-        }else{
-            console.log('没有找到角色:'+this.getRole());
-        }
+
+        roleMap[this.getRole()].run(this);
     };
 
     Creep.prototype.analyzeName = function () {
@@ -52,19 +48,15 @@ export const creepExtension = function () {
         }
         return this.baseName;
     }
-
-    Creep.prototype.getRole = function(){
-        if (this.memory.r){
-            return this.memory.r;
-        }else{
-            return RoleNameHarvester;
-        }
-    }
     Creep.prototype.getIndex = function(){
         if (this.index == 0){
             this.analyzeName();
         }
         return this.index;
+    }
+
+    Creep.prototype.getRole = function(){
+        return this.memory.r;
     }
 
     Creep.prototype.getTarget = function(){
@@ -75,9 +67,11 @@ export const creepExtension = function () {
         this.memory.t = null;
     }
 
-    /**
-     * 更新虫子当前的能量状态
-     */
+    // ------------------------------------------------------------
+    // 状态更新
+    // ------------------------------------------------------------
+
+    // 更新虫子当前的能量状态
     Creep.prototype.updateEnergyStatus = function(){
         if (this.memory.e == ENERGY_NEED){
             if (this.store.getFreeCapacity() == 0){
@@ -93,6 +87,31 @@ export const creepExtension = function () {
             this.memory.e = ENERGY_NEED;
         }
     },
+
+    // 检查是否需要设置工作状态为搬运孵化能量
+    Creep.prototype.checkWorkTransporterSpawn = function(){
+        if (this.memory.w != WORK_TRANSPORTER_SPAWN
+            && this.room.memory.spawnEnergyStores
+            && this.room.memory.spawnEnergyStores.unqueued.length > 0){
+            this.memory.w = WORK_TRANSPORTER_SPAWN;
+        }
+    },
+
+    // 判断当前是否需要给母巢或扩展补充能量
+    // Creep.prototype.needEnergyToSpawn = function(){
+    //     if (creep.room.controller && creep.room.controller.my){
+    //         if (creep.room.energyAvailable < creep.room.energyCapacityAvailable){
+    //             creep.memory.w = WORK_TRANSPORTER_SPAWN;
+    //             return;
+    //         }else if (creep.memory.w == WORK_TRANSPORTER_SPAWN){
+    //             creep.memory.w = WORK_IDLE;
+    //         }
+    //     }
+    // },
+
+    // ------------------------------------------------------------
+    // 执行操作
+    // ------------------------------------------------------------
 
     // 拾取虫子周围掉落的能量
     // 返回值

@@ -22,6 +22,9 @@ export const ENERGY_ENOUGH: ENERGY_ENOUGH = 1;
   * 当前Creep正在空闲，等待新的指令
   */
  export const WORK_IDLE: WORK_IDLE = 0;
+
+ // 运输类工作
+
  /**
   * 当前Creep正在担任运输者职责，补充母巢或是扩展的能量
   */
