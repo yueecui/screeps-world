@@ -27,15 +27,13 @@ interface RoomMemory {
    *
    * container需要手工维护
    *
-   * 这类container的能量超过一定额度后会自动运送到同room的storage里
+   * 这类container的能量可以用于被提取，并且超过一定额度后会自动运送到同room的storage里
    */
   energyContainers?: Array<Id<StructureContainer>>;
   /**
    * 需要搬运走能量的container
    */
   taskEC?: Record<string, TASK_STATUS>;
-
-
 }
 
 type SpawnEnergyStoreStructure = StructureExtension | StructureSpawn;
@@ -59,10 +57,11 @@ interface Room {
    */
   clearCache(): void;
   getStructureById<T extends AnyStructure>(id: Id<T>): T;
+  getStructureByIdArray<T extends AnyStructure>(id: Id<T>[]): T[];
   /**
    * 房间定期检查
    */
-  periodicInspection(): void;
+  tickCheck(): void;
   /**
    * 缓存room中特定建筑的Id
    */
@@ -71,6 +70,12 @@ interface Room {
    * 检查房间内是否孵化用能量没满，如果没满则缓存出所有没满的建筑列表
    */
    CheckSpawnEnergy(): void;
+  /**
+   * 获取房间扩展(Extension)的最大容量
+   * @return number 容量
+   */
+   getExtensionMaxCapacity(): number;
+   getUnqueueSpawnEnergyStores(): SpawnEnergyStoreStructure[];
   /**
    * 检查房间内的tower是否需要补充能量
    */

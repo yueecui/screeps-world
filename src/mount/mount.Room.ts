@@ -1,5 +1,7 @@
 import { TASK_WAITING } from "@/constant";
 
+const CONTAINER_TO_STORAGE_MIN = 1500;
+
 export const roomExtension = function () {
     Room.prototype.cache = {
         structure: {}
@@ -11,6 +13,18 @@ export const roomExtension = function () {
             this.cache.structure[id] = Game.getObjectById(id) as T;
         }
         return this.cache.structure[id] as T;
+    };
+
+    // 从tick cache获取建筑物信息，如果没有则请求→缓存→返回
+    Room.prototype.getStructureByIdArray = function<T extends AnyStructure>(id_list: Id<T>[]): T[]{
+        const result: T[] = [];
+        for (const id in id_list){
+            if (!(id in this.cache.structure)){
+                this.cache.structure[id] = Game.getObjectById(id as Id<T>) as T;
+            }
+            result.push(this.cache.structure[id] as T);
+        }
+        return result;
     };
 
     // 每tick检查的主方法
@@ -51,7 +65,6 @@ export const roomExtension = function () {
         if (!this.memory.flagSpawnEnergy){
             return;
         }
-
         // 查找所有能量不满的孵化用建筑
         const found = this.find(FIND_MY_STRUCTURES, {filter: (find) => {
             return ((find.structureType == STRUCTURE_SPAWN|| find.structureType == STRUCTURE_EXTENSION)
@@ -71,6 +84,32 @@ export const roomExtension = function () {
         })
         // 关闭标记
         this.memory.flagSpawnEnergy = false;
+    }
+
+    Room.prototype.getExtensionMaxCapacity = function(){
+        if (this.controller){
+            switch(this.controller.level){
+                case 1:
+                    return 0;
+                case 7:
+                    return 100;
+                case 8:
+                    return 200;
+                default:
+                    return 50;
+            }
+        }else{
+            return 0;
+        }
+    }
+
+    Room.prototype.getUnqueueSpawnEnergyStores = function(){
+        const result: Id<SpawnEnergyStoreStructure>[] = [];
+        if (this.memory.taskSpawn && Object.keys(this.memory.taskSpawn).length > 0){
+            _.each(this.memory.taskSpawn, (v, k) => { if (v == TASK_WAITING){ result.push(k as Id<SpawnEnergyStoreStructure>) };
+            });
+        }
+        return this.getStructureByIdArray(result);
     }
 
     // 检查tower的能量

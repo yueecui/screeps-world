@@ -15,6 +15,11 @@ interface CreepMemory {
    * Creep当前的目标
    */
   t: Id<any> | null;
+  /**
+   * Creep当前的目标队列
+   */
+  queue: Id<any>[] | null;
+
 
   /**
    * 临时：采集者记录采集点编号
@@ -72,16 +77,31 @@ interface Creep {
    */
   clearTarget(): void;
   /**
+   * 清除当前缓存的目标队列
+   */
+  clearQueue(): void;
+  /**
    * 更新Creep的能量状态（仅对有CARRY部件的creep有效）
    */
   updateEnergyStatus(): void;
+  /**
+   * 从房间的container或是storage里获取能量
+   */
+  obtainEnergy(): void;
   /**
    * 检查房间的孵化能量是否足够，
    * 不足的情况下会设工作状态为WORK_TRANSPORTER_SPAWN
    */
    checkWorkTransporterSpawn(): void;
-
-
+   /**
+    * 执行WORK_TRANSPORTER_SPAWN
+    */
+   doWorkTransporterSpawn(): void;
+   /**
+    * 将下一个需要存能量的建筑ID设为memory.t
+    * @returns true表示设定成功，false表示已经没有目标了，切回IDEL状态
+    */
+   nextSpawnEnergyStore(): boolean;
   /**
    * 本回合执行recycleNearby是否成功的标记
    */

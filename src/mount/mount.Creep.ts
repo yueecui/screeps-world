@@ -5,7 +5,7 @@ import { roleUpgrader } from '@/creeps/role.Upgrader';
 
 import {
     RoleNameHarvester,
-    ENERGY_NEED, ENERGY_ENOUGH, WORK_TRANSPORTER_SPAWN,
+    ENERGY_NEED, ENERGY_ENOUGH, WORK_TRANSPORTER_SPAWN, TASK_WAITING, TASK_ACCEPTED, WORK_IDLE,
 } from '@/constant';
 
 
@@ -67,8 +67,21 @@ export const creepExtension = function () {
         this.memory.t = null;
     }
 
+    Creep.prototype.clearQueue = function(){
+        if (this.memory.queue){
+            for (const id in this.memory.queue){
+                switch(this.memory.w){
+                    case WORK_TRANSPORTER_SPAWN:
+                        this.room.memory.taskSpawn![id] = TASK_WAITING;
+                        break;
+                }
+            }
+        }
+        this.memory.queue = [];
+    }
+
     // ------------------------------------------------------------
-    // 状态更新
+    // 能量相关
     // ------------------------------------------------------------
 
     // 更新虫子当前的能量状态
@@ -88,14 +101,89 @@ export const creepExtension = function () {
         }
     },
 
+    // 从房间里存储器获取能量
+    Creep.prototype.obtainEnergy = function(){
+        // TODO
+    },
+
+    // ------------------------------------------------------------
+    // 工作事务相关
+    // ------------------------------------------------------------
+
     // 检查是否需要设置工作状态为搬运孵化能量
     Creep.prototype.checkWorkTransporterSpawn = function(){
         if (this.memory.w != WORK_TRANSPORTER_SPAWN
             && this.room.memory.taskSpawn
             && Object.keys(this.room.memory.taskSpawn).length > 0){
-            this.memory.w = WORK_TRANSPORTER_SPAWN;
+                // 设定工作状态
+                this.memory.w = WORK_TRANSPORTER_SPAWN;
         }
     },
+
+    // 执行WORK_TRANSPORTER_SPAWN
+    Creep.prototype.doWorkTransporterSpawn = function(){
+        if (this.memory.e == ENERGY_NEED){
+            this.obtainEnergy();
+        }else{
+            if (!this.nextSpawnEnergyStore()){
+                return;
+            }
+            const target = this.getTarget() as SpawnEnergyStoreStructure;
+            if (this.store.getFreeCapacity() > 0 && (target.store.getFreeCapacity(RESOURCE_ENERGY) > this.store[RESOURCE_ENERGY])){
+                this.memory.e = ENERGY_NEED;
+                this.obtainEnergy();
+            }else{
+                const result = this.transfer(target, RESOURCE_ENERGY);
+                switch(result){
+                    case OK:
+                    case ERR_FULL:
+                        this.memory.t = null;
+                        break;
+                    case ERR_NOT_IN_RANGE:
+                        this.moveTo(target);
+                        break;
+                }
+            }
+        }
+    },
+
+    // 将下一个需要存能量的建筑ID设为memory.t
+    Creep.prototype.nextSpawnEnergyStore = function(){
+        // 如果已经有目标了，则直接继续
+        if (this.memory.t){
+            return true;
+        }
+        // 队列不存在的话，获取一下队列
+        if (!(this.memory.queue)){
+            // 剩余可充能量
+            let remain_energy = this.store.getUsedCapacity(RESOURCE_ENERGY);
+            // 获取目标队列
+            let targets = this.room.getUnqueueSpawnEnergyStores();
+            targets.sort((a, b) => {
+                return this.pos.getRangeTo(a) - this.pos.getRangeTo(b);
+            });
+            const queue: Id<SpawnEnergyStoreStructure>[] = [];
+            for (const t of targets){
+                if (t.store.getFreeCapacity(RESOURCE_ENERGY) <= remain_energy){
+                    queue.push(t.id);
+                    this.room.memory.taskSpawn![t.id] = TASK_ACCEPTED;
+                    remain_energy -= t.store.getFreeCapacity(RESOURCE_ENERGY)
+                }
+                if (remain_energy < this.room.getExtensionMaxCapacity()){
+                    break;
+                }
+            }
+        }
+        // 从队列里获取第一个目标，如果没有则完成事务
+        if (this.memory.queue && this.memory.queue.length > 0){
+            this.memory.t = _.head(this.memory.queue);
+            this.memory.queue = _.drop(this.memory.queue);
+            return true;
+        }else{
+            this.memory.w = WORK_IDLE;
+            return false;
+        }
+    }
 
     // 判断当前是否需要给母巢或扩展补充能量
     // Creep.prototype.needEnergyToSpawn = function(){
