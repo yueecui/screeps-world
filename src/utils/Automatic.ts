@@ -5,7 +5,7 @@ const cleanCreepsMemory = function() : void{
             delete Memory.creeps[name];
         }
     }
-    console.log(`[${Game.time}]Memory清理完成！`);
+    console.log(`[${Game.time}] Memory清理完成！`);
 }
 
 // 全局定期自动事务

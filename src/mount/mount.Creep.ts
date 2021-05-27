@@ -91,8 +91,8 @@ export const creepExtension = function () {
     // 检查是否需要设置工作状态为搬运孵化能量
     Creep.prototype.checkWorkTransporterSpawn = function(){
         if (this.memory.w != WORK_TRANSPORTER_SPAWN
-            && this.room.memory.spawnEnergyStores
-            && this.room.memory.spawnEnergyStores.unqueued.length > 0){
+            && this.room.memory.taskSpawn
+            && Object.keys(this.room.memory.taskSpawn).length > 0){
             this.memory.w = WORK_TRANSPORTER_SPAWN;
         }
     },

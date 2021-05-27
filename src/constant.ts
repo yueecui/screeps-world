@@ -37,3 +37,16 @@ export const ENERGY_ENOUGH: ENERGY_ENOUGH = 1;
   * 当前Creep正在担任运输者职责，将当前房间的container里多余的能量带到storage
   */
  export const WORK_TRANSPORTER_STORAGE: WORK_TRANSPORTER_STORAGE = 10;
+
+
+ // Room状态码
+
+/**
+ * 任务正在等待状态
+ */
+export const TASK_WAITING: TASK_WAITING = 0;
+/**
+ * 任务已经被某个虫子接受
+ */
+export const TASK_ACCEPTED: TASK_ACCEPTED = 1;
+

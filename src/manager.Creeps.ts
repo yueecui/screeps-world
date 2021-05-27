@@ -115,7 +115,7 @@ export const ManagerCreeps: Record<string, any> = {
     // console.log(config.basename+index);
     const result = Game.spawns['Spawn1'].spawnCreep(config.body, config.basename+index, {memory: memory, directions: [RIGHT]}); //, TOP_RIGHT, BOTTOM_RIGHT, TOP, TOP_LEFT
     if (result == OK){
-      Game.spawns['Spawn1'].room.memory.needCheckSpawnEnergy = true;
+      Game.spawns['Spawn1'].room.memory.flagSpawnEnergy = true;
     }
     return result;
   },

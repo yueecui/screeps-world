@@ -29,10 +29,9 @@ module.exports.loop = ErrorMapper.wrapLoop(() => {
   for(const name in Game.rooms) {
     const room = Game.rooms[name];
     if (room.controller && room.controller.my){
-      room.periodicInspection();
+      room.tickCheck();
     }
   }
-
 
   // 运转所有小虫
   for(const name in Game.creeps) {
