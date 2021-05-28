@@ -1,3 +1,9 @@
+// import { LoDashStatic } from 'lodash';
+
+// declare global {
+//     const _: LoDashStatic;
+// }
+
 /*
   Example types, expand on these or remove them and add your own.
   Note: Values, properties defined here do no fully *exist* by this type definiton alone.

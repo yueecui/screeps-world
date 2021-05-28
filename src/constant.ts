@@ -50,3 +50,22 @@ export const TASK_WAITING: TASK_WAITING = 0;
  */
 export const TASK_ACCEPTED: TASK_ACCEPTED = 1;
 
+/**
+ * 能量计划类型：预计收入
+ */
+export const PLAN_INCOME: PLAN_INCOME = 0;
+/**
+ * 能量计划类型：预计支出
+ */
+export const PLAN_PAY: PLAN_PAY = 1;
+
+/**
+ * container类型：存储source产出
+ *
+ * 存量变多后会转移到storage
+ */
+export const CONTAINER_TYPE_SOURCE: CONTAINER_TYPE_SOURCE = 0;
+/**
+ * container类型：存储供给给upgrader的能量
+ */
+export const CONTAINER_TYPE_CONTROLLER: CONTAINER_TYPE_CONTROLLER = 1;

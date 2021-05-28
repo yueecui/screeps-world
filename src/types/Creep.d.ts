@@ -87,7 +87,11 @@ interface Creep {
   /**
    * 从房间的container或是storage里获取能量
    */
-  obtainEnergy(): void;
+  obtainEnergy(min_amount: number, opt?: obtainEnergyOpt): void;
+  /**
+   * 寻找最合适的能量存储
+   */
+  findEnergyStore(min_amount: number, opt?: obtainEnergyOpt): void;
   /**
    * 检查房间的孵化能量是否足够，
    * 不足的情况下会设工作状态为WORK_TRANSPORTER_SPAWN
@@ -109,6 +113,11 @@ interface Creep {
   recycleNearby(res_type?: ResourceConstant): ScreepsReturnCode;
   isRecycling(): boolean;
   obtainEnergyFromNearestContainer(capacity_min: number): void;
+}
+
+interface obtainEnergyOpt{
+  container?: ANY_CONTAINER_TYPE[];
+  storage?: boolean;
 }
 
 type ENERGY_STATUS =

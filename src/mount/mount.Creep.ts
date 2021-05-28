@@ -5,7 +5,10 @@ import { roleUpgrader } from '@/creeps/role.Upgrader';
 
 import {
     RoleNameHarvester,
-    ENERGY_NEED, ENERGY_ENOUGH, WORK_TRANSPORTER_SPAWN, TASK_WAITING, TASK_ACCEPTED, WORK_IDLE,
+    ENERGY_NEED, ENERGY_ENOUGH,
+    WORK_IDLE, WORK_TRANSPORTER_SPAWN,
+    TASK_WAITING, TASK_ACCEPTED,
+    CONTAINER_TYPE_SOURCE,
 } from '@/constant';
 
 
@@ -102,9 +105,40 @@ export const creepExtension = function () {
     },
 
     // 从房间里存储器获取能量
-    Creep.prototype.obtainEnergy = function(){
+    Creep.prototype.obtainEnergy = function(min_amount, opt){
         // TODO
+
+
     },
+
+    Creep.prototype.findEnergyStore = function(min_amount, opt){
+        let structures: Array<AnyStoreStructure> = [];
+        if (opt && opt.container){
+            _.each(
+                _.filter(this.room.memory.containers, (config) => {
+                    return opt!.container!.indexOf(config.type) > -1;
+                }),
+                (config) => {
+                    const container = this.room.getStructureById(config.id);
+                    if (container){
+                        structures.push(container);
+                    }
+                }
+            )
+        }
+        if (opt && opt.storage && this.room.storage){
+            structures.push(this.room.storage)
+        }
+        // 根据最小需求量过滤
+        structures = _.filter(structures, (structure) => {
+            if (structure.structureType == STRUCTURE_CONTAINER){
+                return this.room.getContainerEnergyCapacity(structure) >= min_amount;
+            }else{
+                return structure.store[RESOURCE_ENERGY] >= min_amount;
+            }
+        });
+        // TODO
+    }
 
     // ------------------------------------------------------------
     // 工作事务相关
