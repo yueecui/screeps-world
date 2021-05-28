@@ -74,24 +74,26 @@ export const roleTransporter: Transporter = {
         }
 
         if (creep.memory.w == WORK_TRANSPORTER_SPAWN){
-            const target = this.findStore(creep);
-            if (target){
-                if (creep.store.getFreeCapacity() > 0 && (target.store.getFreeCapacity(RESOURCE_ENERGY) > creep.store[RESOURCE_ENERGY])){
-                    creep.memory.e = ENERGY_NEED;
-                    this.obtainEnergy(creep)
-                }else{
-                    const result = creep.transfer(target, RESOURCE_ENERGY);
-                    switch(result){
-                        case OK:
-                        case ERR_FULL:
-                            creep.memory.w = WORK_IDLE;
-                            break;
-                        case ERR_NOT_IN_RANGE:
-                            creep.moveTo(target);
-                            break;
-                    }
-                }
-            }
+            creep.doWorkTransporterSpawn();
+
+            // const target = this.findStore(creep);
+            // if (target){
+            //     if (creep.store.getFreeCapacity() > 0 && (target.store.getFreeCapacity(RESOURCE_ENERGY) > creep.store[RESOURCE_ENERGY])){
+            //         creep.memory.e = ENERGY_NEED;
+            //         this.obtainEnergy(creep)
+            //     }else{
+            //         const result = creep.transfer(target, RESOURCE_ENERGY);
+            //         switch(result){
+            //             case OK:
+            //             case ERR_FULL:
+            //                 creep.memory.w = WORK_IDLE;
+            //                 break;
+            //             case ERR_NOT_IN_RANGE:
+            //                 creep.moveTo(target);
+            //                 break;
+            //         }
+            //     }
+            // }
         }else if (creep.memory.w == WORK_TRANSPORTER_TOWER){
             const target = creep.getTarget();
             if (creep.memory.e == ENERGY_NEED){

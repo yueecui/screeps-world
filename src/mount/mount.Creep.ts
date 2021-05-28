@@ -9,6 +9,7 @@ import {
     WORK_IDLE, WORK_TRANSPORTER_SPAWN,
     TASK_WAITING, TASK_ACCEPTED,
     CONTAINER_TYPE_SOURCE,
+    PLAN_PAY,
 } from '@/constant';
 
 
@@ -105,14 +106,31 @@ export const creepExtension = function () {
     },
 
     // 从房间里存储器获取能量
-    Creep.prototype.obtainEnergy = function(min_amount, opt){
-        // TODO
+    Creep.prototype.obtainEnergy = function(opt){
+        let target = this.getTarget() as StructureContainer | StructureStorage | null;
 
+        if (!target || (target.structureType != STRUCTURE_CONTAINER && target.structureType != STRUCTURE_STORAGE)){
+            target = this.findEnergyStore(opt);
+        }
 
+        if (target){
+            const result = this.withdraw(target, RESOURCE_ENERGY);
+            switch(result){
+                case ERR_NOT_IN_RANGE:
+                    this.moveTo(target);
+                    break;
+                default:
+                    this.memory.t = null;
+                    this.memory.e = ENERGY_ENOUGH;
+                    break;
+            }
+        }else{
+            this.say('无法获得能量')
+        }
     },
 
-    Creep.prototype.findEnergyStore = function(min_amount, opt){
-        let structures: Array<AnyStoreStructure> = [];
+    Creep.prototype.findEnergyStore = function(opt){
+        let structures: Array<StructureContainer | StructureStorage> = [];
         if (opt && opt.container){
             _.each(
                 _.filter(this.room.memory.containers, (config) => {
@@ -126,10 +144,11 @@ export const creepExtension = function () {
                 }
             )
         }
-        if (opt && opt.storage && this.room.storage){
+        if ((opt && opt.storage != undefined ? opt.storage : true) && this.room.storage){
             structures.push(this.room.storage)
         }
         // 根据最小需求量过滤
+        const min_amount = opt && opt.min_amount ? opt.min_amount : this.store.getFreeCapacity(RESOURCE_ENERGY);
         structures = _.filter(structures, (structure) => {
             if (structure.structureType == STRUCTURE_CONTAINER){
                 return this.room.getContainerEnergyCapacity(structure) >= min_amount;
@@ -137,7 +156,21 @@ export const creepExtension = function () {
                 return structure.store[RESOURCE_ENERGY] >= min_amount;
             }
         });
-        // TODO
+        if (structures.length > 0){
+            structures.sort((a, b) => {
+                return this.pos.getRangeTo(a) - this.pos.getRangeTo(b);
+            })
+            const structure = structures[0];
+            this.memory.t = structure.id;
+            if (structure.structureType == STRUCTURE_CONTAINER){
+                this.room.bookingContainer(this.id, structure.id, PLAN_PAY, this.store.getFreeCapacity(RESOURCE_ENERGY));
+            }
+            return structure;
+        }else{
+            this.room.unbookingContainer(this.id);
+            this.memory.t = null;
+            return null;
+        }
     }
 
     // ------------------------------------------------------------
@@ -157,15 +190,23 @@ export const creepExtension = function () {
     // 执行WORK_TRANSPORTER_SPAWN
     Creep.prototype.doWorkTransporterSpawn = function(){
         if (this.memory.e == ENERGY_NEED){
-            this.obtainEnergy();
+            this.obtainEnergy({
+                container: [CONTAINER_TYPE_SOURCE],
+                storage: true,
+            });
         }else{
+            // 没有找到下个目标的情况下，返回false，并且把工作置为IDLE
             if (!this.nextSpawnEnergyStore()){
                 return;
             }
             const target = this.getTarget() as SpawnEnergyStoreStructure;
             if (this.store.getFreeCapacity() > 0 && (target.store.getFreeCapacity(RESOURCE_ENERGY) > this.store[RESOURCE_ENERGY])){
                 this.memory.e = ENERGY_NEED;
-                this.obtainEnergy();
+                this.memory.t = null;
+                this.obtainEnergy({
+                    container: [CONTAINER_TYPE_SOURCE],
+                    storage: true,
+                });
             }else{
                 const result = this.transfer(target, RESOURCE_ENERGY);
                 switch(result){
