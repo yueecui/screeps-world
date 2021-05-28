@@ -212,6 +212,7 @@ export const creepExtension = function () {
                 switch(result){
                     case OK:
                     case ERR_FULL:
+                        delete this.room.memory.taskSpawn[this.memory.t!];
                         this.memory.t = null;
                         break;
                     case ERR_NOT_IN_RANGE:

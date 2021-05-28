@@ -150,12 +150,11 @@ export const roomExtension = function () {
                     && find.store.getFreeCapacity(RESOURCE_ENERGY) > 0);
         }}) as SpawnEnergyStoreStructure[];
         // 缓存所有查询到的房间数据，减少本tick查询
+        this.memory.taskSpawn = {};
         found.forEach((find) => {
             this.cache.structure[find.id] = find;
             // 将ID存储到Memory
-            if (this.memory.taskSpawn && !(find.id in this.memory.taskSpawn)){
-                this.memory.taskSpawn[find.id] = TASK_WAITING
-            }
+            this.memory.taskSpawn[find.id] = TASK_WAITING
         })
         // 关闭标记
         this.memory.flagSpawnEnergy = false;
