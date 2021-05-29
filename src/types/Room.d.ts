@@ -8,18 +8,17 @@ interface RoomMemory {
    *
    * 只生成一次，只要sources这个key存在就不会再刷新
    */
-  sources: Array<sourceStatus>;
+  sources: Array<sourceInfo>;
   /**
-   * 是否需要检查孵化用能量
+   * 本房间最后一次孵化的时间
    *
-   * 1.孵化后自动标记
-   * 2.周期性检查
+   * 用于判断是否要再次进行孵化
    */
-  flagSpawnEnergy: boolean;
+  lastSpawnTime: number;
   /**
    * 当前还需要补充能量的孵化用建筑物
    */
-  taskSpawn: Record<string, TASK_STATUS>;
+  taskSpawn: Record<string, taskInfo>;
   /**
    * room中tower的id缓存
    */
@@ -33,7 +32,7 @@ interface RoomMemory {
    *
    * container需要手工调用Room.addContainer添加（但会定期自动检测是否存在，不存在就会自动移除）
    */
-  containers: Array<containerStatus>;
+  containers: Array<containerInfo>;
   /**
    * 目前运输的能量计划
    *
@@ -45,7 +44,7 @@ interface RoomMemory {
 /**
  * source缓存的状态
  */
-interface sourceStatus {
+interface sourceInfo {
   /**
    * source ID
    */
@@ -62,7 +61,15 @@ interface sourceStatus {
 /**
  * container缓存的状态
  */
- interface containerStatus{
+ interface taskInfo{
+  cName: string | null;
+  stat: TASK_STATUS;
+}
+
+/**
+ * container缓存的状态
+ */
+ interface containerInfo{
   id: Id<StructureContainer>;
   type: ANY_CONTAINER_TYPE;
 }
@@ -77,7 +84,7 @@ type CONTAINER_TYPE_CONTROLLER = 1;  // 用于给upgrader提取能量的containe
  * 运输中的能量计划
  */
 interface EnergyPlan{
-  cid: Id<Creep>,
+  cName: string,
   sid: Id<StructureContainer>,
   t: PLAN_TYPE,
   a: number,
@@ -163,6 +170,11 @@ interface Room {
    */
   getUnqueueSpawnEnergyStores(): SpawnEnergyStoreStructure[];
   /**
+   * 检查是否还有没进入队列的孵化能量建筑，协助creep判断是否需要进入搬运状态
+   * @return boolean 判断结果
+   */
+  hasUnqueueSpawnEnergyStores(): boolean;
+  /**
    * 检查房间内的tower是否需要补充能量
    */
   checkTowerEnergy(): void;
@@ -188,25 +200,25 @@ interface Room {
   /**
    * 预定要变化container的energy
    *
-   * @param creep_id 预定使用的creep id
+   * @param creep_iname 预定使用的creep name
    * @param container_id 预定的container id
    * @param type 预定类型（是存入还是取出）
    * @param amount 预定数量
    */
-  bookingContainer(creep_id: Id<Creep>, container_id: Id<StructureContainer>, type: PLAN_TYPE, amount: number): void;
+  bookingContainer(creep_name: string, container_id: Id<StructureContainer>, type: PLAN_TYPE, amount: number): void;
   /**
    * 取消预定要变化container的energy
    *
    * @param id 需要取消预定的creep id，会取消该creep的所有预定
    */
-  unbookingContainer(id: Id<Creep>): void;
+  unbookingContainer(creep_name: string): void;
   /**
    * 获取指定id的container在计算预定额度后的能量数值
    *
-   * @param id 指定的continaer id
+   * @param structure 指定的continaer或是storage
    * @returns number 计算额度后的能量数值
    */
-   getContainerEnergyCapacity(id: StructureContainer): number;
+   getStructureEnergyCapacity(structure: StructureContainer | StructureStorage): number;
   /**
    * 检查房间内的container是否能量过盛（需要转存到storage中）
    */

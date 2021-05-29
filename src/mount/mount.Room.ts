@@ -19,7 +19,7 @@ export const roomExtension = function () {
     Room.prototype.getStructureByIdArray = function<T extends AnyStructure>(id_list: Id<T>[]){
         const result: T[] = [];
         const missed_id: Id<T>[] = [];
-        for (const id in id_list){
+        for (const id of id_list){
             if (id == ''){
                 continue;
             }
@@ -43,11 +43,11 @@ export const roomExtension = function () {
         // 定期检查
         if (Game.time % 5 == 0){
             this.checkTowerEnergy();
+            // this.memory.lastSpawnTime = (this.energyAvailable < this.energyCapacityAvailable || this.energyAvailable == 300) ? 1 : 0;
         }
-        if (this.memory.flagPurge || Game.time % 50 == 0){
-            this.memory.flagSpawnEnergy = this.energyAvailable < this.energyCapacityAvailable;
-        }
-        if (this.memory.flagPurge || Game.time % 200 == 0){
+        if (this.memory.flagPurge || Game.time % 20 == 0){
+            // 强制刷新孵化能量任务队列
+            this.memory.lastSpawnTime = 1
             this.cacheMyStructuresId();   // 重新缓存特定的自己的建筑（例如塔）
             this.checkContainerStatus();  // 检查container是否存在
         }
@@ -68,8 +68,8 @@ export const roomExtension = function () {
         if (this.memory.sources == undefined){
             this.initSources();
         }
-        if (this.memory.flagSpawnEnergy == undefined){
-            this.memory.flagSpawnEnergy = true;
+        if (this.memory.lastSpawnTime == undefined){
+            this.memory.lastSpawnTime = 0;
         }
         if (this.memory.taskSpawn == undefined){
             this.memory.taskSpawn = {}
@@ -141,7 +141,7 @@ export const roomExtension = function () {
 
     // 检查孵化用能量是否充足
     Room.prototype.checkSpawnEnergy = function(){
-        if (!this.memory.flagSpawnEnergy){
+        if (this.memory.lastSpawnTime == 0 || !(this.memory.lastSpawnTime < Game.time)){
             return;
         }
         // 查找所有能量不满的孵化用建筑
@@ -149,15 +149,26 @@ export const roomExtension = function () {
             return ((find.structureType == STRUCTURE_SPAWN|| find.structureType == STRUCTURE_EXTENSION)
                     && find.store.getFreeCapacity(RESOURCE_ENERGY) > 0);
         }}) as SpawnEnergyStoreStructure[];
-        // 缓存所有查询到的房间数据，减少本tick查询
-        this.memory.taskSpawn = {};
+
+        const newtaskSpawn = {} as Record<string, taskInfo>;
         found.forEach((find) => {
-            this.cache.structure[find.id] = find;
+            this.cache.structure[find.id] = find;  // 缓存所有查询到的房间数据，减少本tick查询
             // 将ID存储到Memory
-            this.memory.taskSpawn[find.id] = TASK_WAITING
+            if (find.id in this.memory.taskSpawn){
+                const oldTaskInfo = this.memory.taskSpawn[find.id];
+                if (oldTaskInfo.cName && Game.creeps[oldTaskInfo.cName]){
+                    newtaskSpawn[find.id] = oldTaskInfo;
+                    return;
+                }
+            }
+            newtaskSpawn[find.id] = {
+                cName: null,
+                stat: TASK_WAITING,
+            }
         })
+        this.memory.taskSpawn = newtaskSpawn;
         // 关闭标记
-        this.memory.flagSpawnEnergy = false;
+        this.memory.lastSpawnTime = 0;
     }
 
     // 根据房间等级获取扩展的最大容量
@@ -181,18 +192,31 @@ export const roomExtension = function () {
     // 获得所有没进入孵化能量补充队列的建筑
     Room.prototype.getUnqueueSpawnEnergyStores = function(){
         const id_list: Id<SpawnEnergyStoreStructure>[] = [];
-        if (this.memory.taskSpawn && Object.keys(this.memory.taskSpawn).length > 0){
-            _.each(this.memory.taskSpawn, (v, k) => { if (v == TASK_WAITING){ id_list.push(k as Id<SpawnEnergyStoreStructure>) };
+        if (Object.keys(this.memory.taskSpawn).length > 0){
+            _.each(this.memory.taskSpawn, (info, k) => {
+                if (info.stat == TASK_WAITING){
+                    id_list.push(k as Id<SpawnEnergyStoreStructure>);
+                };
             });
         }
         const [result, missed_id] = this.getStructureByIdArray(id_list);
         // 如果出现了没查到数据的建筑，则移除掉这些数据
         if (missed_id.length > 0){
             for (const id of missed_id){
-                delete this.memory.taskSpawn![id];
+                delete this.memory.taskSpawn[id];
             }
         }
         return result;
+    }
+
+    // 是否有还未进入队列的孵化能量建筑
+    Room.prototype.hasUnqueueSpawnEnergyStores = function(){
+        for (const key in this.memory.taskSpawn){
+            if (this.memory.taskSpawn[key].stat == TASK_WAITING){
+                return true;
+            }
+        }
+        return false;
     }
 
     // 检查tower的能量
@@ -252,21 +276,21 @@ export const roomExtension = function () {
     }
 
     // 预定一个container的能量变化
-    Room.prototype.bookingContainer = function(creep_id, container_id, type, amount){
+    Room.prototype.bookingContainer = function(creep_name, container_id, type, amount){
         if (amount == 0){
             return;
         }
-        const index = _.findIndex(this.memory.energyPlan!, {cid: creep_id});
+        const index = _.findIndex(this.memory.energyPlan!, {cName: creep_name});
         if (index == -1){
             this.memory.energyPlan.push({
-                cid: creep_id,
+                cName: creep_name,
                 sid: container_id,
                 t: type,
                 a: amount
             })
         }else{
             this.memory.energyPlan[index] = {
-                cid: creep_id,
+                cName: creep_name,
                 sid: container_id,
                 t: type,
                 a: amount
@@ -275,18 +299,22 @@ export const roomExtension = function () {
     }
 
     // 原则上每个creep同一时间只会预订一个存储器，所以只指定creep ID即可
-    Room.prototype.unbookingContainer = function(id: Id<Creep>){
-        _.remove(this.memory.energyPlan, {cid: id});
+    Room.prototype.unbookingContainer = function(creep_name){
+        _.remove(this.memory.energyPlan, {cName: creep_name});
     }
 
     // 按booking后数值计算energy数量
-    Room.prototype.getContainerEnergyCapacity = function(container){
-        return container.store[RESOURCE_ENERGY] + _.sum(_.map(
-            _.filter(this.memory.energyPlan, {sid: container.id}),
-            (plan) => {
-                return plan.t == PLAN_PAY ? plan.a * -1: plan.a;
-            }
-        ));
+    Room.prototype.getStructureEnergyCapacity = function(structure){
+        if (structure.structureType == STRUCTURE_STORAGE){
+            return structure.store[RESOURCE_ENERGY];
+        }else{
+            return structure.store[RESOURCE_ENERGY] + _.sum(_.map(
+                _.filter(this.memory.energyPlan, {sid: structure.id}),
+                (plan) => {
+                    return plan.t == PLAN_PAY ? plan.a * -1: plan.a;
+                }
+            ));
+        }
     }
 
     // energy container相关
@@ -297,7 +325,7 @@ export const roomExtension = function () {
 
         return _.filter(containers, (container) => {
             if (container == null) { return false; }
-            return this.getContainerEnergyCapacity(container) >= CONTAINER_TO_STORAGE_MIN; }
+            return this.getStructureEnergyCapacity(container) >= CONTAINER_TO_STORAGE_MIN; }
         ) as StructureContainer[];
     };
 }

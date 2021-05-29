@@ -26,7 +26,6 @@ const BODY_CONFIG: Record<string, BodyConfig> = {
               CARRY, CARRY, MOVE, MOVE, MOVE, MOVE],  // WORK*10 + CARRY*2 + MOVE*4 = 1300
 }
 
-
 // key值：型号名称，生成的creep会用型号+序号的形式自动取名
 // body body组成数组
 // amount 至少维持的数量
@@ -36,9 +35,9 @@ const ACTIVE_ROLE_CONFIG = new Map([
   // ['Gather-B', { body: BODY_CONFIG['WORKER_R3B'], amount: 1, aheadTime: 80, memory: {role:'Gather', node:1} }],  // W35N57 下方矿点采集
 
   // 收集者
-  ['TR', { body: BODY_CONFIG['CARRYER_R3'], amount: 1, aheadTime: 80, memory: {r:'运输', e: 0} }],   // W35N57 将各个节点额外的能量搬运到Storage
-  ['GA-B', { basename:'', body: BODY_CONFIG['采集者R4'], amount: 1, aheadTime: 80, memory: {r:'采集', node:1} }],  // W35N57 下方矿点采集
-  ['GA-A', { body: BODY_CONFIG['采集者R4'], amount: 1, aheadTime: 80, memory: {r:'采集', node:0} }],  // W35N57 下方矿点采集
+  ['TR', { basename:'',body: BODY_CONFIG['CARRYER_R3'], amount: 3, aheadTime: 80, memory: {r:'运输', e: 0} }],   // W35N57 将各个节点额外的能量搬运到Storage
+  // ['GA-B', { body: BODY_CONFIG['采集者R4'], amount: 1, aheadTime: 80, memory: {r:'采集', node:1} }],  // W35N57 下方矿点采集
+  // ['GA-A', { body: BODY_CONFIG['采集者R4'], amount: 1, aheadTime: 80, memory: {r:'采集', node:0} }],  // W35N57 下方矿点采集
   // ['Gather-B', { body: BODY_CONFIG['采集者R4'], amount: 1, aheadTime: 80, memory: {role:'Gather', node:1} }],  // W35N57 下方矿点采集
   // ['Gather-A', { body: BODY_CONFIG['采集者R4'], amount: 1, aheadTime: 80, memory: {role:'Gather', node:0} }],  // W35N57 上方矿点采集
   // ['Carryer-B', { body: BODY_CONFIG['CARRYER_R2'], amount: 1, aheadTime: 50, memory: {role:'Carryer', route: 0} }],   // W35N57 下方矿点搬运，扩展→母巢
@@ -47,14 +46,14 @@ const ACTIVE_ROLE_CONFIG = new Map([
   // ['Store-B', { body: BODY_CONFIG['CARRYER_R3'], amount: 1, memory: {role:'Store', route: 0} }],   // W35N57 给upgrader提供能量
   // // 建造者
   // ['Builder-B', { body: BODY_CONFIG['BUILDER_R3'], amount: 1, memory: {role:'Builder', model:'B'} }],  // 建造优先
-  ['BD-R', { body: BODY_CONFIG['BUILDER_R3'], amount: 1, memory: {r:'建造', model:'R'} }],  // 修理优先
-  ['UP-A', { body: BODY_CONFIG['升级者R4'], amount: 2, memory: {r:'升级'} }],
+  // ['BD-R', { body: BODY_CONFIG['BUILDER_R3'], amount: 1, memory: {r:'建造', model:'R'} }],  // 修理优先
+  // ['UP-A', { body: BODY_CONFIG['升级者R4'], amount: 2, memory: {r:'升级'} }],
   // ['Transporter-A', { body: BODY_CONFIG['CARRYER_R3'], amount: 1, memory: {role:'Transporter'} }],   // W35N57 将各个节点额外的能量搬运到Storage
 ]);
 
 const OTHER_ROLE_CONFIG = new Map([
   // 救灾
-  ['Rescue', { body: null, amount: 1, memory: {role:'运输', e: 0} }],   // W35N57 救灾机器人
+  ['Rescue', { body: null, amount: 1, memory: {r:'运输', e: 0} }],   // W35N57 救灾机器人
 ]);
 
 
@@ -84,10 +83,6 @@ export const ManagerCreeps: Record<string, any> = {
       }
     }
 
-    // console.log('-----')
-    // console.log('all:'+JSON.stringify(all_creeps));
-    // console.log('valid:'+JSON.stringify(valid_creeps));
-
     for (const [basename,config] of ACTIVE_ROLE_CONFIG){
       config.basename = basename;
       const role_all = all_creeps[basename] || []
@@ -112,10 +107,9 @@ export const ManagerCreeps: Record<string, any> = {
       memory.e = ENERGY_NEED;
     }
     memory.w = WORK_IDLE;
-    // console.log(config.basename+index);
     const result = Game.spawns['Spawn1'].spawnCreep(config.body, config.basename+index, {memory: memory, directions: [RIGHT]}); //, TOP_RIGHT, BOTTOM_RIGHT, TOP, TOP_LEFT
     if (result == OK){
-      Game.spawns['Spawn1'].room.memory.flagSpawnEnergy = true;
+      Game.spawns['Spawn1'].room.memory.lastSpawnTime = Game.time;
     }
     return result;
   },
@@ -132,7 +126,6 @@ export const ManagerCreeps: Record<string, any> = {
     for (let i=0;i<Math.floor(room.energyAvailable/150);i++){
       config.body.push(...[CARRY, CARRY, MOVE]);
     }
-    // console.log(JSON.stringify(config));
     return this.spawnCreep(config, 1);
   },
 };

@@ -29,10 +29,8 @@ export const roleUpgrader: Upgrader = {
             }
         }else if (creep.memory.w == WORK_DOING){
             if (creep.pos.x != 28 || creep.pos.y != 20+creep.getIndex()){
-                // console.log();
                 creep.moveTo(28, 20+creep.getIndex())
             }
-            // console.log(creep.name, creep.getIndex());
             creep.upgradeController(creep.room.controller!);
         }
     },

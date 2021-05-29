@@ -77,6 +77,10 @@ interface Creep {
    */
   clearTarget(): void;
   /**
+   * 将当前缓存的目标塞回队列的第一个
+   */
+  unshiftTarget(): void;
+  /**
    * 清除当前缓存的目标队列
    */
   clearQueue(): void;
@@ -96,16 +100,21 @@ interface Creep {
    * 检查房间的孵化能量是否足够，
    * 不足的情况下会设工作状态为WORK_TRANSPORTER_SPAWN
    */
-   checkWorkTransporterSpawn(): void;
-   /**
-    * 执行WORK_TRANSPORTER_SPAWN
-    */
-   doWorkTransporterSpawn(): void;
-   /**
-    * 将下一个需要存能量的建筑ID设为memory.t
-    * @returns true表示设定成功，false表示已经没有目标了，切回IDEL状态
-    */
-   nextSpawnEnergyStore(): boolean;
+  checkWorkTransporterSpawn(): void;
+  /**
+   * 执行WORK_TRANSPORTER_SPAWN
+   */
+  doWorkTransporterSpawn(): void;
+  /**
+   * 更新队列：WORK_TRANSPORTER_SPAWN
+   * @returns boolean 更新后的队列是否大于0
+   */
+  updateQueueSpawnEnergyStore(): boolean;
+  /**
+   * 将下一个需要存能量的建筑ID设为memory.t
+   * @returns true表示设定成功，false表示已经没有目标了，切回IDEL状态
+   */
+  setNextTargetSpawnEnergyStore(): boolean;
   /**
    * 本回合执行recycleNearby是否成功的标记
    */

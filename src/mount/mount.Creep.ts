@@ -20,17 +20,26 @@ const roleMap: Record<AnyRoleName, AnyRole> = {
     '升级': roleUpgrader,
 }
 
+// 任务队列最大长度
+const TASK_QUEUE_MAX = 5;
+
 export const creepExtension = function () {
     Creep.prototype.baseName = '';
     Creep.prototype.index = 0;
     Creep.prototype.recycling = false;
 
     Creep.prototype.run = function(){
+        if (this.spawning){
+            return;
+        }
         // if (this.getRole() == 'Upgrader'){
         //     return roleMap['Builder'].run(this);
         // }
-
-        roleMap[this.getRole()].run(this);
+        if (this.getRole() == undefined){
+            this.say('没有配置角色');
+        }else{
+            roleMap[this.getRole()].run(this);
+        }
     };
 
     Creep.prototype.analyzeName = function () {
@@ -71,12 +80,24 @@ export const creepExtension = function () {
         this.memory.t = null;
     }
 
+    Creep.prototype.unshiftTarget = function(){
+        if (this.memory.queue && this.memory.t){
+            this.memory.queue.unshift(this.memory.t)
+        }
+        this.clearTarget();
+    }
+
     Creep.prototype.clearQueue = function(){
         if (this.memory.queue){
             for (const id in this.memory.queue){
                 switch(this.memory.w){
                     case WORK_TRANSPORTER_SPAWN:
-                        this.room.memory.taskSpawn![id] = TASK_WAITING;
+                        if (id in this.room.memory.taskSpawn){
+                            this.room.memory.taskSpawn[id] = {
+                                cName: null,
+                                stat: TASK_WAITING,
+                            };
+                        }
                         break;
                 }
             }
@@ -90,16 +111,8 @@ export const creepExtension = function () {
 
     // 更新虫子当前的能量状态
     Creep.prototype.updateEnergyStatus = function(){
-        if (this.memory.e == ENERGY_NEED){
-            if (this.store.getFreeCapacity() == 0){
-                this.memory.e = ENERGY_ENOUGH;
-            }else{
-                const target =  this.getTarget() as StructureContainer | StructureStorage;
-                if (target && target.store[RESOURCE_ENERGY] == 0){
-                    this.memory.e = ENERGY_ENOUGH;
-                    this.clearTarget();
-                }
-            }
+        if (this.memory.e == ENERGY_NEED && this.store.getFreeCapacity() == 0){
+            this.memory.e = ENERGY_ENOUGH;
         }else if (this.memory.e == ENERGY_ENOUGH && this.store[RESOURCE_ENERGY] == 0){
             this.memory.e = ENERGY_NEED;
         }
@@ -120,7 +133,7 @@ export const creepExtension = function () {
                     this.moveTo(target);
                     break;
                 default:
-                    this.memory.t = null;
+                    this.clearTarget();
                     this.memory.e = ENERGY_ENOUGH;
                     break;
             }
@@ -138,23 +151,22 @@ export const creepExtension = function () {
                 }),
                 (config) => {
                     const container = this.room.getStructureById(config.id);
-                    if (container){
+                    if (container && container.store[RESOURCE_ENERGY] > 0){
                         structures.push(container);
                     }
                 }
             )
         }
-        if ((opt && opt.storage != undefined ? opt.storage : true) && this.room.storage){
+        if ((opt
+            && opt.storage != undefined ? opt.storage : true)
+            && this.room.storage
+            && this.room.storage.store[RESOURCE_ENERGY] > 0){
             structures.push(this.room.storage)
         }
         // 根据最小需求量过滤
         const min_amount = opt && opt.min_amount ? opt.min_amount : this.store.getFreeCapacity(RESOURCE_ENERGY);
         structures = _.filter(structures, (structure) => {
-            if (structure.structureType == STRUCTURE_CONTAINER){
-                return this.room.getContainerEnergyCapacity(structure) >= min_amount;
-            }else{
-                return structure.store[RESOURCE_ENERGY] >= min_amount;
-            }
+            return this.room.getStructureEnergyCapacity(structure) >= min_amount;
         });
         if (structures.length > 0){
             structures.sort((a, b) => {
@@ -163,11 +175,11 @@ export const creepExtension = function () {
             const structure = structures[0];
             this.memory.t = structure.id;
             if (structure.structureType == STRUCTURE_CONTAINER){
-                this.room.bookingContainer(this.id, structure.id, PLAN_PAY, this.store.getFreeCapacity(RESOURCE_ENERGY));
+                this.room.bookingContainer(this.name, structure.id, PLAN_PAY, this.store.getFreeCapacity(RESOURCE_ENERGY));
             }
             return structure;
         }else{
-            this.room.unbookingContainer(this.id);
+            this.room.unbookingContainer(this.name);
             this.memory.t = null;
             return null;
         }
@@ -180,9 +192,11 @@ export const creepExtension = function () {
     // 检查是否需要设置工作状态为搬运孵化能量
     Creep.prototype.checkWorkTransporterSpawn = function(){
         if (this.memory.w != WORK_TRANSPORTER_SPAWN
-            && this.room.memory.taskSpawn
-            && Object.keys(this.room.memory.taskSpawn).length > 0){
+            && this.room.hasUnqueueSpawnEnergyStores()){
                 // 设定工作状态
+                this.clearQueue();
+                this.clearTarget();
+                this.updateQueueSpawnEnergyStore();
                 this.memory.w = WORK_TRANSPORTER_SPAWN;
         }
     },
@@ -196,13 +210,14 @@ export const creepExtension = function () {
             });
         }else{
             // 没有找到下个目标的情况下，返回false，并且把工作置为IDLE
-            if (!this.nextSpawnEnergyStore()){
+            if (!this.setNextTargetSpawnEnergyStore()){
+                this.memory.w = WORK_IDLE;
                 return;
             }
             const target = this.getTarget() as SpawnEnergyStoreStructure;
             if (this.store.getFreeCapacity() > 0 && (target.store.getFreeCapacity(RESOURCE_ENERGY) > this.store[RESOURCE_ENERGY])){
                 this.memory.e = ENERGY_NEED;
-                this.memory.t = null;
+                this.unshiftTarget();
                 this.obtainEnergy({
                     container: [CONTAINER_TYPE_SOURCE],
                     storage: true,
@@ -211,9 +226,13 @@ export const creepExtension = function () {
                 const result = this.transfer(target, RESOURCE_ENERGY);
                 switch(result){
                     case OK:
-                    case ERR_FULL:
-                        delete this.room.memory.taskSpawn[this.memory.t!];
-                        this.memory.t = null;
+                        // 如果当前的容量不足以填满目标，则将目标放回队列里
+                        if (this.store[RESOURCE_ENERGY] >= target.store.getFreeCapacity(RESOURCE_ENERGY)){
+                            delete this.room.memory.taskSpawn[this.memory.t!];
+                            this.clearTarget();
+                        }else{
+                            this.unshiftTarget();
+                        }
                         break;
                     case ERR_NOT_IN_RANGE:
                         this.moveTo(target);
@@ -224,54 +243,46 @@ export const creepExtension = function () {
     },
 
     // 将下一个需要存能量的建筑ID设为memory.t
-    Creep.prototype.nextSpawnEnergyStore = function(){
-        // 如果已经有目标了，则直接继续
-        if (this.memory.t){
-            return true;
-        }
+    Creep.prototype.updateQueueSpawnEnergyStore = function(){
         // 队列不存在的话，获取一下队列
-        if (!(this.memory.queue)){
-            // 剩余可充能量
-            let remain_energy = this.store.getUsedCapacity(RESOURCE_ENERGY);
+        if (!this.memory.queue || this.memory.queue.length == 0){
             // 获取目标队列
             let targets = this.room.getUnqueueSpawnEnergyStores();
             targets.sort((a, b) => {
                 return this.pos.getRangeTo(a) - this.pos.getRangeTo(b);
             });
-            const queue: Id<SpawnEnergyStoreStructure>[] = [];
+            this.memory.queue = [];
             for (const t of targets){
-                if (t.store.getFreeCapacity(RESOURCE_ENERGY) <= remain_energy){
-                    queue.push(t.id);
-                    this.room.memory.taskSpawn![t.id] = TASK_ACCEPTED;
-                    remain_energy -= t.store.getFreeCapacity(RESOURCE_ENERGY)
-                }
-                if (remain_energy < this.room.getExtensionMaxCapacity()){
+                this.memory.queue.push(t.id);
+                this.room.memory.taskSpawn![t.id] = {
+                    cName: this.name,
+                    stat: TASK_ACCEPTED,
+                };
+                if (this.memory.queue.length > TASK_QUEUE_MAX){
                     break;
                 }
             }
         }
+        return this.memory.queue.length > 0;
+    }
+
+
+    // 将下一个需要存能量的建筑ID设为memory.t
+    Creep.prototype.setNextTargetSpawnEnergyStore = function(){
+        // 如果已经有目标了，则直接继续
+        if (this.memory.t){
+            return true;
+        }
         // 从队列里获取第一个目标，如果没有则完成事务
-        if (this.memory.queue && this.memory.queue.length > 0){
-            this.memory.t = _.head(this.memory.queue);
-            this.memory.queue = _.drop(this.memory.queue);
+        if (this.updateQueueSpawnEnergyStore()){
+            this.memory.t = _.head(this.memory.queue!);
+            this.memory.queue = _.drop(this.memory.queue!);
             return true;
         }else{
-            this.memory.w = WORK_IDLE;
+            this.clearTarget();
             return false;
         }
     }
-
-    // 判断当前是否需要给母巢或扩展补充能量
-    // Creep.prototype.needEnergyToSpawn = function(){
-    //     if (creep.room.controller && creep.room.controller.my){
-    //         if (creep.room.energyAvailable < creep.room.energyCapacityAvailable){
-    //             creep.memory.w = WORK_TRANSPORTER_SPAWN;
-    //             return;
-    //         }else if (creep.memory.w == WORK_TRANSPORTER_SPAWN){
-    //             creep.memory.w = WORK_IDLE;
-    //         }
-    //     }
-    // },
 
     // ------------------------------------------------------------
     // 执行操作
