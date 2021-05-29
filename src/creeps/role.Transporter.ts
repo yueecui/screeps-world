@@ -25,6 +25,8 @@ export const roleTransporter: Transporter = {
             if (creep.checkWorkTransporterStorage()) return;
         }
     },
+
+    // 根据工作模式执行
     execute: function(creep){
         creep.recycleNearby(); // 回收周围的能量
 
@@ -40,11 +42,14 @@ export const roleTransporter: Transporter = {
                 break;
             case WORK_IDLE:
                 if (creep.store[RESOURCE_ENERGY] > 0){
-                    creep.memory.e = ENERGY_ENOUGH;
-                    creep.memory.w = WORK_TRANSPORTER_STORAGE;
+                    creep.setEnergyState(ENERGY_ENOUGH);
+                    creep.setWorkState(WORK_TRANSPORTER_STORAGE);
                 }else if (creep.pos.x != IDLE_POS.x || creep.pos.y != IDLE_POS.y ){
                     creep.moveTo(IDLE_POS.x, IDLE_POS.y);
                 }
+                break;
+            default:
+                creep.setWorkState(WORK_IDLE);
         }
     },
 };

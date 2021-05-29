@@ -40,7 +40,19 @@ export const WORK_TRANSPORTER_STORAGE: WORK_TRANSPORTER_STORAGE = 10;
 /**
  * 当前Creep正在进行采集
  */
-export const WORK_HARVESTER: WORK_HARVESTER = 11;
+export const WORK_HARVEST: WORK_HARVEST = 11;
+/**
+ * 当前Creep正在升级控制器
+ */
+export const WORK_UPGRADE: WORK_UPGRADE = 12;
+/**
+ * 当前Creep正在进行建造
+ */
+export const WORK_BUILD: WORK_BUILD = 13;
+/**
+ * 当前Creep正在进行修理
+ */
+export const WORK_REPAIR: WORK_REPAIR = 14;
 
 
 // Room状态码
@@ -72,3 +84,15 @@ export const CONTAINER_TYPE_SOURCE: CONTAINER_TYPE_SOURCE = 0;
  * container类型：存储供给给upgrader的能量
  */
 export const CONTAINER_TYPE_CONTROLLER: CONTAINER_TYPE_CONTROLLER = 1;
+
+
+// Creep工作模式代码
+
+/**
+ * 优先建筑的builder
+ */
+export const MODE_BUILDER: MODE_BUILDER = 0;
+/**
+ * 优先修理的builder
+ */
+export const MODE_REPAIRER: MODE_REPAIRER = 1;

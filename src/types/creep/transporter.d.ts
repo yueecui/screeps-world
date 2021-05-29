@@ -30,5 +30,5 @@ interface Creep {
    /**
     * 执行WORK_TRANSPORTER_TOWER
     */
-    doWorkTransporterStorage(): void;
+   doWorkTransporterStorage(): void;
 }

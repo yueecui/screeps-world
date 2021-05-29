@@ -1,38 +1,32 @@
-const SOURCE_NODES = [
-  {node: '5bbcab0c9099fc012e632ae6', container: '60aa34c759123005a22b9120'},  // W35N57 上方采集点
-  {node: '5bbcab0c9099fc012e632ae8', container: '60aa044fea027425aec64b83'},  // W35N57 下方采集点
-]
-
-const WORK_GATHER_ENERGY = 0;
-const WORK_STORAGE = 1;
+import { WORK_IDLE, WORK_HARVEST } from "@/constant";
 
 export const roleHarvester: Harvester = {
     run: function(creep) {
-        creep.recycleNearby(); // 回收周围的能量
-        this.updateWorkStatus(creep);
+        this.updateStatus(creep);
         this.execute(creep);
     },
-    // 根据能量状态切换工作模式
-    updateWorkStatus: function(creep){
-        if (creep.memory.w == WORK_GATHER_ENERGY && creep.store.getFreeCapacity() == 0){
-            creep.memory.w = WORK_STORAGE;
-        }else if (creep.memory.w == WORK_STORAGE && creep.store[RESOURCE_ENERGY] == 0){
-            creep.memory.w = WORK_GATHER_ENERGY;
+
+    // 判断工作模式
+    updateStatus: function(creep){
+        switch(creep.getWorkState()){
+            case WORK_HARVEST:
+                break;
+            case WORK_IDLE:
+                creep.setWorkState(WORK_HARVEST);
+                break;
         }
     },
+
+    // 根据工作模式执行
     execute: function(creep){
-        var container = Game.getObjectById(SOURCE_NODES[creep.memory.node].container as Id<StructureContainer>);
-        if (creep.pos.getRangeTo(container!) == 0){
-            creep.drop(RESOURCE_ENERGY);
-        }
-        if (creep.memory.w == WORK_GATHER_ENERGY){
-            var source_node = Game.getObjectById(SOURCE_NODES[creep.memory.node].node as Id<Source>);
-            var result = creep.harvest(source_node!);
-            if(result == ERR_NOT_IN_RANGE || result == ERR_NOT_ENOUGH_RESOURCES) {
-                creep.moveTo(source_node!);
-            }
-        }else if (creep.memory.w == WORK_STORAGE){
-            creep.moveTo(container!)
+        creep.recycleNearby(); // 回收周围的能量
+
+        switch(creep.getWorkState()){
+            case WORK_HARVEST:
+                creep.doWorkHarvest();
+                break;
+            case WORK_IDLE:
+                break;
         }
     }
 };

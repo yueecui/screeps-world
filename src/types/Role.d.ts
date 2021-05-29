@@ -22,6 +22,8 @@ type RoleNameUpgrader = '升级';
 
 interface CreepRole {
   run(creep: Creep): void;
+  updateStatus(creep: Creep): void;
+  execute(creep: Creep): void;
 }
 
 type AnyRole =
@@ -31,18 +33,13 @@ type AnyRole =
     | Upgrader;
 
 interface Harvester extends CreepRole{
-  updateStatus(creep: Creep): void;
-  execute(creep: Creep): void;
 }
 
 interface Transporter extends CreepRole{
-  updateStatus(creep: Creep): void;
-  execute(creep: Creep): void;
 }
 
 interface Builder extends CreepRole{
-  updateWorkStatus(creep: Creep): void;
-  execute(creep: Creep): void;
+
   findRepairTarget(creep: Creep): Structure|null;
   repairTarget(creep: Creep, target: Structure): void;
   findBuildTarget(creep: Creep): ConstructionSite|null;
@@ -50,7 +47,4 @@ interface Builder extends CreepRole{
 }
 
 interface Upgrader extends CreepRole{
-  updateWorkStatus(creep: Creep): void;
-  execute(creep: Creep): void;
 }
-

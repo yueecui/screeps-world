@@ -6,17 +6,19 @@ import {
 
 export const creepExtensionResource = function () {
     // 更新虫子当前的能量状态
-    // TODO:可能需要废弃
     Creep.prototype.updateEnergyStatus = function(){
-        if (this.memory.e == ENERGY_NEED && this.store.getFreeCapacity() == 0){
-            this.memory.e = ENERGY_ENOUGH;
-        }else if (this.memory.e == ENERGY_ENOUGH && this.store[RESOURCE_ENERGY] == 0){
-            this.memory.e = ENERGY_NEED;
+        if (this.getEnergyState() == ENERGY_NEED && this.store.getFreeCapacity() == 0){
+            this.setEnergyState(ENERGY_ENOUGH);
+        }else if (this.getEnergyState() == ENERGY_ENOUGH && this.store[RESOURCE_ENERGY] == 0){
+            this.setEnergyState(ENERGY_NEED);
         }
     },
 
     // 从房间里存储器获取能量
     Creep.prototype.obtainEnergy = function(opt){
+        if (this.store.getFreeCapacity() == 0){
+            this.setEnergyState(ENERGY_ENOUGH);
+        }
         let target = this.getTargetObject() as StructureContainer | StructureStorage | null;
 
         if (!target || (target.structureType != STRUCTURE_CONTAINER && target.structureType != STRUCTURE_STORAGE)){

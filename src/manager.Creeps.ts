@@ -32,23 +32,14 @@ const BODY_CONFIG: Record<string, BodyConfig> = {
 // aheadTime 如果有生命时间少于aheadTime的，提前<aheadTime>值tick，生成下一个，以免断档
 // : Map<string, RoleConfig>
 const ACTIVE_ROLE_CONFIG = new Map([
-  // ['Gather-B', { body: BODY_CONFIG['WORKER_R3B'], amount: 1, aheadTime: 80, memory: {role:'Gather', node:1} }],  // W35N57 下方矿点采集
-
   // 收集者
   ['TR', { basename:'',body: BODY_CONFIG['CARRYER_R3'], amount: 1, aheadTime: 80, memory: {r:'运输', e: 0} }],   // W35N57 将各个节点额外的能量搬运到Storage
   // ['GA-B', { body: BODY_CONFIG['采集者R4'], amount: 1, aheadTime: 80, memory: {r:'采集', node:1} }],  // W35N57 下方矿点采集
-  // ['GA-A', { body: BODY_CONFIG['采集者R4'], amount: 1, aheadTime: 80, memory: {r:'采集', node:0} }],  // W35N57 下方矿点采集
-  // ['Gather-B', { body: BODY_CONFIG['采集者R4'], amount: 1, aheadTime: 80, memory: {role:'Gather', node:1} }],  // W35N57 下方矿点采集
-  // ['Gather-A', { body: BODY_CONFIG['采集者R4'], amount: 1, aheadTime: 80, memory: {role:'Gather', node:0} }],  // W35N57 上方矿点采集
-  // ['Carryer-B', { body: BODY_CONFIG['CARRYER_R2'], amount: 1, aheadTime: 50, memory: {role:'Carryer', route: 0} }],   // W35N57 下方矿点搬运，扩展→母巢
-  // 储存者（用于搬运能量到特定位置供其他虫子获取）
-  // ['Store-A', { body: BODY_CONFIG['CARRYER_R3'], amount: 1, memory: {role:'Store', route: 0} }],   // W35N57 给upgrader提供能量
-  // ['Store-B', { body: BODY_CONFIG['CARRYER_R3'], amount: 1, memory: {role:'Store', route: 0} }],   // W35N57 给upgrader提供能量
-  // // 建造者
-  // ['Builder-B', { body: BODY_CONFIG['BUILDER_R3'], amount: 1, memory: {role:'Builder', model:'B'} }],  // 建造优先
-  // ['BD-R', { body: BODY_CONFIG['BUILDER_R3'], amount: 1, memory: {r:'建造', model:'R'} }],  // 修理优先
-  // ['UP-A', { body: BODY_CONFIG['升级者R4'], amount: 2, memory: {r:'升级'} }],
-  // ['Transporter-A', { body: BODY_CONFIG['CARRYER_R3'], amount: 1, memory: {role:'Transporter'} }],   // W35N57 将各个节点额外的能量搬运到Storage
+  ['GA-A', { body: BODY_CONFIG['采集者R4'], amount: 1, aheadTime: 80, memory: {r:'采集', node:0} }],  // W35N57 下方矿点采集
+  // 建造者
+  // ['BD-B', { body: BODY_CONFIG['BUILDER_R3'], amount: 1, memory: {r:'建造', mode:0} }],  // 建造优先
+  ['BD-R', { body: BODY_CONFIG['BUILDER_R3'], amount: 1, memory: {r:'建造', mode:1} }],  // 修理优先
+  ['UP-A', { body: BODY_CONFIG['升级者R4'], amount: 1, memory: {r:'升级'} }],
 ]);
 
 const OTHER_ROLE_CONFIG = new Map([
