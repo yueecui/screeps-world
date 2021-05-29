@@ -67,11 +67,35 @@ interface Creep {
    */
   getRole(): AnyRoleName;
   /**
+   * 设定工作状态
+   */
+  setWorkState(state: WORK_STATUS): void;
+  /**
+   * 获取工作状态
+   */
+  getWorkState(): WORK_STATUS;
+  /**
+   * 设定能量状态
+   */
+  setEnergyState(state: ENERGY_STATUS): void;
+  /**
+   * 获取能量状态
+   */
+  getEnergyState(): ENERGY_STATUS;
+  /**
+   * 设定当前缓存的目标object id
+   */
+  setTarget(id: Id<any>): void;
+  /**
+   * 获取当前的目标object id
+   */
+  getTarget(): string | null;
+  /**
    * 获取当前缓存的目标object
    *
    * 由于不确认缓存的目标是什么，请注意安全
    */
-  getTarget(): any;
+  getTargetObject(): any;
   /**
    * 清除当前缓存的目标object ID
    */
@@ -84,6 +108,10 @@ interface Creep {
    * 清除当前缓存的目标队列
    */
   clearQueue(): void;
+  /**
+   * 检查一个id是否在target或是queue中
+   */
+  inTaskQueue(id: Id<any>): boolean;
   /**
    * 更新Creep的能量状态（仅对有CARRY部件的creep有效）
    */
@@ -109,18 +137,29 @@ interface Creep {
    * 更新队列：WORK_TRANSPORTER_SPAWN
    * @returns boolean 更新后的队列是否大于0
    */
-  updateQueueSpawnEnergyStore(): boolean;
+  acceptTaskSpawn(): boolean;
   /**
-   * 将下一个需要存能量的建筑ID设为memory.t
-   * @returns true表示设定成功，false表示已经没有目标了，切回IDEL状态
+   * 根据任务队列，设定下一个目标
+   * @returns true表示设定成功，false表示已经没有目标了
    */
-  setNextTargetSpawnEnergyStore(): boolean;
+  setNextTarget(): boolean;
+  /**
+   * 尝试回收creep附近的掉落能量、墓碑能量、废墟能量
+   * @returns true表示成功拾取到
+   */
+  recycleNearby(res_type?: ResourceConstant): boolean;
   /**
    * 本回合执行recycleNearby是否成功的标记
    */
   recycling: boolean;
-  recycleNearby(res_type?: ResourceConstant): ScreepsReturnCode;
+  /**
+   * 返回本回合是否有进行回收操作
+   *
+   * 主要用于阻止后续进行获取类操作
+   */
   isRecycling(): boolean;
+
+  // 应该会作废
   obtainEnergyFromNearestContainer(capacity_min: number): void;
 }
 

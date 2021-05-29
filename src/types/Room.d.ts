@@ -26,7 +26,7 @@ interface RoomMemory {
   /**
    * 当前还需要补充能量的塔
    */
-  taskTowers: Record<string, TASK_STATUS>;
+  taskTowers: Record<string, taskInfo>;
   /**
    * room中，container的ID缓存
    *
@@ -164,6 +164,10 @@ interface Room {
    * @return number 根据controller等级返回容量值
    */
   getExtensionMaxCapacity(): number;
+  /**
+   * 检查room的各个任务队列是否存在错误，如果存在就自动修复
+   */
+  checkTaskError(): void;
   /**
    * 获取所有还没有排入队列的需要补充孵化能量的建筑
    * @return array 每个元素是一个建筑的实例
