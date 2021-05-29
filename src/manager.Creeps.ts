@@ -34,12 +34,12 @@ const BODY_CONFIG: Record<string, BodyConfig> = {
 const ACTIVE_ROLE_CONFIG = new Map([
   // 收集者
   ['TR', { basename:'',body: BODY_CONFIG['CARRYER_R3'], amount: 1, aheadTime: 80, memory: {r:'运输', e: 0} }],   // W35N57 将各个节点额外的能量搬运到Storage
-  // ['GA-B', { body: BODY_CONFIG['采集者R4'], amount: 1, aheadTime: 80, memory: {r:'采集', node:1} }],  // W35N57 下方矿点采集
+  ['GA-B', { body: BODY_CONFIG['采集者R4'], amount: 1, aheadTime: 80, memory: {r:'采集', node:1} }],  // W35N57 下方矿点采集
   ['GA-A', { body: BODY_CONFIG['采集者R4'], amount: 1, aheadTime: 80, memory: {r:'采集', node:0} }],  // W35N57 下方矿点采集
   // 建造者
   // ['BD-B', { body: BODY_CONFIG['BUILDER_R3'], amount: 1, memory: {r:'建造', mode:0} }],  // 建造优先
   ['BD-R', { body: BODY_CONFIG['BUILDER_R3'], amount: 1, memory: {r:'建造', mode:1} }],  // 修理优先
-  ['UP-A', { body: BODY_CONFIG['升级者R4'], amount: 1, memory: {r:'升级'} }],
+  ['UP-A', { body: BODY_CONFIG['升级者R4'], amount: 3, memory: {r:'升级'} }],
 ]);
 
 const OTHER_ROLE_CONFIG = new Map([

@@ -53,8 +53,8 @@ export const creepExtensionHarvester = function () {
                     storage: true,
                 });
             }
-            if (this.pos.x != 28 || this.pos.y != 20+this.getIndex()){
-                this.moveTo(28, 20+this.getIndex())
+            if (this.pos.x != 29 || this.pos.y != 20+this.getIndex()){
+                this.moveTo(29, 20+this.getIndex())
             }
             switch(this.upgradeController(this.room.controller!)){
                 case ERR_NOT_ENOUGH_RESOURCES:

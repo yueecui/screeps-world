@@ -28,6 +28,8 @@ export const roleUpgrader: Upgrader = {
                 break;
             case WORK_IDLE:
                 break;
+            default:
+                creep.setWorkState(WORK_IDLE);
         }
     },
 };

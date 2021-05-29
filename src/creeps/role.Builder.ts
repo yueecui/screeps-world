@@ -40,6 +40,7 @@ export const roleBuilder: Builder = {
         creep.recycleNearby(); // 回收周围的能量
 
         if (creep.getEnergyState() == ENERGY_NEED){
+            creep.clearTarget();
             creep.obtainEnergy({
                 storage: true,
             });
