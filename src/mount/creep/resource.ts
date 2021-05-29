@@ -20,28 +20,22 @@ export const creepExtensionResource = function () {
         let target = this.getTargetObject() as StructureContainer | StructureStorage | null;
 
         if (!target || (target.structureType != STRUCTURE_CONTAINER && target.structureType != STRUCTURE_STORAGE)){
-            // console.log('寻找新目标');
             target = this.findEnergyStore(opt);
-        }else{
-            // console.log('当前目标'+target.id);
         }
 
         if (target){
-            const result = this.withdraw(target, RESOURCE_ENERGY);
-            switch(result){
-                case OK:
+            if (this.pos.isNearTo(target)){
+                // 如果本回合拾取过能量则跳过获取阶段
+                if (this.isRecycling()){
+                    return;
+                }
+                if (this.withdraw(target, RESOURCE_ENERGY) == OK){
                     this.clearTarget();
                     this.setEnergyState(ENERGY_ENOUGH);
                     this.room.unbookingContainer(this.name);
-                    break;
-                case ERR_NOT_IN_RANGE:
-                    this.moveTo(target);
-                    break;
-                default:
-                    this.clearTarget();
-                    this.setEnergyState(ENERGY_ENOUGH);
-                    this.room.unbookingContainer(this.name);
-                    break;
+                };
+            }else{
+                this.moveTo(target);
             }
         }else{
             this.say('无法获得能量')
@@ -63,21 +57,17 @@ export const creepExtensionResource = function () {
                 }
             )
         }
-        // console.log('container:'+structures.length);
         if ((opt
             && opt.storage != undefined ? opt.storage : true)
             && this.room.storage
             && this.room.storage.store[RESOURCE_ENERGY] > 0){
             structures.push(this.room.storage)
         }
-        // console.log('storage:'+structures.length);
         // 根据最小需求量过滤
         const min_amount = opt && opt.min_amount ? opt.min_amount : this.store.getFreeCapacity(RESOURCE_ENERGY);
-        // console.log('amount:'+min_amount);
         structures = _.filter(structures, (structure) => {
             return this.room.getStructureEnergyCapacity(structure) >= min_amount;
         });
-        // console.log('structures:'+structures.length);
         if (structures.length > 0){
             structures.sort((a, b) => {
                 return this.pos.getRangeTo(a) - this.pos.getRangeTo(b);

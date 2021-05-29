@@ -31,16 +31,13 @@ type AnyRole =
     | Upgrader;
 
 interface Harvester extends CreepRole{
-  updateWorkStatus(creep: Creep): void;
+  updateStatus(creep: Creep): void;
   execute(creep: Creep): void;
 }
 
 interface Transporter extends CreepRole{
-  // updateEnergy(creep: Creep): void;
   updateStatus(creep: Creep): void;
   execute(creep: Creep): void;
-  obtainEnergy(creep: Creep): void;
-  findStore(creep: Creep): StructureExtension|StructureSpawn|null;
 }
 
 interface Builder extends CreepRole{

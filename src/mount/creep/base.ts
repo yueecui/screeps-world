@@ -103,6 +103,70 @@ export const creepExtensionBase = function () {
         this.clearTarget();
     }
 
+    Creep.prototype.inTaskQueue = function(id){
+        if (this.memory.t == id){
+            return true;
+        }else if (this.memory.queue && this.memory.queue.indexOf(id) > -1){
+            return true;
+        }
+        return false;
+    }
+
+    // 根据任务队列，设定下一个目标
+    Creep.prototype.setNextTarget = function(){
+        // 如果已经有目标了，则直接继续
+        if (this.memory.t){
+            return true;
+        }
+        // 更新队列
+        let result = this.acceptTaskSpawn();
+        // 从队列里获取第一个目标，如果没有则完成事务
+        if (result){
+            this.memory.t = _.head(this.memory.queue!);
+            this.memory.queue = _.drop(this.memory.queue!);
+            return true;
+        }else{
+            this.clearTarget();
+            return false;
+        }
+    }
+
+    // 从Room.taskSpawn接取任务
+    Creep.prototype.acceptTaskSpawn = function(){
+        // 队列不存在的话，获取一下队列
+        if (!this.memory.queue || this.memory.queue.length == 0){
+            let targets;
+            // 获取目标队列
+            switch(this.getWorkState()){
+                case WORK_TRANSPORTER_SPAWN:
+                    targets = this.room.getUnqueueTaskSpawn();
+                    break;
+                case WORK_TRANSPORTER_TOWER:
+                    targets = this.room.getUnqueueTaskTower();
+                    break;
+            }
+            if (targets && targets.length > 0){
+                // TODO 距离选择部分还可以优化
+                targets.sort((a: AnyStructure, b: AnyStructure) => {
+                    return this.pos.getRangeTo(a) - this.pos.getRangeTo(b);
+                });
+                this.memory.queue = [];
+                for (const t of targets){
+                    this.memory.queue.push(t.id);
+                    this.room.memory.taskSpawn![t.id] = {
+                        cName: this.name,
+                        stat: TASK_ACCEPTED,
+                    };
+                    if (this.memory.queue.length > TASK_QUEUE_MAX){
+                        break;
+                    }
+                }
+            }
+        }
+        return (this.memory.queue != null && this.memory.queue.length > 0);
+    }
+
+    // 清除队列
     Creep.prototype.clearQueue = function(){
         if (this.memory.queue){
             for (const id in this.memory.queue){
@@ -115,67 +179,17 @@ export const creepExtensionBase = function () {
                             };
                         }
                         break;
+                    case WORK_TRANSPORTER_TOWER:
+                        if (id in this.room.memory.taskTowers){
+                            this.room.memory.taskTowers[id] = {
+                                cName: null,
+                                stat: TASK_WAITING,
+                            };
+                        }
+                        break;
                 }
             }
         }
         this.memory.queue = [];
-    }
-
-    Creep.prototype.inTaskQueue = function(id){
-        if (this.memory.t == id){
-            return true;
-        }else if (this.memory.queue && this.memory.queue.indexOf(id) > -1){
-            return true;
-        }
-        return false;
-    }
-
-    // 从Room.taskSpawn接取任务
-    Creep.prototype.acceptTaskSpawn = function(){
-        // 队列不存在的话，获取一下队列
-        if (!this.memory.queue || this.memory.queue.length == 0){
-            // 获取目标队列
-            let targets = this.room.getUnqueueSpawnEnergyStores();
-            // TODO 距离选择部分还可以优化
-            targets.sort((a, b) => {
-                return this.pos.getRangeTo(a) - this.pos.getRangeTo(b);
-            });
-            this.memory.queue = [];
-            for (const t of targets){
-                this.memory.queue.push(t.id);
-                this.room.memory.taskSpawn![t.id] = {
-                    cName: this.name,
-                    stat: TASK_ACCEPTED,
-                };
-                if (this.memory.queue.length > TASK_QUEUE_MAX){
-                    break;
-                }
-            }
-        }
-        return this.memory.queue.length > 0;
-    }
-
-    // 根据任务队列，设定下一个目标
-    Creep.prototype.setNextTarget = function(){
-        // 如果已经有目标了，则直接继续
-        if (this.memory.t){
-            return true;
-        }
-        // 更新队列
-        let result = false;
-        switch(this.getWorkState()){
-            case WORK_TRANSPORTER_SPAWN:
-                result = this.acceptTaskSpawn();
-                break;
-        }
-        // 从队列里获取第一个目标，如果没有则完成事务
-        if (result){
-            this.memory.t = _.head(this.memory.queue!);
-            this.memory.queue = _.drop(this.memory.queue!);
-            return true;
-        }else{
-            this.clearTarget();
-            return false;
-        }
     }
 }

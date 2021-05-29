@@ -53,7 +53,7 @@ export const roomExtensionSpawn = function () {
     }
 
     // 获得所有没进入孵化能量补充队列的建筑
-    Room.prototype.getUnqueueSpawnEnergyStores = function(){
+    Room.prototype.getUnqueueTaskSpawn = function(){
         const id_list: Id<SpawnEnergyStoreStructure>[] = [];
         if (Object.keys(this.memory.taskSpawn).length > 0){
             _.each(this.memory.taskSpawn, (info, k) => {
@@ -73,7 +73,7 @@ export const roomExtensionSpawn = function () {
     }
 
     // 是否有还未进入队列的孵化能量建筑
-    Room.prototype.hasUnqueueSpawnEnergyStores = function(){
+    Room.prototype.hasUnqueueTaskSpawn = function(){
         for (const key in this.memory.taskSpawn){
             if (this.memory.taskSpawn[key].stat == TASK_WAITING){
                 return true;

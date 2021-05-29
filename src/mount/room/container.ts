@@ -1,5 +1,9 @@
 import { CONTAINER_TYPE_SOURCE, PLAN_PAY } from "@/constant";
 
+
+// 当SOURCE CONTAINER的容量超过下面的数值时，进行回收
+const CONTAINER_TO_STORAGE_MIN = 1500;
+
 export const roomExtensionContainer = function () {
     // 手工调用方法：添加一个container
     Room.prototype.addContainer = function(id, type){
@@ -109,5 +113,17 @@ export const roomExtensionContainer = function () {
             }
         }
     }
+
+    // 获得接近全满的source container
+    Room.prototype.getFullSourceContainers = function(){
+        let containers = _.map(this.memory.containers, (c) => {
+            return c.type == CONTAINER_TYPE_SOURCE ? this.getStructureById(c.id) : null;
+        });
+
+        return _.filter(containers, (container) => {
+            if (container == null) { return false; }
+            return this.getStructureEnergyCapacity(container) >= CONTAINER_TO_STORAGE_MIN; }
+        ) as StructureContainer[];
+    };
 
 }

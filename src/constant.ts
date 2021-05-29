@@ -18,29 +18,32 @@ export const ENERGY_NEED: ENERGY_NEED = 0;
 export const ENERGY_ENOUGH: ENERGY_ENOUGH = 1;
 
 
- /**
-  * 当前Creep正在空闲，等待新的指令
-  */
- export const WORK_IDLE: WORK_IDLE = 0;
+/**
+ * 当前Creep正在空闲，等待新的指令
+ */
+export const WORK_IDLE: WORK_IDLE = 0;
 
- // 运输类工作
+// 运输类工作
 
- /**
-  * 当前Creep正在担任运输者职责，补充母巢或是扩展的能量
-  */
- export const WORK_TRANSPORTER_SPAWN: WORK_TRANSPORTER_SPAWN = 1;
- /**
-  * 当前Creep正在担任运输者职责，补充塔的能量
-  */
- export const WORK_TRANSPORTER_TOWER: WORK_TRANSPORTER_TOWER = 2;
- /**
-  * 当前Creep正在担任运输者职责，将当前房间的container里多余的能量带到storage
-  */
- export const WORK_TRANSPORTER_STORAGE: WORK_TRANSPORTER_STORAGE = 10;
+/**
+ * 当前Creep正在担任运输者职责，补充母巢或是扩展的能量
+ */
+export const WORK_TRANSPORTER_SPAWN: WORK_TRANSPORTER_SPAWN = 1;
+/**
+ * 当前Creep正在担任运输者职责，补充塔的能量
+ */
+export const WORK_TRANSPORTER_TOWER: WORK_TRANSPORTER_TOWER = 2;
+/**
+ * 当前Creep正在担任运输者职责，将当前房间的container里多余的能量带到storage
+ */
+export const WORK_TRANSPORTER_STORAGE: WORK_TRANSPORTER_STORAGE = 10;
+/**
+ * 当前Creep正在进行采集
+ */
+export const WORK_HARVESTER: WORK_HARVESTER = 11;
 
 
- // Room状态码
-
+// Room状态码
 /**
  * 任务正在等待状态
  */
