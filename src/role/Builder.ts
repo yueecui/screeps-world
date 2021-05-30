@@ -57,6 +57,10 @@ export const roleBuilder: Builder = {
             // if (!creep.pos.isNearTo(flag)){
             //     creep.moveTo(flag);
             // }
+            if (creep.ticksToLive! < 100){
+                creep.memory.r = '回收';
+                return;
+            }
 
             creep.updateEnergyStatus();
 

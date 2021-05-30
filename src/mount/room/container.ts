@@ -131,7 +131,7 @@ export const roomExtensionContainer = function () {
 
         return _.filter(containers, (container) => {
             if (container == null) { return false; }
-            return this.getStructureEnergyCapacity(container) >= SOURCE_CONTAINER_FULL; }
+            return container.store.getUsedCapacity() >= SOURCE_CONTAINER_FULL; }
         ) as StructureContainer[];
     };
 

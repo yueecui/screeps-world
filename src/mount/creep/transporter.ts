@@ -271,7 +271,23 @@ export const creepExtensionTransporter = function () {
     // 执行 WORK_TRANSPORTER_STORAGE
     Creep.prototype.doWorkTransporterStorage_Mineral = function(){
         if (this.store.getUsedCapacity() == 0){
-
+            const target = this.getTargetObject() as StructureContainer;
+            if (target == null){
+                this.clearTarget();
+                this.setWorkState(WORK_IDLE);
+                return;
+            }
+            for (const name in target.store){
+                const result = this.withdraw(target, name as ResourceConstant);
+                switch(result){
+                    case OK:
+                        // this.setWorkState(WORK_IDLE);
+                        break;
+                    case ERR_NOT_IN_RANGE:
+                        this.moveTo(target);
+                        break;
+                }
+            }
         }else{
             const target = this.room.storage;
             // 目标如果不存在（被拆除）或是目标已经满了

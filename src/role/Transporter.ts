@@ -18,6 +18,7 @@ export const roleTransporter: Transporter = {
         // 判断是否需要补充孵化能量
         // 会中断其他工作优先进行本工作
         if (creep.getMode() == MODE_CONTROLLER){
+            if (creep.checkWorkTransporterStorage_Mineral()) return;
             if (creep.checkWorkTransporterController()) return;
 
             // 空闲下才会执行的任务
@@ -43,7 +44,9 @@ export const roleTransporter: Transporter = {
 
     // 根据工作模式执行
     execute: function(creep){
-        creep.recycleNearby(); // 回收周围的能量
+        if (creep.getWorkState() != WORK_TRANSPORTER_STORAGE_MINERAL){
+            creep.recycleNearby(); // 回收周围的能量
+        }
 
         switch(creep.getWorkState()){
             case WORK_TRANSPORTER_SPAWN:
