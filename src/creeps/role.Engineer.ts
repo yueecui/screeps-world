@@ -26,10 +26,22 @@ export const roleEngineer: Engineer = {
         }
         const flag = Game.flags[creep.memory.flag];
 
-        if (creep.pos.isNearTo(flag)){
-            creep.attackController(flag.room?.controller!);
-        }else{
+        if (creep.room != flag.room){
             creep.moveTo(flag, {visualizePathStyle:{}});
+        }else{
+            if (creep.pos.isNearTo(creep.room.controller!)){
+                if (creep.room.controller!.my){
+                    creep.reserveController(creep.room.controller!);
+                }else{
+                    if (creep.attackController(creep.room.controller!) == ERR_TIRED){
+                        if (creep.room.controller!.upgradeBlocked > 100){
+                            creep.memory.r = '回收';
+                        }
+                    };
+                }
+            }else{
+                creep.moveTo(creep.room.controller!);
+            }
         }
 
         // creep.recycleNearby(); // 回收周围的能量

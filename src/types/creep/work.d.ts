@@ -31,5 +31,5 @@ interface Creep{
      * 不足的情况下会设工作状态为WORK_TRANSPORTER_SPAWN
      * @returns 是否找到
      */
-     findBuildTarget(): boolean;
+    findBuildTarget(): boolean;
 }

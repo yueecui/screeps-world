@@ -2,7 +2,7 @@ import {
     ENERGY_NEED, ENERGY_ENOUGH,
     WORK_IDLE,
     CONTAINER_TYPE_CONTROLLER,
-    WORK_HARVEST,
+    WORK_HARVEST_ENERGY,
     WORK_GOTO,
     WORK_REPAIR,
 } from '@/constant';
@@ -39,7 +39,7 @@ export const creepExtensionHarvester = function () {
         if (this.pos.getRangeTo(container) > 0){
             this.moveTo(container);
         }else{
-            this.setWorkState(WORK_HARVEST);
+            this.setWorkState(WORK_HARVEST_ENERGY);
             this.doWorkHarvest();
         }
     }
@@ -71,7 +71,7 @@ export const creepExtensionHarvester = function () {
 
         if (this.pos.isNearTo(source_node)){
             if (source_node.energy > 0){
-                this.setWorkState(WORK_HARVEST);
+                this.setWorkState(WORK_HARVEST_ENERGY);
                 this.doWorkHarvest();
             }
         }else{
