@@ -55,7 +55,7 @@ export const roomExtensionBase = function () {
             this.memory.lastSpawnTime = 1
             this.cacheMyStructuresId();   // 重新缓存特定的自己的建筑（例如塔）
             this.checkContainerStatus();  // 检查container是否存在
-            this.checkTaskError();        // 检查各个任务队列是否存在错误
+            this.errorCheck();        // 检查各个任务队列是否存在错误
         }
 
         if (this.memory.flagPurge){
@@ -67,23 +67,35 @@ export const roomExtensionBase = function () {
         this.checkSpawnEnergy();
     };
 
-    Room.prototype.checkTaskError = function(){
-        for (const id in this.memory.taskSpawn){
-            const task_info = this.memory.taskSpawn[id];
-            // 检查任务接受者是否还存活
-            if (
-                task_info.cName
-                && (
-                        !(task_info.cName in Game.creeps)
-                    || !(Game.creeps[task_info.cName].inTaskQueue(id as Id<AnySpawnEnergyStoreStructure>))
-                    )
-                ){
-                this.memory.taskSpawn[id] = {
-                    cName: null,
-                    stat: TASK_WAITING,
+    Room.prototype.errorCheck = function(){
+        // 检查任务分配是否有蚂蚁死了
+        for (const tasks of [this.memory.taskSpawn, this.memory.taskTowers]){
+            for (const id in tasks){
+                const task_info = tasks[id];
+                // 检查任务接受者是否还存活
+                if (
+                    task_info.cName
+                    && (
+                            !(task_info.cName in Game.creeps)
+                        || !(Game.creeps[task_info.cName].inTaskQueue(id as Id<AnySpawnEnergyStoreStructure>))
+                        )
+                    ){
+                    tasks[id] = {
+                        cName: null,
+                        stat: TASK_WAITING,
+                    }
                 }
             }
         }
+        // 检查能量合约，是否有蚂蚁死了
+        const newPlan = [];
+        for (const plan of this.memory.energyPlan){
+            if (plan.cName in Game.creeps
+                && _.filter(this.memory.containers, (c)=>{ return c.id == plan.sid }).length > 0){
+                newPlan.push(plan);
+            }
+        }
+        this.memory.energyPlan = newPlan;
     }
 
     Room.prototype.initMemory = function(){

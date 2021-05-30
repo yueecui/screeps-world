@@ -1,10 +1,10 @@
 // Creep的角色名
 
-export const RoleNameHarvester: RoleNameHarvester = '采集';
-export const RoleNameTransporter: RoleNameTransporter = '运输';
-export const RoleNameBuilder: RoleNameBuilder = '建造';
-export const RoleNameUpgrader: RoleNameUpgrader = '升级';
-export const RoleNameAttacker: RoleNameAttacker = '攻击';
+export const ROLE_HARVESTER: ROLE_HARVESTER = '采集';
+export const ROLE_TRANSPORTER: ROLE_TRANSPORTER = '运输';
+export const ROLE_BUILDER: ROLE_BUILDER = '建造';
+export const ROLE_UPGRADER: ROLE_UPGRADER = '升级';
+export const ROLE_ATTACKER: ROLE_ATTACKER = '攻击';
 
 
 // Creep工作进程的状态码
@@ -96,6 +96,20 @@ export const CONTAINER_TYPE_CONTROLLER: CONTAINER_TYPE_CONTROLLER = 1;
 
 
 // Creep工作模式代码
+
+/**
+ * 无指定模式
+ */
+ export const MODE_NONE: MODE_NONE = -1;
+
+/**
+ * 优先提供孵化器能量的运输者
+ */
+export const MODE_SPAWN: MODE_SPAWN = 0;
+ /**
+  * 优先提供控制器能量的运输者
+  */
+export const MODE_CONTROLLER: MODE_CONTROLLER = 1;
 
 /**
  * 优先建筑的builder
