@@ -1,25 +1,27 @@
-type BodyConfig = Array<BodyPartConstant>;
-
 interface RoleConfig{
   basename?: string;
-  body: BodyConfig | null;
+  body: BodyPartConstant[] | null;
   amount: number;
   aheadTime?: number;
-  memory: CreepMemory;
+  memory: Record<string, any>;
 }
 
-type AnyRoleName =
-    | RoleNameHarvester
-    | RoleNameTransporter
-    | RoleNameBuilder
-    | RoleNameUpgrader
-    | RoleNameAttacker;
+type ANY_ROLE_NAME =
+    | ROLE_GOTO_RECYCLE
+    | ROLE_HARVESTER
+    | ROLE_TRANSPORTER
+    | ROLE_BUILDER
+    | ROLE_UPGRADER
+    | ROLE_ATTACKER
+    | ROLE_ENGINEER;
 
-type RoleNameHarvester = '采集';
-type RoleNameTransporter = '运输';
-type RoleNameBuilder = '建造';
-type RoleNameUpgrader = '升级';
-type RoleNameAttacker = '攻击';
+type ROLE_GOTO_RECYCLE = '回收';
+type ROLE_HARVESTER = '采集';
+type ROLE_TRANSPORTER = '运输';
+type ROLE_BUILDER = '建造';
+type ROLE_UPGRADER = '升级';
+type ROLE_ATTACKER = '攻击';
+type ROLE_ENGINEER = '工兵';
 
 
 interface CreepRole {
@@ -29,10 +31,17 @@ interface CreepRole {
 }
 
 type AnyRole =
+    | GoToRecycle
     | Harvester
     | Transporter
     | Builder
-    | Upgrader;
+    | Upgrader
+    | Attacker
+    | Engineer;
+
+interface GoToRecycle extends CreepRole{
+
+}
 
 interface Harvester extends CreepRole{
 }
@@ -52,4 +61,8 @@ interface Upgrader extends CreepRole{
 }
 
 interface Attacker extends CreepRole{
+}
+
+interface Engineer extends CreepRole{
+
 }

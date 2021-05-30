@@ -2,7 +2,7 @@ interface CreepMemory {
   /**
    * Creep的职责(Role)
    */
-  r: AnyRoleName;
+  r: ANY_ROLE_NAME;
   /**
    * Creep的能量持有状态，只有具备CARRY模块的才有该属性
    */
@@ -14,7 +14,7 @@ interface CreepMemory {
   /**
    * Creep当前的工作目标队列
    */
-   queue: Id<any>[] | null;
+  queue: Id<any>[] | null;
   /**
    * Creep当前的工作目标
    */
@@ -32,7 +32,15 @@ interface CreepMemory {
    *
    * 不同类型的模式不同
    */
-  mode: number;
+  mode: ANY_CREEP_MODE;
+  /**
+   * 指定站着的位置
+   */
+  flag?: string;
+  /**
+   * 指定站着的位置
+   */
+  stay?: [number, number];
 }
 
 
@@ -67,8 +75,17 @@ type WORK_BUILD = 13;
 type WORK_REPAIR = 14;
 
 type ANY_CREEP_MODE =
+    | MODE_NONE
+    | MODE_SPAWN
+    | MODE_CONTROLLER
     | MODE_BUILDER
     | MODE_REPAIRER;
 
+// 无模式
+type MODE_NONE = -1;
+// 搬运者的模式
+type MODE_SPAWN = 0;
+type MODE_CONTROLLER = 1;
+// 建造者的模式
 type MODE_BUILDER = 0;
 type MODE_REPAIRER = 1;

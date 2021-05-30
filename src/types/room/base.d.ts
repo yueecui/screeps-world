@@ -29,7 +29,7 @@ interface Room {
   /**
    * 检查room的各个任务队列是否存在错误，如果存在就自动修复
    */
-  checkTaskError(): void;
+  errorCheck(): void;
   /**
    * 初始化memory
    */

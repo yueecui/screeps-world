@@ -28,11 +28,15 @@ export const creepExtensionTransporter = function () {
 
     // 执行WORK_TRANSPORTER_SPAWN
     Creep.prototype.doWorkTransporterSpawn = function(){
-        if (this.getEnergyState() == ENERGY_NEED){
+        const obtain_energy = () => {
             this.obtainEnergy({
+                min_amount: this.room.getExtensionMaxCapacity(),
                 container: [CONTAINER_TYPE_SOURCE],
                 storage: true,
             });
+        }
+        if (this.getEnergyState() == ENERGY_NEED){
+            obtain_energy();
         }else{
             // 没有找到下个目标的情况下，返回false，并且把工作置为IDLE
             if (!this.setNextTarget()){
@@ -48,10 +52,7 @@ export const creepExtensionTransporter = function () {
             }
             if (this.store.getFreeCapacity() > 0 && (target.store.getFreeCapacity(RESOURCE_ENERGY) > this.store[RESOURCE_ENERGY])){
                 this.setEnergyState(ENERGY_NEED);
-                this.obtainEnergy({
-                    container: [CONTAINER_TYPE_SOURCE],
-                    storage: true,
-                });
+                obtain_energy();
             }else{
                 const result = this.transfer(target, RESOURCE_ENERGY);
                 switch(result){

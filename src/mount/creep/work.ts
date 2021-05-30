@@ -4,6 +4,7 @@ import {
     CONTAINER_TYPE_CONTROLLER,
     WORK_HARVEST,
     WORK_GOTO,
+    WORK_REPAIR,
 } from '@/constant';
 
 export const creepExtensionHarvester = function () {
@@ -33,7 +34,7 @@ export const creepExtensionHarvester = function () {
         if (this.errorCheckHarvest()) return;
 
         const source_set = this.room.memory.sources[this.memory.node];
-        const container = Game.getObjectById(source_set.c!)!;
+        const container = this.room.getStructureById(source_set.c!)!;
 
         if (this.pos.getRangeTo(container) > 0){
             this.moveTo(container);
@@ -51,10 +52,62 @@ export const creepExtensionHarvester = function () {
         const source_node = Game.getObjectById(source_set.s)!;
 
         if (this.pos.isNearTo(source_node)){
-            this.harvest(source_node);
+            if (source_node.energy > 0){
+                this.harvest(source_node);
+            }else{
+                this.setWorkState(WORK_REPAIR);
+            }
         }else{
             this.setWorkState(WORK_GOTO);
             this.goToSourceNode();
+        }
+    }
+
+    // 判断采集点能量
+    // repair和idel时会进行该判断
+    Creep.prototype.checkSourceNodeEnergy = function(){
+        const source_set = this.room.memory.sources[this.memory.node];
+        const source_node = Game.getObjectById(source_set.s)!;
+
+        if (this.pos.isNearTo(source_node)){
+            if (source_node.energy > 0){
+                this.setWorkState(WORK_HARVEST);
+                this.doWorkHarvest();
+            }
+        }else{
+            this.setWorkState(WORK_GOTO);
+            this.goToSourceNode();
+        }
+    }
+
+    // 执行 WORK_REPAIR
+    Creep.prototype.doWorkRepair_Harvester = function(){
+        let target = this.getTargetObject();
+        if (!target || (target as AnyStructure).hits == target.hitsMax){
+            const found = this.pos.findInRange(FIND_STRUCTURES, 3, {filter: (struct) => {
+                // 返回生命值不满，是路或是容器或是我自己的建筑
+                return struct.hits < struct.hitsMax && (struct.structureType == STRUCTURE_CONTAINER
+                    || struct.structureType == STRUCTURE_ROAD
+                    || ('my' in struct && struct.my));
+            }});
+            if (found.length > 0){
+                target = found[0];
+                this.setTarget(target.id);
+            }else{
+                this.clearTarget();
+                this.setWorkState(WORK_IDLE);
+                return;
+            }
+        }
+
+        this.repair(target);
+        if (this.store[RESOURCE_ENERGY] < this.getActiveBodyparts(WORK)){
+            const source_set = this.room.memory.sources[this.memory.node];
+            const container = this.room.getStructureById(source_set.c!)!;
+            if (this.withdraw(container, RESOURCE_ENERGY) == ERR_NOT_ENOUGH_RESOURCES){
+                this.clearTarget();
+                this.setWorkState(WORK_IDLE);
+            }
         }
     }
 

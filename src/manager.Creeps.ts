@@ -3,7 +3,7 @@ import {
     WORK_IDLE, WORK_TRANSPORTER_SPAWN, WORK_TRANSPORTER_TOWER, WORK_TRANSPORTER_STORAGE
 } from '@/constant';
 
-const BODY_CONFIG: Record<string, BodyConfig> = {
+const BODY_CONFIG: Record<string, BodyPartConstant[]> = {
     'WORKER_BASE': [WORK, CARRY, MOVE],    // 300，道路上1tick，平原上2tick
     'WORKER_HELP': [CARRY, CARRY, CARRY, CARRY, MOVE, MOVE], // 救灾机器人
 
@@ -45,21 +45,43 @@ const getMaxCarrierBody = function(){
     return body
 }
 
+const getMaxBuilderBody = function(){
+    const group_number = Math.floor(Game.spawns['Spawn1'].room.energyCapacityAvailable / 200) ;
+    const body: BodyPartConstant[] = []
+    for (let i=0;i<group_number;i++){
+        body.push(WORK);
+    }
+    for (let i=0;i<group_number;i++){
+        body.push(CARRY);
+    }
+    for (let i=0;i<group_number;i++){
+        body.push(MOVE);
+    }
+    return body
+}
+
 // key值：型号名称，生成的creep会用型号+序号的形式自动取名
 // body body组成数组
 // amount 至少维持的数量
 // aheadTime 如果有生命时间少于aheadTime的，提前<aheadTime>值tick，生成下一个，以免断档
 // : Map<string, RoleConfig>
-const ACTIVE_ROLE_CONFIG = new Map([
-    // 收集者
+const ACTIVE_ROLE_CONFIG: Map<string, RoleConfig> = new Map([
     // ['Guu', { body: BODY_CONFIG['侵略者R5'], amount: 1, memory: {r:'攻击'} }],
-    ['TR', { basename:'',body: getMaxCarrierBody(), amount: 2, aheadTime: 80, memory: {r:'运输', e: 0} }],     // W35N57 将各个节点额外的能量搬运到Storage
+
+    // ROOM搬运者
+    ['TR-S', { basename:'',body: getMaxCarrierBody(), amount: 1, aheadTime: 160, memory: {r:'运输', mode: 0, stay: [34, 35]} }],     // W35N57 将各个节点额外的能量搬运到Storage
+    ['TR-U', { basename:'',body: getMaxCarrierBody(), amount: 1, aheadTime: 160, memory: {r:'运输', mode: 1, stay: [28, 18]} }],
+    // ROOM收集者
     ['GA-B', { body: BODY_CONFIG['采集者R4'], amount: 1, aheadTime: 80, memory: {r:'采集', node:1} }],    // W35N57 下方矿点采集
     ['GA-A', { body: BODY_CONFIG['采集者R4'], amount: 1, aheadTime: 80, memory: {r:'采集', node:0} }],    // W35N57 下方矿点采集
-    // 建造者
-    // ['BD-B', { body: BODY_CONFIG['BUILDER_R3'], amount: 1, memory: {r:'建造', mode:0} }],    // 建造优先
-    ['BD-R', { body: BODY_CONFIG['BUILDER_R3'], amount: 1, memory: {r:'建造', mode:1} }],    // 修理优先
+    // ROOM的建造者
+    // ['BD-B', { body: getMaxBuilderBody(), amount: 1, memory: {r:'建造', mode:0, stay: [29, 27]} }],    // 建造优先
+    ['BD-R', { body: getMaxBuilderBody(), amount: 1, memory: {r:'建造', mode:1, stay: [22, 30]} }],    // 修理优先
+    // ROOM升级者
     ['UP-A', { body: BODY_CONFIG['升级者R4'], amount: 3, memory: {r:'升级'} }],
+    // ROOM外建造者
+    ['ENG', { body: [CLAIM, CLAIM, CLAIM, MOVE, MOVE, MOVE], amount: 1, memory: {r:'工兵', mode:1, flag: 'eng1'}}],    // 修理优先
+    ['BDO-R', { body: getMaxBuilderBody(), amount: 1, memory: {r:'建造', mode:1, flag: 'colony', stay: [22, 30]} }],    // 修理优先
 ]);
 
 

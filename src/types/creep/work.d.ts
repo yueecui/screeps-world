@@ -12,6 +12,14 @@ interface Creep{
      * 执行 WORK_HARVEST
      */
     doWorkHarvest(): void;
+    /**
+     * 检查资源点状态，如果资源点回复，则返回采集模式
+     */
+    checkSourceNodeEnergy(): void;
+    /**
+     * 采集者执行 WORK_REPAIR
+     */
+    doWorkRepair_Harvester(): void;
 
     /**
      * 执行 WORK_UPGRADE
