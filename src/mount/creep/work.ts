@@ -5,6 +5,7 @@ import {
     WORK_HARVEST_ENERGY,
     WORK_GOTO,
     WORK_REPAIR,
+    WORK_HARVEST_MINERAL,
 } from '@/constant';
 
 export const creepExtensionHarvester = function () {
@@ -12,8 +13,8 @@ export const creepExtensionHarvester = function () {
     // 采集能量
     // ------------------------------------------------------
 
-    // 前往采集点
-    Creep.prototype.errorCheckHarvest = function(){
+    // 采集能量的错误检查
+    Creep.prototype.errorCheckHarvestEnergy = function(){
         if (this.memory.node == undefined){
             this.say('没配置采集点');
             return true;
@@ -29,9 +30,9 @@ export const creepExtensionHarvester = function () {
         return false;
     }
 
-    // 前往采集点
+    // 前往能量采集点
     Creep.prototype.goToSourceNode = function(){
-        if (this.errorCheckHarvest()) return;
+        if (this.errorCheckHarvestEnergy()) return;
 
         const source_set = this.room.memory.sources[this.memory.node];
         const container = this.room.getStructureById(source_set.c!)!;
@@ -40,16 +41,16 @@ export const creepExtensionHarvester = function () {
             this.moveTo(container);
         }else{
             this.setWorkState(WORK_HARVEST_ENERGY);
-            this.doWorkHarvest();
+            this.doWorkHarvestEnergy();
         }
     }
 
-    // 执行 WORK_HARVEST
-    Creep.prototype.doWorkHarvest = function(){
-        if (this.errorCheckHarvest()) return;
+    // 执行 WORK_HARVEST_ENERGY
+    Creep.prototype.doWorkHarvestEnergy = function(){
+        if (this.errorCheckHarvestEnergy()) return;
 
         const source_set = this.room.memory.sources[this.memory.node];
-        const source_node = Game.getObjectById(source_set.s)!;
+        const source_node = Game.getObjectById(source_set.s as Id<Source>)!;
 
         if (this.pos.isNearTo(source_node)){
             if (source_node.energy > 0){
@@ -67,12 +68,12 @@ export const creepExtensionHarvester = function () {
     // repair和idel时会进行该判断
     Creep.prototype.checkSourceNodeEnergy = function(){
         const source_set = this.room.memory.sources[this.memory.node];
-        const source_node = Game.getObjectById(source_set.s)!;
+        const source_node = Game.getObjectById(source_set.s as Id<Source>)!;
 
         if (this.pos.isNearTo(source_node)){
             if (source_node.energy > 0){
                 this.setWorkState(WORK_HARVEST_ENERGY);
-                this.doWorkHarvest();
+                this.doWorkHarvestEnergy();
             }
         }else{
             this.setWorkState(WORK_GOTO);
@@ -110,6 +111,51 @@ export const creepExtensionHarvester = function () {
             }
         }
     }
+
+    // 采集矿物的错误检查
+    Creep.prototype.errorCheckHarvestMineral = function(){
+        const source_set = this.room.memory.mineral;
+        if (!source_set.c){
+            this.say(`矿藏没有存储容器`);
+            return true;
+        }
+        return false;
+    }
+
+    // 前往采集点
+    Creep.prototype.goToMineralNode = function(){
+        if (this.errorCheckHarvestMineral()) return;
+
+        const set = this.room.memory.mineral;
+        const container = this.room.getStructureById(set.c!)!;
+
+        if (this.pos.getRangeTo(container) > 0){
+            this.moveTo(container);
+        }else{
+            this.setWorkState(WORK_HARVEST_MINERAL);
+            this.doWorkHarvestMineral();
+        }
+    }
+
+    // 执行 WORK_HARVEST_MINERAL
+    Creep.prototype.doWorkHarvestMineral = function(){
+        if (this.errorCheckHarvestMineral()) return;
+
+        const set = this.room.memory.mineral;
+        const node = Game.getObjectById(set.s as Id<Mineral>)!;
+        const container = this.room.getStructureById(set.c!)!;
+
+        if (this.pos.isNearTo(node)){
+            if (node.mineralAmount > 0 && container.store.getFreeCapacity() > 200){
+                this.harvest(node);
+            }else{
+            }
+        }else{
+            this.setWorkState(WORK_GOTO);
+            this.goToMineralNode();
+        }
+    }
+
 
     // ------------------------------------------------------
     // 升级

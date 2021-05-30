@@ -8,7 +8,7 @@ import { roleGoToRecycle } from '@/creeps/role.GoToRecycle';
 
 import {
     ENERGY_NEED,
-    WORK_TRANSPORTER_SPAWN, WORK_TRANSPORTER_TOWER, WORK_TRANSPORTER_STORAGE,
+    WORK_TRANSPORTER_SPAWN, WORK_TRANSPORTER_TOWER, WORK_TRANSPORTER_STORAGE_ENERGY,
     TASK_WAITING, TASK_ACCEPTED, MODE_NONE, WORK_IDLE,
 } from '@/constant';
 
@@ -42,7 +42,7 @@ export const creepExtensionBase = function () {
     };
 
     Creep.prototype.analyzeName = function () {
-        const find = /([^\d]+)(\d+)/.exec(this.name);
+        const find = /^(.+?)(\d+)$/.exec(this.name);
         if (find){
             this.baseName = find[1];
             this.index = parseInt(find[2]) || 0;

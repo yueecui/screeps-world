@@ -1,7 +1,7 @@
 import {
     ENERGY_NEED, ENERGY_ENOUGH,
-    WORK_IDLE, WORK_TRANSPORTER_SPAWN, WORK_TRANSPORTER_TOWER, WORK_TRANSPORTER_STORAGE, WORK_TRANSPORTER_CONTROLLER,
-    MODE_SPAWN, MODE_CONTROLLER
+    WORK_IDLE, WORK_TRANSPORTER_SPAWN, WORK_TRANSPORTER_TOWER, WORK_TRANSPORTER_STORAGE_ENERGY, WORK_TRANSPORTER_CONTROLLER,
+    MODE_SPAWN, MODE_CONTROLLER, WORK_TRANSPORTER_STORAGE_MINERAL
 } from '@/constant';
 
 const IDLE_POS = { x: 28, y: 27 }
@@ -24,7 +24,8 @@ export const roleTransporter: Transporter = {
             if (creep.getWorkState() == WORK_IDLE){
                 if (creep.checkWorkTransporterSpawn()) return;
                 if (creep.checkWorkTransporterTower()) return;
-                if (creep.checkWorkTransporterStorage()) return;
+                // if (creep.checkWorkTransporterStorage_Mineral()) return;
+                if (creep.checkWorkTransporterStorage_Energy()) return;
             }
         }else {
             if (creep.checkWorkTransporterSpawn()) return;
@@ -33,7 +34,8 @@ export const roleTransporter: Transporter = {
             if (creep.getWorkState() == WORK_IDLE){
                 if (creep.checkWorkTransporterTower()) return;
                 if (creep.checkWorkTransporterController()) return;
-                if (creep.checkWorkTransporterStorage()) return;
+                // if (creep.checkWorkTransporterStorage_Mineral()) return;
+                if (creep.checkWorkTransporterStorage_Energy()) return;
             }
         }
 
@@ -53,13 +55,16 @@ export const roleTransporter: Transporter = {
             case WORK_TRANSPORTER_CONTROLLER:
                 creep.doWorkTransporterController();
                 break;
-            case WORK_TRANSPORTER_STORAGE:
-                creep.doWorkTransporterStorage();
+            case WORK_TRANSPORTER_STORAGE_ENERGY:
+                creep.doWorkTransporterStorage_Energy();
+                break;
+            case WORK_TRANSPORTER_STORAGE_MINERAL:
+                creep.doWorkTransporterStorage_Mineral();
                 break;
             case WORK_IDLE:
                 if (creep.store[RESOURCE_ENERGY] > 0){
                     creep.setEnergyState(ENERGY_ENOUGH);
-                    creep.setWorkState(WORK_TRANSPORTER_STORAGE);
+                    creep.setWorkState(WORK_TRANSPORTER_STORAGE_ENERGY);
                 }else{
                     creep.goToStay();
                 }

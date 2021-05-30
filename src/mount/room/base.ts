@@ -102,8 +102,8 @@ export const roomExtensionBase = function () {
         if (this.memory.flagPurge == undefined){
             this.memory.flagPurge = true;
         }
-        if (this.memory.sources == undefined){
-            this.initSources();
+        if (this.memory.sources == undefined || this.memory.mineral == undefined){
+            this.initCollection();
         }
         if (this.memory.lastSpawnTime == undefined){
             this.memory.lastSpawnTime = 0;
@@ -127,9 +127,9 @@ export const roomExtensionBase = function () {
 
     // 初始化所有资源点数据
     // 每个room从上到下，从左到右存储，作为那个地图的资源点node顺序
-    Room.prototype.initSources = function(){
-        const found = this.find(FIND_SOURCES)
-        found.sort((a, b) => {
+    Room.prototype.initCollection = function(){
+        const found_sources = this.find(FIND_SOURCES);
+        found_sources.sort((a, b) => {
             if (a.pos.x == b.pos.x){
                 return a.pos.y - b.pos.y;
             }else{
@@ -137,11 +137,19 @@ export const roomExtensionBase = function () {
             }
         })
         this.memory.sources = []
-        for (const source of found){
+        for (const source of found_sources){
             this.memory.sources.push({
                 s: source.id,
                 c: null,
             })
+        }
+
+        const found_mineral = this.find(FIND_MINERALS);
+        if (found_mineral.length){
+            this.memory.mineral = {
+                s: found_mineral[0].id,
+                c: null,
+            }
         }
     }
 }

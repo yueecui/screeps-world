@@ -10,6 +10,12 @@ interface RoomMemory {
    */
   sources: Array<sourceInfo>;
   /**
+   * room里的mineral缓存
+   *
+   * 只生成一次，只要mineral这个key存在就不会再刷新
+   */
+  mineral: sourceInfo;
+  /**
    * 本房间最后一次孵化的时间
    *
    * 用于判断是否要再次进行孵化
@@ -49,7 +55,7 @@ interface RoomMemory {
   /**
    * source ID
    */
-  s: Id<Source>;
+  s: Id<Source>|Id<Mineral>;
   /**
    * 对应的container
    *
@@ -85,9 +91,11 @@ interface containerInfo{
 
 type ANY_CONTAINER_TYPE =
     | CONTAINER_TYPE_SOURCE
-    | CONTAINER_TYPE_CONTROLLER;
+    | CONTAINER_TYPE_CONTROLLER
+    | CONTAINER_TYPE_MINERAL;
 type CONTAINER_TYPE_SOURCE = 0;  // 临接source的container，存量变多后会转移到storage
 type CONTAINER_TYPE_CONTROLLER = 1;  // 用于给upgrader提取能量的container
+type CONTAINER_TYPE_MINERAL = 2;  // 临接mineral的container，存量变多后会转移到storage
 
 /**
  * 运输中的能量计划

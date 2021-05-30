@@ -42,9 +42,13 @@ export const WORK_TRANSPORTER_TOWER: WORK_TRANSPORTER_TOWER = 2;
  */
 export const WORK_TRANSPORTER_CONTROLLER: WORK_TRANSPORTER_CONTROLLER = 3;
 /**
+ * 当前Creep正在担任运输者职责，将当前房间的container里多余的矿物带到storage
+ */
+export const WORK_TRANSPORTER_STORAGE_MINERAL: WORK_TRANSPORTER_STORAGE_MINERAL = 9;
+/**
  * 当前Creep正在担任运输者职责，将当前房间的container里多余的能量带到storage
  */
-export const WORK_TRANSPORTER_STORAGE: WORK_TRANSPORTER_STORAGE = 10;
+export const WORK_TRANSPORTER_STORAGE_ENERGY: WORK_TRANSPORTER_STORAGE_ENERGY = 10;
 /**
  * 当前Creep正在进行采集
  */
@@ -97,7 +101,12 @@ export const CONTAINER_TYPE_SOURCE: CONTAINER_TYPE_SOURCE = 0;
  * container类型：存储供给给upgrader的能量
  */
 export const CONTAINER_TYPE_CONTROLLER: CONTAINER_TYPE_CONTROLLER = 1;
-
+/**
+ * container类型：存储mineral产出
+ *
+ * 存量变多后会转移到storage
+ */
+ export const CONTAINER_TYPE_MINERAL: CONTAINER_TYPE_MINERAL = 2;
 
 // Creep工作模式代码
 
