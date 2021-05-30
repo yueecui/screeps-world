@@ -37,6 +37,20 @@ export const roleBuilder: Builder = {
 
     // 根据工作模式执行
     execute: function(creep){
+        if (creep.memory.flag && Game.flags['remove']){
+            const flag = Game.flags['remove'];
+            if (creep.room.name != 'W34N57'){
+                creep.moveTo(flag);
+                return;
+            }
+            const look = flag.pos.lookFor(LOOK_STRUCTURES);
+            if (look.length > 0){
+                if (creep.dismantle(look[0]) == ERR_NOT_IN_RANGE){
+                    creep.moveTo(look[0]);
+                }
+                return;
+            }
+        }
         // 临时
         if (creep.memory.flag && Game.flags[creep.memory.flag]){
             const flag = Game.flags[creep.memory.flag];
@@ -71,7 +85,7 @@ export const roleBuilder: Builder = {
                 //     target = last_target[0];
                 // }else{
                     targets = targets.filter((s) => {
-                        return (s.hits/s.hitsMax) < REPAIR_PERCENT}
+                        return s.hits<s.hitsMax}
                     )
                     targets.sort((a, b) => {
                         return (a.hits/a.hitsMax - b.hits/b.hitsMax)

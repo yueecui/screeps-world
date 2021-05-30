@@ -1,4 +1,4 @@
-import { WORK_IDLE, WORK_GOTO, WORK_HARVEST, WORK_REPAIR } from "@/constant";
+import { WORK_IDLE, WORK_GOTO, WORK_HARVEST_ENERGY, WORK_REPAIR, MODE_HARVEST_ENERGY, MODE_HARVEST_MINERAL } from "@/constant";
 
 export const roleHarvester: Harvester = {
     run: function(creep) {
@@ -12,12 +12,16 @@ export const roleHarvester: Harvester = {
             case WORK_GOTO:
                 // 状态切换在执行时
                 break;
-            case WORK_HARVEST:
+            case WORK_HARVEST_ENERGY:
                 // 状态切换在执行时
                 break;
             case WORK_REPAIR:
             case WORK_IDLE:
-                creep.checkSourceNodeEnergy();
+                if (creep.getMode() == MODE_HARVEST_MINERAL){
+
+                }else{
+                    creep.checkSourceNodeEnergy();
+                }
                 break;
         }
     },
@@ -30,7 +34,7 @@ export const roleHarvester: Harvester = {
             case WORK_GOTO:
                 creep.goToSourceNode();
                 break;
-            case WORK_HARVEST:
+            case WORK_HARVEST_ENERGY:
                 creep.doWorkHarvest();
                 break;
             case WORK_REPAIR:

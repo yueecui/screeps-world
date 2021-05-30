@@ -48,7 +48,11 @@ export const WORK_TRANSPORTER_STORAGE: WORK_TRANSPORTER_STORAGE = 10;
 /**
  * 当前Creep正在进行采集
  */
-export const WORK_HARVEST: WORK_HARVEST = 11;
+export const WORK_HARVEST_ENERGY: WORK_HARVEST_ENERGY = 21;
+/**
+ * 当前Creep正在进行采集
+ */
+ export const WORK_HARVEST_MINERAL: WORK_HARVEST_MINERAL = 22;
 /**
  * 当前Creep正在升级控制器
  */
@@ -101,6 +105,15 @@ export const CONTAINER_TYPE_CONTROLLER: CONTAINER_TYPE_CONTROLLER = 1;
  * 无指定模式
  */
  export const MODE_NONE: MODE_NONE = -1;
+
+/**
+ * 优先提供孵化器能量的运输者
+ */
+export const MODE_HARVEST_ENERGY: MODE_HARVEST_ENERGY = 0;
+/**
+ * 优先提供控制器能量的运输者
+ */
+export const MODE_HARVEST_MINERAL: MODE_HARVEST_MINERAL = 1;
 
 /**
  * 优先提供孵化器能量的运输者

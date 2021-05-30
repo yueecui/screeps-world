@@ -72,15 +72,16 @@ const ACTIVE_ROLE_CONFIG: Map<string, RoleConfig> = new Map([
     ['TR-S', { basename:'',body: getMaxCarrierBody(), amount: 1, aheadTime: 160, memory: {r:'运输', mode: 0, stay: [34, 35]} }],     // W35N57 将各个节点额外的能量搬运到Storage
     ['TR-U', { basename:'',body: getMaxCarrierBody(), amount: 1, aheadTime: 160, memory: {r:'运输', mode: 1, stay: [28, 18]} }],
     // ROOM收集者
-    ['GA-B', { body: BODY_CONFIG['采集者R4'], amount: 1, aheadTime: 80, memory: {r:'采集', node:1} }],    // W35N57 下方矿点采集
-    ['GA-A', { body: BODY_CONFIG['采集者R4'], amount: 1, aheadTime: 80, memory: {r:'采集', node:0} }],    // W35N57 下方矿点采集
+    ['GA-B', { body: BODY_CONFIG['采集者R4'], amount: 1, aheadTime: 80, memory: {r:'采集', mode:0, node:1} }],    // W35N57 下方矿点采集
+    ['GA-A', { body: BODY_CONFIG['采集者R4'], amount: 1, aheadTime: 80, memory: {r:'采集', mode:0, node:0} }],    // W35N57 下方矿点采集
+    // ['GA1-M', { body: BODY_CONFIG['采集者R4'], amount: 1, aheadTime: 80, memory: {r:'采集', mode:1} }],    // W35N57 下方矿点采集
     // ROOM的建造者
     // ['BD-B', { body: getMaxBuilderBody(), amount: 1, memory: {r:'建造', mode:0, stay: [29, 27]} }],    // 建造优先
-    ['BD-R', { body: getMaxBuilderBody(), amount: 1, memory: {r:'建造', mode:1, stay: [22, 30]} }],    // 修理优先
+    ['BD-R', { body: getMaxBuilderBody(), amount: 1, memory: {r:'建造', mode:1, stay: [27, 30]} }],    // 修理优先
     // ROOM升级者
     ['UP-A', { body: BODY_CONFIG['升级者R4'], amount: 3, memory: {r:'升级'} }],
     // ROOM外建造者
-    ['ENG', { body: [CLAIM, CLAIM, CLAIM, MOVE, MOVE, MOVE], amount: 1, memory: {r:'工兵', mode:1, flag: 'eng1'}}],    // 修理优先
+    ['ENG', { body: [CLAIM, CLAIM, CLAIM, MOVE, MOVE, MOVE], amount: 1, memory: {r:'工兵', mode:1, flag: 'eng1'}}],
     ['BDO-R', { body: getMaxBuilderBody(), amount: 1, memory: {r:'建造', mode:1, flag: 'colony', stay: [22, 30]} }],    // 修理优先
 ]);
 
@@ -120,6 +121,16 @@ export const ManagerCreeps: Record<string, any> = {
 
         for (const [basename,config] of ACTIVE_ROLE_CONFIG){
             config.basename = basename;
+            if (basename == 'ENG'){
+                if (Game.flags['eng1'].room){
+                    const controller = Game.flags['eng1'].room!.controller!
+                    if (!controller.my && controller.upgradeBlocked && controller.upgradeBlocked > 100){
+                        continue;
+                    }
+                }else{
+                    continue;
+                }
+            }
             const role_all = all_creeps[basename] || []
             const role_valid = valid_creeps[basename] || []
 
