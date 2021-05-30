@@ -4,6 +4,7 @@ import {
     TASK_WAITING, TASK_ACCEPTED,
     CONTAINER_TYPE_SOURCE,
     WORK_TRANSPORTER_CONTROLLER,
+    PRIORITY_CONTAINER,
 } from '@/constant';
 
 export const creepExtensionTransporter = function () {
@@ -142,7 +143,7 @@ export const creepExtensionTransporter = function () {
                 // 设定工作状态
                 this.clearQueue();
                 this.setTarget(empty_containers[0].id);
-                if (this.store.getFreeCapacity() == 0){
+                if (this.store[RESOURCE_ENERGY] > 0){
                     this.setEnergyState(ENERGY_ENOUGH);
                 }else{
                     this.setEnergyState(ENERGY_NEED);
@@ -160,6 +161,7 @@ export const creepExtensionTransporter = function () {
             this.obtainEnergy({
                 container: [CONTAINER_TYPE_SOURCE],
                 storage: true,
+                priority: PRIORITY_CONTAINER,
             })
         }else{
             const target = this.getTargetObject() as StructureContainer | null;
@@ -175,6 +177,7 @@ export const creepExtensionTransporter = function () {
                 this.obtainEnergy({
                     container: [CONTAINER_TYPE_SOURCE],
                     storage: true,
+                    priority: PRIORITY_CONTAINER,
                 });
             }else{
                 const result = this.transfer(target, RESOURCE_ENERGY);

@@ -33,7 +33,7 @@ export const roomExtensionSpawn = function () {
 
         const newtaskSpawn = {} as Record<string, taskInfo>;
         found.forEach((find) => {
-            this.cache.structure[find.id] = find;  // 缓存所有查询到的房间数据，减少本tick查询
+            Game.cache.structure[find.id] = find;  // 缓存所有查询到的房间数据，减少本tick查询
             // 将ID存储到Memory
             if (find.id in this.memory.taskSpawn){
                 const oldTaskInfo = this.memory.taskSpawn[find.id];

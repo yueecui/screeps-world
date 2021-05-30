@@ -9,45 +9,50 @@ import { ManagerCreeps } from 'manager.Creeps';
 // When compiling TS to JS and bundling with rollup, the line numbers and file names in error messages change
 // This utility uses source maps to get the line numbers and file names of the original, TS source code
 module.exports.loop = () => {
-  // 自动事务
-  Automatic.run();
+    // 自动事务
+    Automatic.run();
 
-  // 修改原型
-  // prototypeMain.init();
+    // 修改原型
+    // prototypeMain.init();
 
-  // 保存bucket
-  if (Game.cpu.bucket == 10000){
-    Game.cpu.generatePixel();
-  }
-
-  // 小虫管理器检查当前单位数量是否正常
-  ManagerCreeps.check();
-
-  // 检查所有自己的房间
-  for(const name in Game.rooms) {
-    const room = Game.rooms[name];
-    if (room.controller && room.controller.my){
-      room.tickCheck();
+    // 保存bucket
+    if (Game.cpu.bucket == 10000){
+        Game.cpu.generatePixel();
     }
-  }
 
-  // 运转所有小虫
-  for(const name in Game.creeps) {
-    Game.creeps[name].run();
-  }
+    // 小虫管理器检查当前单位数量是否正常
+    ManagerCreeps.check();
 
-  // 临时运转塔
-  var tower = Game.getObjectById('60abc165b225d38453b62cde' as Id<StructureTower>);
-  if(tower) {
-    // var closestDamagedStructure = tower.pos.findClosestByRange(FIND_STRUCTURES, {
-    //   filter: (structure) => structure.hits < structure.hitsMax
-    // });
-    // if(closestDamagedStructure) {
-    //   tower.repair(closestDamagedStructure);
-    // }
-    var closestHostile = tower.pos.findClosestByRange(FIND_HOSTILE_CREEPS);
-    if(closestHostile) {
-      tower.attack(closestHostile);
+    // 检查所有自己的房间
+    for(const name in Game.rooms) {
+        const room = Game.rooms[name];
+        if (room.controller && room.controller.my){
+            room.tickCheck();
+        }
     }
-  }
+
+    // 运转所有小虫
+    for(const name in Game.creeps) {
+        Game.creeps[name].run();
+    }
+
+    // 临时运转塔
+    var towers = [
+        Game.getObjectById('60abc165b225d38453b62cde' as Id<StructureTower>),
+        Game.getObjectById('60adb99b03e40e459ecbd5c2' as Id<StructureTower>),
+    ];
+    for (const tower of towers){
+        if(tower) {
+            // var closestDamagedStructure = tower.pos.findClosestByRange(FIND_STRUCTURES, {
+            //     filter: (structure) => structure.hits < structure.hitsMax
+            // });
+            // if(closestDamagedStructure) {
+            //     tower.repair(closestDamagedStructure);
+            // }
+            var closestHostile = tower.pos.findClosestByRange(FIND_HOSTILE_CREEPS);
+            if(closestHostile) {
+                tower.attack(closestHostile);
+            }
+        }
+    }
 };

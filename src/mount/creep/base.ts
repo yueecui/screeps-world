@@ -2,6 +2,7 @@ import { roleHarvester } from '@/creeps/role.Harvester';
 import { roleTransporter } from '@/creeps/role.Transporter';
 import { roleBuilder } from '@/creeps/role.Builder';
 import { roleUpgrader } from '@/creeps/role.Upgrader';
+import { roleAttacker } from '@/creeps/role.Attacker';
 
 import {
     ENERGY_NEED,
@@ -17,6 +18,7 @@ const roleMap: Record<AnyRoleName, AnyRole> = {
     '运输': roleTransporter,
     '建造': roleBuilder,
     '升级': roleUpgrader,
+    '攻击': roleAttacker,
 }
 
 export const creepExtensionBase = function () {

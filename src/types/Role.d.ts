@@ -12,12 +12,14 @@ type AnyRoleName =
     | RoleNameHarvester
     | RoleNameTransporter
     | RoleNameBuilder
-    | RoleNameUpgrader;
+    | RoleNameUpgrader
+    | RoleNameAttacker;
 
 type RoleNameHarvester = '采集';
 type RoleNameTransporter = '运输';
 type RoleNameBuilder = '建造';
 type RoleNameUpgrader = '升级';
+type RoleNameAttacker = '攻击';
 
 
 interface CreepRole {
@@ -47,4 +49,7 @@ interface Builder extends CreepRole{
 }
 
 interface Upgrader extends CreepRole{
+}
+
+interface Attacker extends CreepRole{
 }

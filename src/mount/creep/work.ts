@@ -67,14 +67,14 @@ export const creepExtensionHarvester = function () {
         if (this.getEnergyState() == ENERGY_NEED){
             this.obtainEnergy({
                 container: [CONTAINER_TYPE_CONTROLLER],
-                storage: true,
+                storage: false,
             });
         }else{
             if (this.store[RESOURCE_ENERGY] == 0){
                 this.setEnergyState(ENERGY_NEED);
                 this.obtainEnergy({
                     container: [CONTAINER_TYPE_CONTROLLER],
-                    storage: true,
+                    storage: false,
                 });
             }
             if (this.pos.x != 29 || this.pos.y != 20+this.getIndex()){
@@ -85,7 +85,7 @@ export const creepExtensionHarvester = function () {
                     this.setEnergyState(ENERGY_NEED);
                     this.obtainEnergy({
                         container: [CONTAINER_TYPE_CONTROLLER],
-                        storage: true,
+                        storage: false,
                     });
                     break;
             }

@@ -1,7 +1,10 @@
 import {
     RoleNameHarvester,
     ENERGY_NEED, ENERGY_ENOUGH,
-    PLAN_PAY
+    PLAN_PAY,
+    PRIORITY_NONE,
+    PRIORITY_CONTAINER,
+    PRIORITY_STORAGE
 } from '@/constant';
 
 export const creepExtensionResource = function () {
@@ -18,14 +21,20 @@ export const creepExtensionResource = function () {
     Creep.prototype.obtainEnergy = function(opt){
         if (this.store.getFreeCapacity() == 0){
             this.setEnergyState(ENERGY_ENOUGH);
+            this.room.unbookingContainer(this.name);
             return false;
         }
         let target = this.getEnergyTargetObject() as StructureContainer | StructureStorage | null;
 
-        if (!target || (target.structureType != STRUCTURE_CONTAINER && target.structureType != STRUCTURE_STORAGE)){
-            target = this.findEnergyStore(opt);
-        }else if (target){
+        if (target && target.store[RESOURCE_ENERGY] == 0){
+            this.room.unbookingContainer(this.name);
+            this.clearEnergyTarget();
+            target = null;
+        }
 
+        if (!target || (target.structureType != STRUCTURE_CONTAINER && target.structureType != STRUCTURE_STORAGE)){
+            opt = opt == undefined ? {} : opt;
+            target = this.findEnergyStore(opt);
         }
 
         if (target){
@@ -49,8 +58,14 @@ export const creepExtensionResource = function () {
     },
 
     Creep.prototype.findEnergyStore = function(opt){
+        // 初始化参数
+        opt.min_amount = opt.min_amount == undefined ? this.store.getFreeCapacity(RESOURCE_ENERGY) : opt.min_amount;
+        opt.container = opt.container == undefined ? [] : opt.container;
+        opt.storage = opt.storage == undefined ? true : opt.storage;
+        opt.priority = opt.priority == undefined ? PRIORITY_NONE : opt.priority;
+
         let structures: Array<StructureContainer | StructureStorage> = [];
-        if (opt && opt.container){
+        if (opt.container){
             _.each(
                 _.filter(this.room.memory.containers, (config) => {
                     return opt!.container!.indexOf(config.type) > -1;
@@ -63,19 +78,31 @@ export const creepExtensionResource = function () {
                 }
             )
         }
-        if ((opt
-            && opt.storage != undefined ? opt.storage : true)
+        if (opt.storage
             && this.room.storage
             && this.room.storage.store[RESOURCE_ENERGY] > 0){
             structures.push(this.room.storage)
         }
+
         // 根据最小需求量过滤
-        const min_amount = opt && opt.min_amount ? opt.min_amount : this.store.getFreeCapacity(RESOURCE_ENERGY);
         structures = _.filter(structures, (structure) => {
-            return this.room.getStructureEnergyCapacity(structure) >= min_amount;
+            return this.room.getStructureEnergyCapacity(structure) >= opt.min_amount!;
         });
         if (structures.length > 0){
             structures.sort((a, b) => {
+                if (opt.priority == PRIORITY_CONTAINER){
+                    if (a.structureType == STRUCTURE_CONTAINER){
+                        return -1;
+                    }else if (b.structureType == STRUCTURE_CONTAINER){
+                        return 1;
+                    }
+                }else if(opt.priority == PRIORITY_STORAGE){
+                    if (a.structureType == STRUCTURE_STORAGE){
+                        return -1;
+                    }else if (b.structureType == STRUCTURE_STORAGE){
+                        return 1;
+                    }
+                }
                 return this.pos.getRangeTo(a) - this.pos.getRangeTo(b);
             })
             const structure = structures[0];

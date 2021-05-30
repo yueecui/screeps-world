@@ -4,6 +4,7 @@ export const RoleNameHarvester: RoleNameHarvester = '采集';
 export const RoleNameTransporter: RoleNameTransporter = '运输';
 export const RoleNameBuilder: RoleNameBuilder = '建造';
 export const RoleNameUpgrader: RoleNameUpgrader = '升级';
+export const RoleNameAttacker: RoleNameAttacker = '攻击';
 
 
 // Creep工作进程的状态码
@@ -103,3 +104,8 @@ export const MODE_BUILDER: MODE_BUILDER = 0;
  * 优先修理的builder
  */
 export const MODE_REPAIRER: MODE_REPAIRER = 1;
+
+
+export const PRIORITY_NONE: PRIORITY_NONE = 0;
+export const PRIORITY_CONTAINER: PRIORITY_CONTAINER = 1;
+export const PRIORITY_STORAGE: PRIORITY_STORAGE = 2;

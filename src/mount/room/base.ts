@@ -2,26 +2,22 @@ import { TASK_WAITING } from "@/constant";
 
 
 export const roomExtensionBase = function () {
-    Room.prototype.cache = {
-        structure: {}
-    };
-
     // 缓存特定建筑的Id
     Room.prototype.cacheMyStructuresId = function(){
         const found = this.find(FIND_MY_STRUCTURES);
         // 缓存下来，本tick当单id查询，就不必再请求getObjectById了
         _.each(found, (structure)=>{
-            this.cache.structure[structure.id] = structure;
+            Game.cache.structure[structure.id] = structure;
         })
         this.memory.towers = _.map(_.filter(found, {structureType: STRUCTURE_TOWER}) as StructureTower[], 'id');
     };
 
     // 从tick cache获取建筑物信息，如果没有则请求→缓存→返回
     Room.prototype.getStructureById = function<T extends AnyStructure>(id: Id<T>): T|null{
-        if (!(id in this.cache.structure)){
-            this.cache.structure[id] = Game.getObjectById(id) as T;
+        if (!(id in Game.cache.structure)){
+            Game.cache.structure[id] = Game.getObjectById(id) as T;
         }
-        return this.cache.structure[id] ? this.cache.structure[id] as T : null;
+        return Game.cache.structure[id] ? Game.cache.structure[id] as T : null;
     };
 
     // 从tick cache获取建筑物信息，如果没有则请求→缓存→返回
@@ -32,11 +28,11 @@ export const roomExtensionBase = function () {
             if (id == ''){
                 continue;
             }
-            if (!(id in this.cache.structure)){
-                this.cache.structure[id] = Game.getObjectById(id as Id<T>);
+            if (!(id in Game.cache.structure)){
+                Game.cache.structure[id] = Game.getObjectById(id as Id<T>);
             }
-            if (this.cache.structure[id]){
-                result.push(this.cache.structure[id] as T);
+            if (Game.cache.structure[id]){
+                result.push(Game.cache.structure[id] as T);
             }else{
                 missed_id.push(id as Id<T>);
             }

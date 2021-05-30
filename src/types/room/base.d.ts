@@ -3,13 +3,6 @@ type AnySpawnEnergyStoreStructure = StructureExtension | StructureSpawn;
 
 interface Room {
   /**
-   * 按tick的缓存信息
-   */
-  cache: {
-    structure: Record<string, AnyStructure | null>  // 因为ID类型不同，只能当成字符串存下来，使用时需要注意
-  };
-
-  /**
    * 缓存room中特定建筑的Id
    */
    cacheMyStructuresId(): void;
