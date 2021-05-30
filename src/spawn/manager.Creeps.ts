@@ -82,8 +82,8 @@ const ACTIVE_ROLE_CONFIG: Map<string, RoleConfig> = new Map([
     // ['Guu', { body: BODY_CONFIG['侵略者R5'], amount: 1, memory: {r:'攻击'} }],
 
     // ROOM搬运者
-    ['TR-S', { basename:'',body: getMaxCarrierBody(), amount: 1, aheadTime: 160, memory: {r:'运输', mode: 0, stay: [34, 35]} }],     // W35N57 将各个节点额外的能量搬运到Storage
-    ['TR-U', { basename:'',body: getMaxCarrierBody(), amount: 1, aheadTime: 160, memory: {r:'运输', mode: 1, stay: [28, 18]} }],
+    ['TR-S', { body: getMaxCarrierBody(), amount: 1, aheadTime: 160, memory: {r:'运输', mode: 0, stay: [34, 35]} }],     // W35N57 将各个节点额外的能量搬运到Storage
+    ['TR-U', { body: getMaxCarrierBody(), amount: 1, aheadTime: 160, memory: {r:'运输', mode: 1, stay: [28, 18]} }],
     // ROOM收集者
     ['GA-B', { body: BODY_CONFIG['采集者R4'], amount: 1, aheadTime: 80, memory: {r:'采集', mode:0, node:1} }],    // W35N57 下方矿点采集
     ['GA-A', { body: BODY_CONFIG['采集者R4'], amount: 1, aheadTime: 80, memory: {r:'采集', mode:0, node:0} }],    // W35N57 下方矿点采集
@@ -95,14 +95,14 @@ const ACTIVE_ROLE_CONFIG: Map<string, RoleConfig> = new Map([
     // ROOM外建造者
     ['GA1-M', { body: getMinerBody(), amount: 1, aheadTime: 80, memory: {r:'采集', mode:1} }],    // W35N57 下方矿点采集
     ['ENG', { body: [CLAIM, CLAIM, CLAIM, MOVE, MOVE, MOVE], amount: 1, memory: {r:'工兵', mode:1, flag: 'eng1'}}],
-    ['BDO-R', { body: getMaxBuilderBody(), amount: 1, memory: {r:'建造', mode:1, flag: 'colony', stay: [22, 30]} }],    // 修理优先
+    ['BDO-R', { body: BODY_CONFIG['BUILDER_R2'], amount: 1, memory: {r:'建造', mode:1, flag: 'colony', stay: [22, 30]} }],    // 修理优先
 ]);
 
 
 
 const OTHER_ROLE_CONFIG = new Map([
     // 救灾
-    ['Rescue', { body: null, amount: 1, memory: {r:'运输', e: 0} }],     // W35N57 救灾机器人
+    ['Rescue', { body: null, amount: 1, memory: {r:'运输', mode: 0} }],     // W35N57 救灾机器人
 ]);
 
 

@@ -8,6 +8,7 @@ interface RoleConfig{
 
 type ANY_ROLE_NAME =
     | ROLE_GOTO_RECYCLE
+    | ROLE_MANUAL
     | ROLE_HARVESTER
     | ROLE_TRANSPORTER
     | ROLE_BUILDER
@@ -16,6 +17,7 @@ type ANY_ROLE_NAME =
     | ROLE_ENGINEER;
 
 type ROLE_GOTO_RECYCLE = '回收';
+type ROLE_MANUAL = '手动';
 type ROLE_HARVESTER = '采集';
 type ROLE_TRANSPORTER = '运输';
 type ROLE_BUILDER = '建造';
@@ -31,17 +33,12 @@ interface CreepRole {
 }
 
 type AnyRole =
-    | GoToRecycle
     | Harvester
     | Transporter
     | Builder
     | Upgrader
     | Attacker
     | Engineer;
-
-interface GoToRecycle extends CreepRole{
-
-}
 
 interface Harvester extends CreepRole{
 }

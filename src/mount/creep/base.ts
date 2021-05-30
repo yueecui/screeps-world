@@ -1,10 +1,11 @@
-import { roleHarvester } from '@/creeps/role.Harvester';
-import { roleTransporter } from '@/creeps/role.Transporter';
-import { roleBuilder } from '@/creeps/role.Builder';
-import { roleUpgrader } from '@/creeps/role.Upgrader';
-import { roleAttacker } from '@/creeps/role.Attacker';
-import { roleEngineer } from '@/creeps/role.Engineer';
-import { roleGoToRecycle } from '@/creeps/role.GoToRecycle';
+import { roleHarvester } from '@/role/Harvester';
+import { roleTransporter } from '@/role/Transporter';
+import { roleBuilder } from '@/role/Builder';
+import { roleUpgrader } from '@/role/Upgrader';
+import { roleAttacker } from '@/role/Attacker';
+import { roleEngineer } from '@/role/Engineer';
+import { roleGoToRecycle } from '@/role/GoToRecycle';
+import { roleManual } from '@/role/Manual';
 
 import {
     ENERGY_NEED,
@@ -17,6 +18,7 @@ const TASK_QUEUE_MAX = 5;
 
 const roleMap: Record<ANY_ROLE_NAME, AnyRole> = {
     '回收': roleGoToRecycle,
+    '手动': roleGoToRecycle,
     '采集': roleHarvester,
     '运输': roleTransporter,
     '建造': roleBuilder,
