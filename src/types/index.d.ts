@@ -1,3 +1,9 @@
+// import { LoDashStatic } from 'lodash';
+
+// declare global {
+//     const _: LoDashStatic;
+// }
+
 /*
   Example types, expand on these or remove them and add your own.
   Note: Values, properties defined here do no fully *exist* by this type definiton alone.
@@ -23,4 +29,14 @@ declare namespace NodeJS {
   interface Global {
     log: any;
   }
+}
+
+
+interface Game{
+    /**
+     * 按tick的缓存信息
+     */
+    cache: {
+        structure: Record<string, AnyStructure | null>  // 因为ID类型不同，只能当成字符串存下来，使用时需要注意
+    };
 }

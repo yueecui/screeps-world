@@ -3,42 +3,57 @@
 // model为B的优先建造，没有可建造的时修理
 // model为R的优先修理，没有可修理的时候建造
 
-// 修理一旦开始
+// 修理一旦开始就会修完
 
-const WORK_OBTAIN_ENERGY = 0;
-const WORK_DOING = 1;
+import {
+    ENERGY_NEED,
+    WORK_IDLE, WORK_BUILD, WORK_REPAIR,
+    MODE_BUILDER, MODE_REPAIRER } from "@/constant";
 
-const REPAIR_PERCENT = 0.7;  // 耐久度低到什么程度开始修理
+const REPAIR_PERCENT = 0.95;  // 耐久度低到什么程度开始修理
 
 export const roleBuilder: Builder = {
     run: function(creep) {
-        creep.recycleNearby(); // 回收周围的能量
-        this.updateWorkStatus(creep);
+        this.updateStatus(creep);
         this.execute(creep);
 	},
-    // 根据能量状态切换工作模式
-    updateWorkStatus: function(creep){
-        if (creep.memory.w == WORK_OBTAIN_ENERGY && creep.store.getFreeCapacity() == 0){
-            creep.memory.w = WORK_DOING;
-        }else if (creep.memory.w == WORK_DOING && creep.store[RESOURCE_ENERGY] == 0){
-            creep.memory.w = WORK_OBTAIN_ENERGY;
+
+    // 判断工作模式
+    updateStatus: function(creep){
+        switch(creep.getWorkState()){
+            case WORK_BUILD:
+                break;
+            case WORK_REPAIR:
+                break;
+            case WORK_IDLE:
+                if (creep.memory.mode == MODE_BUILDER){
+                    creep.setWorkState(WORK_BUILD);
+                }else if (creep.memory.mode == MODE_REPAIRER){
+                    creep.setWorkState(WORK_REPAIR);
+                }
+                break;
         }
     },
+
+    // 根据工作模式执行
     execute: function(creep){
-        if (creep.memory.w == WORK_OBTAIN_ENERGY){
-            if (creep.room.storage){
-                if(creep.withdraw(creep.room.storage, RESOURCE_ENERGY) == ERR_NOT_IN_RANGE) {
-                    creep.moveTo(creep.room.storage);
-                }
-            }else{
-                creep.obtainEnergyFromNearestContainer(500);
+        creep.recycleNearby(); // 回收周围的能量
+
+        if (creep.getEnergyState() == ENERGY_NEED){
+            creep.clearTarget();
+            creep.obtainEnergy({
+                storage: true,
+            });
+        }else{
+            if (creep.store[RESOURCE_ENERGY] == 0){
+                creep.clearTarget();
+                creep.setEnergyState(ENERGY_NEED);
+                creep.obtainEnergy({
+                    storage: true,
+                });
             }
-        }else if (creep.memory.w == WORK_DOING){
             let target;
-            // if (creep.pos.x == 33 && creep.pos.y == 35){
-            //     creep.moveTo(32, 34);
-            // }
-            if (creep.memory.model == 'R'){
+            if (creep.getWorkState() == WORK_REPAIR){
                 target = this.findRepairTarget(creep);
                 if (target){
                     return this.repairTarget(creep, target);
