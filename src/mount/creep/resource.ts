@@ -18,29 +18,33 @@ export const creepExtensionResource = function () {
     Creep.prototype.obtainEnergy = function(opt){
         if (this.store.getFreeCapacity() == 0){
             this.setEnergyState(ENERGY_ENOUGH);
+            return false;
         }
-        let target = this.getTargetObject() as StructureContainer | StructureStorage | null;
+        let target = this.getEnergyTargetObject() as StructureContainer | StructureStorage | null;
 
         if (!target || (target.structureType != STRUCTURE_CONTAINER && target.structureType != STRUCTURE_STORAGE)){
             target = this.findEnergyStore(opt);
+        }else if (target){
+
         }
 
         if (target){
             if (this.pos.isNearTo(target)){
                 // 如果本回合拾取过能量则跳过获取阶段
                 if (this.isRecycling()){
-                    return;
+                    return true;
                 }
                 if (this.withdraw(target, RESOURCE_ENERGY) == OK){
-                    this.clearTarget();
                     this.setEnergyState(ENERGY_ENOUGH);
                     this.room.unbookingContainer(this.name);
                 };
             }else{
                 this.moveTo(target);
             }
+            return true;
         }else{
             this.say('无法获得能量')
+            return false;
         }
     },
 
@@ -75,14 +79,14 @@ export const creepExtensionResource = function () {
                 return this.pos.getRangeTo(a) - this.pos.getRangeTo(b);
             })
             const structure = structures[0];
-            this.memory.t = structure.id;
+            this.setEnergyTarget(structure.id);
             if (structure.structureType == STRUCTURE_CONTAINER){
                 this.room.bookingContainer(this.name, structure.id, PLAN_PAY, this.store.getFreeCapacity(RESOURCE_ENERGY));
             }
             return structure;
         }else{
             this.room.unbookingContainer(this.name);
-            this.memory.t = null;
+            this.clearEnergyTarget();
             return null;
         }
     }
@@ -109,8 +113,13 @@ export const creepExtensionResource = function () {
                 }
             }
             this.pickup(find);
-            this.recycling = true;
-            return true;
+            // 太少的话就不视为拣了
+            if (find.amount >= 50){
+                this.recycling = true;
+                return true;
+            }else{
+                return false;
+            }
         }
         // this.recycling = false;
         // 判断拾取附近的墓碑

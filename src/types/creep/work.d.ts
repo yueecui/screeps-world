@@ -1,5 +1,14 @@
 interface Creep{
     /**
+     * 错误检查
+     * @returns true表示有错误，false表示无错误
+     */
+    errorCheckHarvest(): boolean;
+    /**
+     * 前往采集点
+     */
+    goToSourceNode(): void;
+    /**
      * 执行 WORK_HARVEST
      */
     doWorkHarvest(): void;

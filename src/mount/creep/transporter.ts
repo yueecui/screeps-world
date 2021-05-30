@@ -3,6 +3,7 @@ import {
     WORK_IDLE, WORK_TRANSPORTER_SPAWN, WORK_TRANSPORTER_TOWER, WORK_TRANSPORTER_STORAGE,
     TASK_WAITING, TASK_ACCEPTED,
     CONTAINER_TYPE_SOURCE,
+    WORK_TRANSPORTER_CONTROLLER,
 } from '@/constant';
 
 export const creepExtensionTransporter = function () {
@@ -37,7 +38,7 @@ export const creepExtensionTransporter = function () {
                 this.setWorkState(WORK_IDLE);
                 return;
             }
-            const target = this.getTargetObject() as SpawnEnergyStoreStructure;
+            const target = this.getTargetObject() as AnySpawnEnergyStoreStructure;
             // 目标如果不存在（被拆除）或是目标已经满了
             // 就跳过该目标
             if (!target || target.store.getFreeCapacity(RESOURCE_ENERGY) == 0){
@@ -46,7 +47,6 @@ export const creepExtensionTransporter = function () {
             }
             if (this.store.getFreeCapacity() > 0 && (target.store.getFreeCapacity(RESOURCE_ENERGY) > this.store[RESOURCE_ENERGY])){
                 this.setEnergyState(ENERGY_NEED);
-                this.unshiftTarget();
                 this.obtainEnergy({
                     container: [CONTAINER_TYPE_SOURCE],
                     storage: true,
@@ -55,12 +55,10 @@ export const creepExtensionTransporter = function () {
                 const result = this.transfer(target, RESOURCE_ENERGY);
                 switch(result){
                     case OK:
-                        // 如果当前的容量不足以填满目标，则将目标放回队列里
+                        // 如果容量能填满则任务完成，否则不能清除目标还得继续运能量来填
                         if (this.store[RESOURCE_ENERGY] >= target.store.getFreeCapacity(RESOURCE_ENERGY)){
                             delete this.room.memory.taskSpawn[this.memory.t!];
                             this.clearTarget();
-                        }else{
-                            this.unshiftTarget();
                         }
                         break;
                     case ERR_NOT_IN_RANGE:
@@ -111,7 +109,6 @@ export const creepExtensionTransporter = function () {
             }
             if (this.store.getFreeCapacity() > 0 && (target.store.getFreeCapacity(RESOURCE_ENERGY) > this.store[RESOURCE_ENERGY])){
                 this.setEnergyState(ENERGY_NEED);
-                this.unshiftTarget();
                 this.obtainEnergy({
                     storage: true,
                 });
@@ -119,13 +116,71 @@ export const creepExtensionTransporter = function () {
                 const result = this.transfer(target, RESOURCE_ENERGY);
                 switch(result){
                     case OK:
-                        // 如果当前的容量不足以填满目标，则将目标放回队列里
+                        // 如果容量能填满则任务完成，否则不能清除目标还得继续运能量来填
                         if (this.store[RESOURCE_ENERGY] >= target.store.getFreeCapacity(RESOURCE_ENERGY)){
                             delete this.room.memory.taskTowers[this.memory.t!];
                             this.clearTarget();
-                        }else{
-                            this.unshiftTarget();
                         }
+                        break;
+                    case ERR_NOT_IN_RANGE:
+                        this.moveTo(target);
+                        break;
+                }
+            }
+        }
+    }
+
+    // ------------------------------------------------------
+    // 给controller container补充能量
+    // ------------------------------------------------------
+
+    // 检查
+    Creep.prototype.checkWorkTransporterController = function(){
+        if (this.getWorkState() != WORK_TRANSPORTER_CONTROLLER){
+            const empty_containers = this.room.getEmptyControllerContainers();
+            if (empty_containers.length > 0){
+                // 设定工作状态
+                this.clearQueue();
+                this.setTarget(empty_containers[0].id);
+                if (this.store.getFreeCapacity() == 0){
+                    this.setEnergyState(ENERGY_ENOUGH);
+                }else{
+                    this.setEnergyState(ENERGY_NEED);
+                }
+                this.setWorkState(WORK_TRANSPORTER_CONTROLLER);
+                return true;
+            }
+        }
+        return false;
+    }
+
+    // 执行 WORK_TRANSPORTER_CONTROLLER
+    Creep.prototype.doWorkTransporterController = function(){
+        if (this.getEnergyState() == ENERGY_NEED){
+            this.obtainEnergy({
+                container: [CONTAINER_TYPE_SOURCE],
+                storage: true,
+            })
+        }else{
+            const target = this.getTargetObject() as StructureContainer | null;
+            // 目标如果不存在（被拆除）或是目标已经满了
+            // 就跳过该目标
+            if (target == null || target.store.getFreeCapacity(RESOURCE_ENERGY) == 0){
+                this.clearTarget();
+                this.setWorkState(WORK_IDLE);
+                return;
+            }
+            if (this.store[RESOURCE_ENERGY] == 0){
+                this.setEnergyState(ENERGY_NEED);
+                this.obtainEnergy({
+                    container: [CONTAINER_TYPE_SOURCE],
+                    storage: true,
+                });
+            }else{
+                const result = this.transfer(target, RESOURCE_ENERGY);
+                switch(result){
+                    case OK:
+                        this.setWorkState(WORK_IDLE);
                         break;
                     case ERR_NOT_IN_RANGE:
                         this.moveTo(target);
@@ -146,12 +201,12 @@ export const creepExtensionTransporter = function () {
             if (full_containers.length > 0){
                 // 设定工作状态
                 this.clearQueue();
-                this.setTarget(full_containers[0].id);
                 if (this.store.getFreeCapacity() == 0){
                     this.setEnergyState(ENERGY_ENOUGH);
                 }else{
                     this.setEnergyState(ENERGY_NEED);
                 }
+                this.setEnergyTarget(full_containers[0].id);
                 this.setWorkState(WORK_TRANSPORTER_STORAGE);
                 return true;
             }
@@ -159,10 +214,13 @@ export const creepExtensionTransporter = function () {
         return false;
     }
 
-    // 执行WORK_TRANSPORTER_STORAGE
+    // 执行 WORK_TRANSPORTER_STORAGE
     Creep.prototype.doWorkTransporterStorage = function(){
         if (this.getEnergyState() == ENERGY_NEED){
-            this.obtainEnergy(); // 从target中获取
+            // 只从energy target中获取
+            this.obtainEnergy({
+                storage: false,
+            })
         }else{
             const target = this.room.storage;
             // 目标如果不存在（被拆除）或是目标已经满了

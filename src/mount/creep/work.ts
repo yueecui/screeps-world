@@ -2,6 +2,8 @@ import {
     ENERGY_NEED, ENERGY_ENOUGH,
     WORK_IDLE,
     CONTAINER_TYPE_CONTROLLER,
+    WORK_HARVEST,
+    WORK_GOTO,
 } from '@/constant';
 
 export const creepExtensionHarvester = function () {
@@ -9,28 +11,50 @@ export const creepExtensionHarvester = function () {
     // 采集能量
     // ------------------------------------------------------
 
-    // 执行 WORK_HARVEST
-    Creep.prototype.doWorkHarvest = function(){
+    // 前往采集点
+    Creep.prototype.errorCheckHarvest = function(){
         if (this.memory.node == undefined){
             this.say('没配置采集点');
-            return;
+            return true;
         }else if (this.room.memory.sources.length < this.memory.node + 1){
             this.say('没有足够的采集点');
-            return;
+            return true;
         }
-
-        const source_set = this.room.memory.sources[this.memory.node]
+        const source_set = this.room.memory.sources[this.memory.node];
         if (!source_set.c){
             this.say(`${this.memory.node}号没有存储容器`);
-            return;
+            return true;
         }
+        return false;
+    }
+
+    // 前往采集点
+    Creep.prototype.goToSourceNode = function(){
+        if (this.errorCheckHarvest()) return;
+
+        const source_set = this.room.memory.sources[this.memory.node];
+        const container = Game.getObjectById(source_set.c!)!;
+
+        if (this.pos.getRangeTo(container) > 0){
+            this.moveTo(container);
+        }else{
+            this.setWorkState(WORK_HARVEST);
+            this.doWorkHarvest();
+        }
+    }
+
+    // 执行 WORK_HARVEST
+    Creep.prototype.doWorkHarvest = function(){
+        if (this.errorCheckHarvest()) return;
+
+        const source_set = this.room.memory.sources[this.memory.node];
         const source_node = Game.getObjectById(source_set.s)!;
 
         if (this.pos.isNearTo(source_node)){
             this.harvest(source_node);
         }else{
-            const container = Game.getObjectById(source_set.c)!;
-            this.moveTo(container);
+            this.setWorkState(WORK_GOTO);
+            this.goToSourceNode();
         }
     }
 

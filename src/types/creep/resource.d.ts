@@ -7,8 +7,9 @@ interface Creep {
   updateEnergyStatus(): void;
   /**
    * 从房间的container或是storage里获取能量
+   * @returns boolean 能量目标是否存在
    */
-  obtainEnergy(opt?: obtainEnergyOpt): void;
+  obtainEnergy(opt?: obtainEnergyOpt): boolean;
   /**
    * 寻找最合适的能量存储
    */

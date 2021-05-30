@@ -4,6 +4,7 @@ import { roleBuilder } from '@/creeps/role.Builder';
 import { roleUpgrader } from '@/creeps/role.Upgrader';
 
 import {
+    ENERGY_NEED,
     WORK_TRANSPORTER_SPAWN, WORK_TRANSPORTER_TOWER, WORK_TRANSPORTER_STORAGE,
     TASK_WAITING, TASK_ACCEPTED,
 } from '@/constant';
@@ -73,6 +74,7 @@ export const creepExtensionBase = function () {
     }
 
     Creep.prototype.setEnergyState = function(state){
+        this.clearEnergyTarget();
         this.memory.e = state;
     }
 
@@ -96,6 +98,22 @@ export const creepExtensionBase = function () {
         this.memory.t = null;
     }
 
+    Creep.prototype.setEnergyTarget = function(id){
+        this.memory.et = id;
+    }
+
+    Creep.prototype.getEnergyTarget = function(){
+        return this.memory.et ? this.memory.et : null;
+    }
+
+    Creep.prototype.getEnergyTargetObject = function(){
+        return this.memory.et ? Game.getObjectById(this.memory.et) : null;
+    }
+
+    Creep.prototype.clearEnergyTarget = function(){
+        delete this.memory.et;
+    }
+
     Creep.prototype.unshiftTarget = function(){
         if (this.memory.queue && this.memory.t){
             this.memory.queue.unshift(this.memory.t)
@@ -115,14 +133,14 @@ export const creepExtensionBase = function () {
     // 根据任务队列，设定下一个目标
     Creep.prototype.setNextTarget = function(){
         // 如果已经有目标了，则直接继续
-        if (this.memory.t){
+        if (this.getTarget()){
             return true;
         }
         // 更新队列
         let result = this.acceptTaskSpawn();
         // 从队列里获取第一个目标，如果没有则完成事务
         if (result){
-            this.memory.t = _.head(this.memory.queue!);
+            this.setTarget(_.head(this.memory.queue!));
             this.memory.queue = _.drop(this.memory.queue!);
             return true;
         }else{

@@ -55,4 +55,8 @@ interface Room {
    * 获取到的将安排任务转存到storage中
    */
   getFullSourceContainers(): StructureContainer[];
+  /**
+   * 获取房间内已经要空的controller container
+   */
+  getEmptyControllerContainers(): StructureContainer[];
 }

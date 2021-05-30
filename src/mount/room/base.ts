@@ -79,7 +79,7 @@ export const roomExtensionBase = function () {
                 task_info.cName
                 && (
                         !(task_info.cName in Game.creeps)
-                    || !(Game.creeps[task_info.cName].inTaskQueue(id as Id<SpawnEnergyStoreStructure>))
+                    || !(Game.creeps[task_info.cName].inTaskQueue(id as Id<AnySpawnEnergyStoreStructure>))
                     )
                 ){
                 this.memory.taskSpawn[id] = {

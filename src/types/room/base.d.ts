@@ -1,4 +1,4 @@
-type SpawnEnergyStoreStructure = StructureExtension | StructureSpawn;
+type AnySpawnEnergyStoreStructure = StructureExtension | StructureSpawn;
 
 
 interface Room {

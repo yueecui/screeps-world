@@ -29,7 +29,7 @@ export const roomExtensionSpawn = function () {
         const found = this.find(FIND_MY_STRUCTURES, {filter: (find) => {
             return ((find.structureType == STRUCTURE_SPAWN|| find.structureType == STRUCTURE_EXTENSION)
                     && find.store.getFreeCapacity(RESOURCE_ENERGY) > 0);
-        }}) as SpawnEnergyStoreStructure[];
+        }}) as AnySpawnEnergyStoreStructure[];
 
         const newtaskSpawn = {} as Record<string, taskInfo>;
         found.forEach((find) => {
@@ -54,11 +54,11 @@ export const roomExtensionSpawn = function () {
 
     // 获得所有没进入孵化能量补充队列的建筑
     Room.prototype.getUnqueueTaskSpawn = function(){
-        const id_list: Id<SpawnEnergyStoreStructure>[] = [];
+        const id_list: Id<AnySpawnEnergyStoreStructure>[] = [];
         if (Object.keys(this.memory.taskSpawn).length > 0){
             _.each(this.memory.taskSpawn, (info, k) => {
                 if (info.stat == TASK_WAITING){
-                    id_list.push(k as Id<SpawnEnergyStoreStructure>);
+                    id_list.push(k as Id<AnySpawnEnergyStoreStructure>);
                 };
             });
         }

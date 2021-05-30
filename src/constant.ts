@@ -22,7 +22,10 @@ export const ENERGY_ENOUGH: ENERGY_ENOUGH = 1;
  * 当前Creep正在空闲，等待新的指令
  */
 export const WORK_IDLE: WORK_IDLE = 0;
-
+/**
+ * 当前Creep正在前往工作场所
+ */
+export const WORK_GOTO: WORK_GOTO = -1;
 // 运输类工作
 
 /**
@@ -33,6 +36,10 @@ export const WORK_TRANSPORTER_SPAWN: WORK_TRANSPORTER_SPAWN = 1;
  * 当前Creep正在担任运输者职责，补充塔的能量
  */
 export const WORK_TRANSPORTER_TOWER: WORK_TRANSPORTER_TOWER = 2;
+/**
+ * 当前Creep正在担任运输者职责，为控制器container补充能量
+ */
+export const WORK_TRANSPORTER_CONTROLLER: WORK_TRANSPORTER_CONTROLLER = 3;
 /**
  * 当前Creep正在担任运输者职责，将当前房间的container里多余的能量带到storage
  */

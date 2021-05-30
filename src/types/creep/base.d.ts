@@ -71,6 +71,22 @@ interface Creep {
    */
   clearTarget(): void;
   /**
+   * 设定当前缓存的能量目标object id
+   */
+  setEnergyTarget(id: Id<AnyStoreStructure>): void;
+  /**
+   * 获取当前缓存的能量目标object id
+   */
+  getEnergyTarget(): Id<AnyStoreStructure> | null;
+  /**
+   * 获取当前缓存的能量目标object
+   */
+  getEnergyTargetObject(): AnyStoreStructure | null;
+  /**
+   * 清除当前缓存的能量目标object ID
+   */
+  clearEnergyTarget(): void;
+  /**
    * 将当前缓存的目标塞回队列的第一个
    */
   unshiftTarget(): void;

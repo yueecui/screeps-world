@@ -24,6 +24,7 @@ const BODY_CONFIG: Record<string, BodyConfig> = {
               WORK, CARRY, MOVE, MOVE, MOVE],  // WORK*11 + CARRY*1 + MOVE*3 = 1300
   '升级者R4': [WORK, WORK, WORK, WORK, WORK, WORK, WORK, WORK, WORK, WORK,
               CARRY, CARRY, MOVE, MOVE, MOVE, MOVE],  // WORK*10 + CARRY*2 + MOVE*4 = 1300
+
 }
 
 // key值：型号名称，生成的creep会用型号+序号的形式自动取名
@@ -33,7 +34,7 @@ const BODY_CONFIG: Record<string, BodyConfig> = {
 // : Map<string, RoleConfig>
 const ACTIVE_ROLE_CONFIG = new Map([
   // 收集者
-  ['TR', { basename:'',body: BODY_CONFIG['CARRYER_R3'], amount: 1, aheadTime: 80, memory: {r:'运输', e: 0} }],   // W35N57 将各个节点额外的能量搬运到Storage
+  ['TR', { basename:'',body: BODY_CONFIG['CARRYER_R3'], amount: 2, aheadTime: 80, memory: {r:'运输', e: 0} }],   // W35N57 将各个节点额外的能量搬运到Storage
   ['GA-B', { body: BODY_CONFIG['采集者R4'], amount: 1, aheadTime: 80, memory: {r:'采集', node:1} }],  // W35N57 下方矿点采集
   ['GA-A', { body: BODY_CONFIG['采集者R4'], amount: 1, aheadTime: 80, memory: {r:'采集', node:0} }],  // W35N57 下方矿点采集
   // 建造者
