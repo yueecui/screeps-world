@@ -33,12 +33,22 @@ interface Creep {
      doWorkTransporterController(): void;
     /**
      * 检查房间的source container是否接近满了
-     * 如果有，设工作状态为 WORK_TRANSPORTER_STORAGE
+     * 如果有，设工作状态为 WORK_TRANSPORTER_STORAGE_ENERGY
      * @returns 是否成功变化工作状态
      */
-    checkWorkTransporterStorage(): boolean;
+    checkWorkTransporterStorage_Energy(): boolean;
     /**
-     * 执行 WORK_TRANSPORTER_STORAGE
+     * 执行 WORK_TRANSPORTER_STORAGE_ENERGY
      */
-    doWorkTransporterStorage(): void;
+    doWorkTransporterStorage_Energy(): void;
+    /**
+     * 检查房间的mineral container是否接近满了
+     * 如果有，设工作状态为 WORK_TRANSPORTER_STORAGE_MINERAL
+     * @returns 是否成功变化工作状态
+     */
+    checkWorkTransporterStorage_Mineral(): boolean;
+    /**
+     * 执行 WORK_TRANSPORTER_STORAGE_MINERAL
+     */
+    doWorkTransporterStorage_Mineral(): void;
 }

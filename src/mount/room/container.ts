@@ -1,4 +1,4 @@
-import { CONTAINER_TYPE_CONTROLLER, CONTAINER_TYPE_SOURCE, PLAN_PAY } from "@/constant";
+import { CONTAINER_TYPE_CONTROLLER, CONTAINER_TYPE_SOURCE, CONTAINER_TYPE_MINERAL, PLAN_PAY } from "@/constant";
 import { CONTROLLER_CONTAINER_EMPTY, SOURCE_CONTAINER_FULL } from "@/config"
 
 export const roomExtensionContainer = function () {
@@ -91,7 +91,7 @@ export const roomExtensionContainer = function () {
     // 添加一个source container时，判断是否在某个source边上
     Room.prototype.addSourceContainer = function(container){
         for (const status of this.memory.sources){
-            const source = Game.getObjectById(status.s)!;
+            const source = Game.getObjectById(status.s as Id<Source>)!;
             if (source.pos.getRangeTo(container) == 1){
                 status.c = container.id;
                 console.log(`container ${container.id} 成功绑定到 source ${source.id} 上`);
@@ -115,6 +115,18 @@ export const roomExtensionContainer = function () {
     Room.prototype.getFullSourceContainers = function(){
         let containers = _.map(this.memory.containers, (c) => {
             return c.type == CONTAINER_TYPE_SOURCE ? this.getStructureById(c.id) : null;
+        });
+
+        return _.filter(containers, (container) => {
+            if (container == null) { return false; }
+            return this.getStructureEnergyCapacity(container) >= SOURCE_CONTAINER_FULL; }
+        ) as StructureContainer[];
+    };
+
+    // 获得接近全满的mineral container
+    Room.prototype.getFullMineralContainers = function(){
+        let containers = _.map(this.memory.containers, (c) => {
+            return c.type == CONTAINER_TYPE_MINERAL ? this.getStructureById(c.id) : null;
         });
 
         return _.filter(containers, (container) => {

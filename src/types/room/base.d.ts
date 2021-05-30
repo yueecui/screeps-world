@@ -37,5 +37,5 @@ interface Room {
   /**
    * 初始化source数据
    */
-  initSources(): void;
+  initCollection(): void;
 }

@@ -18,7 +18,7 @@ export const roleHarvester: Harvester = {
             case WORK_REPAIR:
             case WORK_IDLE:
                 if (creep.getMode() == MODE_HARVEST_MINERAL){
-
+                    creep.setWorkState(WORK_GOTO);
                 }else{
                     creep.checkSourceNodeEnergy();
                 }
@@ -32,13 +32,20 @@ export const roleHarvester: Harvester = {
 
         switch(creep.getWorkState()){
             case WORK_GOTO:
-                creep.goToSourceNode();
+                if (creep.getMode() == MODE_HARVEST_MINERAL){
+                    creep.goToMineralNode();
+                }else{
+                    creep.goToSourceNode();
+                }
                 break;
             case WORK_HARVEST_ENERGY:
-                creep.doWorkHarvest();
+                creep.doWorkHarvestEnergy();
                 break;
-            case WORK_REPAIR:
+            case WORK_REPAIR:  // 只有挖能量的会有这个操作
                 creep.doWorkRepair_Harvester();
+                break;
+            case WORK_HARVEST_ENERGY:
+                creep.doWorkHarvestEnergy();
                 break;
             case WORK_IDLE:
                 break;

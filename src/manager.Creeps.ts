@@ -1,6 +1,6 @@
 import {
     ENERGY_NEED, ENERGY_ENOUGH,
-    WORK_IDLE, WORK_TRANSPORTER_SPAWN, WORK_TRANSPORTER_TOWER, WORK_TRANSPORTER_STORAGE
+    WORK_IDLE, WORK_TRANSPORTER_SPAWN, WORK_TRANSPORTER_TOWER, WORK_TRANSPORTER_STORAGE_ENERGY
 } from '@/constant';
 
 const BODY_CONFIG: Record<string, BodyPartConstant[]> = {
@@ -60,6 +60,19 @@ const getMaxBuilderBody = function(){
     return body
 }
 
+const getMinerBody = function(){
+    // 4 WORK + 1 MOVE
+    const group_number = Math.floor(Game.spawns['Spawn1'].room.energyCapacityAvailable / 450) ;
+    const body: BodyPartConstant[] = []
+    for (let i=0;i<group_number;i++){
+        body.push(WORK, WORK, WORK, WORK);
+    }
+    for (let i=0;i<group_number;i++){
+        body.push(MOVE);
+    }
+    return body
+}
+
 // key值：型号名称，生成的creep会用型号+序号的形式自动取名
 // body body组成数组
 // amount 至少维持的数量
@@ -74,13 +87,13 @@ const ACTIVE_ROLE_CONFIG: Map<string, RoleConfig> = new Map([
     // ROOM收集者
     ['GA-B', { body: BODY_CONFIG['采集者R4'], amount: 1, aheadTime: 80, memory: {r:'采集', mode:0, node:1} }],    // W35N57 下方矿点采集
     ['GA-A', { body: BODY_CONFIG['采集者R4'], amount: 1, aheadTime: 80, memory: {r:'采集', mode:0, node:0} }],    // W35N57 下方矿点采集
-    // ['GA1-M', { body: BODY_CONFIG['采集者R4'], amount: 1, aheadTime: 80, memory: {r:'采集', mode:1} }],    // W35N57 下方矿点采集
     // ROOM的建造者
     // ['BD-B', { body: getMaxBuilderBody(), amount: 1, memory: {r:'建造', mode:0, stay: [29, 27]} }],    // 建造优先
     ['BD-R', { body: getMaxBuilderBody(), amount: 1, memory: {r:'建造', mode:1, stay: [27, 30]} }],    // 修理优先
     // ROOM升级者
     ['UP-A', { body: BODY_CONFIG['升级者R4'], amount: 3, memory: {r:'升级'} }],
     // ROOM外建造者
+    ['GA1-M', { body: getMinerBody(), amount: 1, aheadTime: 80, memory: {r:'采集', mode:1} }],    // W35N57 下方矿点采集
     ['ENG', { body: [CLAIM, CLAIM, CLAIM, MOVE, MOVE, MOVE], amount: 1, memory: {r:'工兵', mode:1, flag: 'eng1'}}],
     ['BDO-R', { body: getMaxBuilderBody(), amount: 1, memory: {r:'建造', mode:1, flag: 'colony', stay: [22, 30]} }],    // 修理优先
 ]);
