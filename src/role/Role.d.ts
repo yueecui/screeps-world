@@ -47,7 +47,6 @@ interface Transporter extends CreepRole{
 }
 
 interface Builder extends CreepRole{
-
   findRepairTarget(creep: Creep): Structure|null;
   repairTarget(creep: Creep, target: Structure): void;
   findBuildTarget(creep: Creep): ConstructionSite|null;

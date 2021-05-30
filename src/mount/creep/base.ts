@@ -18,7 +18,7 @@ const TASK_QUEUE_MAX = 5;
 
 const roleMap: Record<ANY_ROLE_NAME, AnyRole> = {
     '回收': roleGoToRecycle,
-    '手动': roleGoToRecycle,
+    '手动': roleManual,
     '采集': roleHarvester,
     '运输': roleTransporter,
     '建造': roleBuilder,
