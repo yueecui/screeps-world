@@ -176,9 +176,16 @@ export const creepExtensionHarvester = function () {
                     storage: false,
                 });
             }
-            if (this.pos.x != 29 || this.pos.y != 20+this.getIndex()){
-                this.moveTo(29, 20+this.getIndex())
+            if (this.room.name == 'W35N57'){
+                if (this.pos.x != 29 || this.pos.y != 20+this.getIndex()){
+                    this.moveTo(29, 20+this.getIndex())
+                }
+            }else{
+                if (this.pos.x != 40 || this.pos.y != 16+this.getIndex()){
+                    this.moveTo(40, 16+this.getIndex())
+                }
             }
+
             switch(this.upgradeController(this.room.controller!)){
                 case ERR_NOT_ENOUGH_RESOURCES:
                     this.setEnergyState(ENERGY_NEED);

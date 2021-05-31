@@ -3,10 +3,7 @@ import {getMaxCarrierBody, getMaxBuilderBody, getMinerBody, BODY_CONFIG} from '.
 
 const getNewEngBody = function(){
     const body: BodyPartConstant[] = []
-    for (let i=0;i<13;i++){
-        body.push(TOUGH);
-    }
-    for (let i=0;i<7;i++){
+    for (let i=0;i<2;i++){
         body.push(MOVE);
     }
     body.push(CLAIM);
@@ -27,6 +24,26 @@ const getOutCarrierBody = function(){
     return body
 }
 
+const getNewBuilderBody = function(){
+    // 2300
+    // 10 WORK = 1000
+    // 9 CARRY = 450
+    // 17 MOVE = 850
+
+    const body: BodyPartConstant[] = []
+    for (let i=0;i<10;i++){
+        body.push(WORK);
+    }
+    for (let i=0;i<9;i++){
+        body.push(CARRY);
+    }
+    for (let i=0;i<17;i++){
+        body.push(MOVE);
+    }
+    return body
+}
+
+
 // key值：型号名称，生成的creep会用型号+序号的形式自动取名
 // body body组成数组
 // amount 至少维持的数量
@@ -34,13 +51,14 @@ const getOutCarrierBody = function(){
 // : Map<string, RoleConfig>
 export const ACTIVE_ROLE_CONFIG: Map<string, RoleConfig> = new Map([
     // ['Guu', { body: BODY_CONFIG['侵略者R5'], amount: 1, memory: {r:'攻击'} }],
+    ['N-BD', { body: getNewBuilderBody(), aheadTime: 500, amount: 2, memory: {r:'手动', mode:0}}],
     // ROOM搬运者
     ['TR-S', { body: getMaxCarrierBody(), amount: 1, aheadTime: 160, memory: {r:'运输', mode: 0, stay: [34, 35]} }],
     ['TR-U', { body: getMaxCarrierBody(), amount: 1, aheadTime: 160, memory: {r:'运输', mode: 1, stay: [28, 18]} }],
     // ROOM收集者
     ['GA-B', { body: BODY_CONFIG['采集者R4'], amount: 1, aheadTime: 80, memory: {r:'采集', mode:0, node:1} }],
     ['GA-A', { body: BODY_CONFIG['采集者R4'], amount: 1, aheadTime: 80, memory: {r:'采集', mode:0, node:0} }],
-    ['GA1-M', { body: getMinerBody(), amount: 1, aheadTime: 80, memory: {r:'采集', mode:1} }],
+    // ['GA1-M', { body: getMinerBody(), amount: 1, aheadTime: 80, memory: {r:'采集', mode:1} }],
     // 中心操作设备
     ['R1-MM', { body: [CARRY, CARRY, CARRY, CARRY, CARRY, CARRY, CARRY, CARRY, MOVE], amount: 1, aheadTime: 80, memory: {r:'主脑'} }],
 
@@ -59,5 +77,5 @@ export const ACTIVE_ROLE_CONFIG: Map<string, RoleConfig> = new Map([
 
     // 开分矿用c
     // ['N-ENG', { body: getNewEngBody(), amount: 1, memory: {r:'手动', mode:1}}],
-    // ['N-BD', { body: getMaxBuilderBody(), amount: 1, memory: {r:'手动', mode:0}}],
+
 ]);

@@ -4,10 +4,12 @@ import {
 } from '@/constant';
 
 
-import { ACTIVE_ROLE_CONFIG } from './W35N57'
+import { ACTIVE_ROLE_CONFIG } from './R1_W35N57';
+import { R2_CREEP_CONFIG } from './R2_W37N55';
 
 const ROOM_SPAWN_CONFIG: Record<string, Map<string, RoleConfig>>= {
     'W35N57': ACTIVE_ROLE_CONFIG,  // 第一个房间
+    'W37N55': R2_CREEP_CONFIG,  // 第二个房间
 }
 
 
@@ -91,7 +93,7 @@ export const ManagerCreeps: Record<string, any> = {
             memory.e = ENERGY_NEED;
         }
         memory.w = WORK_IDLE;
-        const result = spawn.spawnCreep(config.body, config.basename+index, {memory: memory, directions: [RIGHT]}); //, TOP_RIGHT, BOTTOM_RIGHT, TOP, TOP_LEFT
+        const result = spawn.spawnCreep(config.body, config.basename+index, {memory: memory}); //, directions: [RIGHT], TOP_RIGHT, BOTTOM_RIGHT, TOP, TOP_LEFT
         if (result == OK){
             spawn.room.memory.lastSpawnTime = Game.time;
         }
