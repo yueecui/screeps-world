@@ -36,16 +36,6 @@ export const roomExtensionContainer = function () {
         }
     }
 
-    // 周期性检查container的状态
-    Room.prototype.checkContainerStatus = function(){
-        for (const status of this.memory.containers){
-            const container = this.getStructureById(status.id);
-            if (!container){
-                this.removeContainer(status.id);
-            }
-        }
-    }
-
     // 预定一个container的能量变化
     Room.prototype.bookingContainer = function(creep_name, container_id, type, amount){
         if (amount == 0){

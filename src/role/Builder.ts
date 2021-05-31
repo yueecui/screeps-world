@@ -43,10 +43,14 @@ export const roleBuilder: Builder = {
                 creep.moveTo(flag);
                 return;
             }
-            const look = flag.pos.lookFor(LOOK_STRUCTURES);
-            if (look.length > 0){
-                if (creep.dismantle(look[0]) == ERR_NOT_IN_RANGE){
-                    creep.moveTo(look[0]);
+            // 寻找一个可以修理的目标
+            let r_targets = flag.pos.findInRange(FIND_STRUCTURES, 3, { filter: function(s){
+                return (s.structureType == STRUCTURE_ROAD);
+            }})
+
+            if (r_targets.length > 0){
+                if (creep.dismantle(r_targets[0]) == ERR_NOT_IN_RANGE){
+                    creep.moveTo(r_targets[0]);
                 }
                 return;
             }
@@ -65,48 +69,73 @@ export const roleBuilder: Builder = {
             creep.updateEnergyStatus();
 
             if (creep.getEnergyState() == ENERGY_NEED){
-                if (creep.room.name != 'W35N57'){
-                    creep.moveTo(Game.rooms['W35N57']!.storage!);
-                }else{
-                    creep.clearTarget();
-                    creep.obtainEnergy({
-                        storage: true,
-                    });
+                if (creep.room.name != 'W34N57'){
+                    creep.moveTo(flag);
+                    return;
                 }
+                const source = Game.getObjectById('5bbcab199099fc012e632d04' as Id<Source>);
+                if (creep.harvest(source!) == ERR_NOT_IN_RANGE){
+                    creep.moveTo(source!);
+                }
+
+                // if (creep.room.name != 'W34N57'){
+                //     creep.moveTo(Game.rooms['W35N57']!.storage!);
+                // }else{
+                //     creep.clearTarget();
+                //     creep.obtainEnergy({
+                //         storage: true,
+                //     });
+                // }
 
             }else{
                 if (creep.room.name != 'W34N57'){
                     creep.moveTo(flag);
                     return;
                 }
+                // 寻找一个可以建造的目标
+                let b_targets = creep.room.find(FIND_CONSTRUCTION_SITES);
+                let b_target;
+                if (b_targets[0]){
+                    creep.memory.t = b_targets[0].id;
+                    b_target = b_targets[0];
+                }else{
+                    creep.memory.t = null;
+                    b_target = null;
+                }
+                if (b_target){
+                    if (creep.build(b_target) == ERR_NOT_IN_RANGE){
+                        creep.moveTo(b_target);
+                    }
+                }
+
                 // 寻找一个可以修理的目标
-                let targets = flag.pos.findInRange(FIND_STRUCTURES, 5, { filter: function(s){
+                let r_targets = flag.pos.findInRange(FIND_STRUCTURES, 3, { filter: function(s){
                     return (s.structureType == STRUCTURE_ROAD) && (s.hits < s.hitsMax);
                 }})
-                let target;
+                let r_target;
                 // const last_target = targets.filter((s) => { return s.id == creep.memory.t; });
                 // if (last_target[0]){
                 //     target = last_target[0];
                 // }else{
-                    targets = targets.filter((s) => {
+                    r_targets = r_targets.filter((s) => {
                         return s.hits<s.hitsMax}
                     )
-                    targets.sort((a, b) => {
+                    r_targets.sort((a, b) => {
                         return (a.hits/a.hitsMax - b.hits/b.hitsMax)
                         // return creep.pos.getRangeTo(a) - creep.pos.getRangeTo(b);
                     })
 
-                    if (targets[0]){
-                        creep.memory.t = targets[0].id;
-                        target = targets[0];
+                    if (r_targets[0]){
+                        creep.memory.t = r_targets[0].id;
+                        r_target = r_targets[0];
                     }else{
                         creep.memory.t = null;
-                        target = null;
+                        r_target = null;
                     }
                 // }
-                if (target){
-                    if (creep.repair(target) == ERR_NOT_IN_RANGE){
-                        creep.moveTo(target);
+                if (r_target){
+                    if (creep.repair(r_target) == ERR_NOT_IN_RANGE){
+                        creep.moveTo(r_target);
                     }
                 }
 

@@ -30,7 +30,7 @@ export const roleEngineer: Engineer = {
             creep.moveTo(flag, {visualizePathStyle:{}});
         }else{
             if (creep.pos.isNearTo(creep.room.controller!)){
-                if (creep.room.controller!.my){
+                if (!creep.room.controller!.my){
                     creep.reserveController(creep.room.controller!);
                 }else{
                     if (creep.attackController(creep.room.controller!) == ERR_TIRED){

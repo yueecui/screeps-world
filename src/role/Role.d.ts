@@ -14,7 +14,8 @@ type ANY_ROLE_NAME =
     | ROLE_BUILDER
     | ROLE_UPGRADER
     | ROLE_ATTACKER
-    | ROLE_ENGINEER;
+    | ROLE_ENGINEER
+    | ROLE_MASTERMIND;
 
 type ROLE_GOTO_RECYCLE = '回收';
 type ROLE_MANUAL = '手动';
@@ -24,6 +25,7 @@ type ROLE_BUILDER = '建造';
 type ROLE_UPGRADER = '升级';
 type ROLE_ATTACKER = '攻击';
 type ROLE_ENGINEER = '工兵';
+type ROLE_MASTERMIND = '主脑';
 
 
 interface CreepRole {
@@ -41,9 +43,11 @@ type AnyRole =
     | Engineer;
 
 interface Harvester extends CreepRole{
+  otherRoom(creep: Creep): void;
 }
 
 interface Transporter extends CreepRole{
+  otherRoom(creep: Creep): void;
 }
 
 interface Builder extends CreepRole{

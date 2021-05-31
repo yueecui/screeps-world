@@ -1,17 +1,8 @@
 import { TASK_WAITING } from "@/constant";
+import { all } from "lodash";
 
 
 export const roomExtensionBase = function () {
-    // 缓存特定建筑的Id
-    Room.prototype.cacheMyStructuresId = function(){
-        const found = this.find(FIND_MY_STRUCTURES);
-        // 缓存下来，本tick当单id查询，就不必再请求getObjectById了
-        _.each(found, (structure)=>{
-            Game.cache.structure[structure.id] = structure;
-        })
-        this.memory.towers = _.map(_.filter(found, {structureType: STRUCTURE_TOWER}) as StructureTower[], 'id');
-    };
-
     // 从tick cache获取建筑物信息，如果没有则请求→缓存→返回
     Room.prototype.getStructureById = function<T extends AnyStructure>(id: Id<T>): T|null{
         if (!(id in Game.cache.structure)){
@@ -53,8 +44,7 @@ export const roomExtensionBase = function () {
         if (this.memory.flagPurge || Game.time % 20 == 0){
             // 强制刷新孵化能量任务队列
             this.memory.lastSpawnTime = 1
-            this.cacheMyStructuresId();   // 重新缓存特定的自己的建筑（例如塔）
-            this.checkContainerStatus();  // 检查container是否存在
+            this.cacheStructuresStatus();   // 重新缓存特定建筑信息（例如塔）
             this.errorCheck();        // 检查各个任务队列是否存在错误
         }
 
@@ -112,7 +102,7 @@ export const roomExtensionBase = function () {
             this.memory.taskSpawn = {}
         }
         if (this.memory.towers == undefined){
-            this.cacheMyStructuresId();
+            this.cacheStructuresStatus();
         }
         if (this.memory.taskTowers == undefined){
             this.memory.taskTowers = {};
@@ -152,4 +142,40 @@ export const roomExtensionBase = function () {
             }
         }
     }
+
+     // 缓存特定建筑的Id
+     Room.prototype.cacheStructuresStatus = function(){
+        const all_structures = this.find(FIND_STRUCTURES);
+        // 缓存下来，本tick当单id查询，就不必再请求getObjectById了
+        _.each(all_structures, (structure)=>{
+            Game.cache.structure[structure.id] = structure;
+        })
+
+        // 所有的塔
+        this.memory.towers = _.map(_.filter(all_structures, {structureType: STRUCTURE_TOWER}) as StructureTower[], 'id');
+
+        // 所有的LINK
+        this.memory.links = [];
+        const all_links = _.filter(all_structures, {structureType: STRUCTURE_LINK}) as StructureLink[];
+        if (this.storage){
+            const near_to_storage_link = _.filter(all_links, (link) => { return this.storage!.pos.getRangeTo(link) <= 2; });
+            if (near_to_storage_link.length > 0){
+                this.memory.links.push(near_to_storage_link[0].id);
+                _.remove(all_links, { id: near_to_storage_link[0].id });
+            }
+        }
+        all_links.sort((a, b) => {
+            return a.pos.y  == b.pos.y ? a.pos.x - b.pos.x : a.pos.y - b.pos.y;
+        })
+        this.memory.links.push(...all_links.map((link) => {return link.id}));
+
+        // container检查
+        // TODO 需重新写
+        for (const status of this.memory.containers){
+            const container = this.getStructureById(status.id);
+            if (!container){
+                this.removeContainer(status.id);
+            }
+        }
+    };
 }

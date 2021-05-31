@@ -58,6 +58,8 @@ export const BODY_CONFIG: Record<string, BodyPartConstant[]> = {
     // RCL 4可用
     '采集者R4': [WORK, WORK, WORK, WORK, WORK, WORK, WORK, WORK, WORK, WORK,
                             WORK, CARRY, MOVE, MOVE, MOVE],    // WORK*11 + CARRY*1 + MOVE*3 = 1300
+    '采集者R4+': [WORK, WORK, WORK, WORK, WORK, WORK, WORK, WORK, WORK, WORK,
+                CARRY, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE],    // WORK*11 + CARRY*1 + MOVE*6 = 1450
     '升级者R4': [WORK, WORK, WORK, WORK, WORK, WORK, WORK, WORK, WORK, WORK,
                             CARRY, CARRY, MOVE, MOVE, MOVE, MOVE],    // WORK*10 + CARRY*2 + MOVE*4 = 1300
     '侵略者R5': [ATTACK, ATTACK, ATTACK, ATTACK, ATTACK, ATTACK, ATTACK, ATTACK, ATTACK, ATTACK,

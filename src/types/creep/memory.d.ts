@@ -12,6 +12,10 @@ interface CreepMemory {
    */
   w: WORK_STATUS;
   /**
+   * Creep工作的目标room
+   */
+  room: string;
+  /**
    * Creep当前的工作目标队列
    */
   queue: Id<any>[] | null;

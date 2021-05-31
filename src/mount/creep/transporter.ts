@@ -249,7 +249,12 @@ export const creepExtensionTransporter = function () {
 
     // 检查是否需要设置工作状态为搬运孵化能量
     Creep.prototype.checkWorkTransporterStorage_Mineral = function(){
-        if (this.getWorkState() != WORK_TRANSPORTER_STORAGE_MINERAL && this.room.storage){
+        if (this.ticksToLive && this.ticksToLive < 100){
+            return false;
+        }
+        if (this.getWorkState() == WORK_TRANSPORTER_STORAGE_MINERAL){
+            return true;
+        }else if (this.room.storage) {
             const full_containers = this.room.getFullMineralContainers();
             if (full_containers.length > 0){
                 // 设定工作状态

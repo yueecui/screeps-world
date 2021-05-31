@@ -5,8 +5,8 @@ import { MODE_NONE } from "@/constant";
  */
 export const roleManual: CreepRole = {
     run: function(creep) {
-        this.updateStatus(creep);
-        // this.execute(creep);
+        // this.updateStatus(creep);
+        this.execute(creep);
 	},
 
     // 判断工作模式
@@ -24,16 +24,16 @@ export const roleManual: CreepRole = {
 
         //     }
         // }
-        if (creep.name == 'TR-S1'){
-            creep.moveTo(15, 15);
-        }else{
-            for (const name in creep.store){
-                if (creep.transfer(creep.room.storage!, name as ResourceConstant) == ERR_NOT_IN_RANGE){
-                    creep.moveTo(creep.room.storage!);
-                    break;
-                };
-            }
-        }
+        // if (creep.name == 'TR-S1'){
+        //     creep.moveTo(15, 15);
+        // }else{
+        //     for (const name in creep.store){
+        //         if (creep.transfer(creep.room.storage!, name as ResourceConstant) == ERR_NOT_IN_RANGE){
+        //             creep.moveTo(creep.room.storage!);
+        //             break;
+        //         };
+        //     }
+        // }
 
 
     },

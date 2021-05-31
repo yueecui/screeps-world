@@ -15,10 +15,6 @@ interface Room {
   */
  removeContainer(id: Id<StructureContainer>): void;
  /**
-  * 周期性检查container，移除不存在的
-  */
- checkContainerStatus(): void;
- /**
   * 预定要变化container的energy
   *
   * @param creep_iname 预定使用的creep name

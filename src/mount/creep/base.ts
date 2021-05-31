@@ -6,6 +6,7 @@ import { roleAttacker } from '@/role/Attacker';
 import { roleEngineer } from '@/role/Engineer';
 import { roleGoToRecycle } from '@/role/GoToRecycle';
 import { roleManual } from '@/role/Manual';
+import { roleMastermind } from '@/role/Mastermind';
 
 import {
     ENERGY_NEED,
@@ -19,6 +20,7 @@ const TASK_QUEUE_MAX = 5;
 const roleMap: Record<ANY_ROLE_NAME, AnyRole> = {
     '回收': roleGoToRecycle,
     '手动': roleManual,
+    '主脑': roleMastermind,
     '采集': roleHarvester,
     '运输': roleTransporter,
     '建造': roleBuilder,

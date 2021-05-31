@@ -26,7 +26,11 @@ module.exports.loop = () => {
     // 检查所有自己的房间
     for(const name in Game.rooms) {
         const room = Game.rooms[name];
-        if (room.controller && room.controller.my){
+        if (room.controller
+            && (room.controller.my
+                || (room.controller.reservation && room.controller.reservation.username == 'Yuee')
+               )
+           ){
             room.tickCheck();
         }
     }
@@ -53,6 +57,16 @@ module.exports.loop = () => {
             if(closestHostile) {
                 tower.attack(closestHostile);
             }
+        }
+    }
+
+    // 临时运转LINK
+    const room = Game.rooms['W35N57'];
+    const mm_link = room.getStructureById(room.memory.links[0])!;
+    for (let i=1;i<room.memory.links.length;i++){
+        const link = room.getStructureById(room.memory.links[i])!;
+        if (link.store[RESOURCE_ENERGY] > 0){
+            link.transferEnergy(mm_link);
         }
     }
 };
