@@ -51,7 +51,7 @@ export const BODY_CONFIG: Record<string, BodyPartConstant[]> = {
     'BUILDER_R2': [WORK, WORK, CARRY, CARRY, CARRY, CARRY, MOVE, MOVE, MOVE], // WORK*2 + CARRY*4 + MOVE*3 = 550，道路上1tick，平原上2tick    用于建造建筑物
 
     '采集者R2': [WORK, WORK, WORK, WORK, WORK, MOVE],    // WORK*5 + MOVE*1 = 550 用于挖资源
-    '运输者R2': [CARRY, CARRY, CARRY, CARRY, CARRY, CARRY, MOVE, MOVE, MOVE], // CARRY*6 + MOVE*3 = 450，储量300    用于搬运资源
+    '运输者R2': [CARRY, CARRY, CARRY, CARRY, CARRY, CARRY, CARRY, MOVE, MOVE, MOVE, MOVE], // CARRY*7 + MOVE*4 = 550，储量300    用于搬运资源
     '建造者R2': [WORK, WORK, CARRY, CARRY, CARRY, CARRY, MOVE, MOVE, MOVE], // WORK*2 + CARRY*4 + MOVE*3 = 550，道路上1tick，平原上2tick    用于建造建筑物
 
     // RCL 3可用

@@ -29,10 +29,11 @@ export const roleTransporter: Transporter = {
         // 会中断其他工作优先进行本工作
         if (creep.getMode() == MODE_CONTROLLER){
             if (creep.checkWorkTransporterStorage_Mineral()) return;
+            if (creep.checkWorkTransporterController()) return;
 
             // 空闲下才会执行的任务
             if (creep.getWorkState() == WORK_IDLE){
-                if (creep.checkWorkTransporterController()) return;
+                // if (creep.checkWorkTransporterController()) return;
                 if (creep.checkWorkTransporterSpawn()) return;
                 if (creep.checkWorkTransporterTower()) return;
                 // if (creep.checkWorkTransporterStorage_Mineral()) return;

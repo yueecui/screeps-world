@@ -181,9 +181,16 @@ export const creepExtensionHarvester = function () {
                     this.moveTo(29, 20+this.getIndex())
                 }
             }else{
-                if (this.pos.x != 42 || this.pos.y != 14+this.getIndex()){
-                    this.moveTo(42, 14+this.getIndex())
+                if (this.getIndex() >= 4){
+                    if (this.pos.x != 41 || this.pos.y != 14+this.getIndex()){
+                        this.moveTo(41, 4+this.getIndex())
+                    }
+                }else{
+                    if (this.pos.x != 42 || this.pos.y != 14+this.getIndex()){
+                        this.moveTo(42, 14+this.getIndex())
+                    }
                 }
+
             }
 
             switch(this.upgradeController(this.room.controller!)){

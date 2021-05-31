@@ -67,11 +67,11 @@ export const creepExtensionResource = function () {
         let structures: Array<StructureContainer | StructureStorage> = [];
         if (opt.container){
             _.each(
-                _.filter(this.room.memory.containers, (config) => {
-                    return opt!.container!.indexOf(config.type) > -1;
+                _.filter(this.room.memory.containers, (info) => {
+                    return opt!.container!.indexOf(info.type) > -1;
                 }),
-                (config) => {
-                    const container = this.room.getStructureById(config.id);
+                (info) => {
+                    const container = this.room.getStructureById(info.id);
                     if (container && container.store[RESOURCE_ENERGY] > 0){
                         structures.push(container);
                     }
@@ -90,17 +90,22 @@ export const creepExtensionResource = function () {
         });
         if (structures.length > 0){
             structures.sort((a, b) => {
-                if (opt.priority == PRIORITY_CONTAINER){
-                    if (a.structureType == STRUCTURE_CONTAINER){
-                        return -1;
-                    }else if (b.structureType == STRUCTURE_CONTAINER){
-                        return 1;
-                    }
-                }else if(opt.priority == PRIORITY_STORAGE){
-                    if (a.structureType == STRUCTURE_STORAGE){
-                        return -1;
-                    }else if (b.structureType == STRUCTURE_STORAGE){
-                        return 1;
+                if (a.structureType == b.structureType){
+                    return this.pos.getRangeTo(a) - this.pos.getRangeTo(b);
+                }else{
+                    if (opt.priority == PRIORITY_CONTAINER){
+
+                        if (a.structureType == STRUCTURE_CONTAINER){
+                            return -1;
+                        }else if (b.structureType == STRUCTURE_CONTAINER){
+                            return 1;
+                        }
+                    }else if(opt.priority == PRIORITY_STORAGE){
+                        if (a.structureType == STRUCTURE_STORAGE){
+                            return -1;
+                        }else if (b.structureType == STRUCTURE_STORAGE){
+                            return 1;
+                        }
                     }
                 }
                 return this.pos.getRangeTo(a) - this.pos.getRangeTo(b);
