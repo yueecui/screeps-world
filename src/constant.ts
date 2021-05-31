@@ -81,7 +81,6 @@ export const TASK_WAITING: TASK_WAITING = 0;
  */
 export const TASK_ACCEPTED: TASK_ACCEPTED = 1;
 
-<<<<<<< HEAD
 /**
  * 能量计划类型：预计收入
  */
@@ -146,5 +145,3 @@ export const MODE_REPAIRER: MODE_REPAIRER = 1;
 export const PRIORITY_NONE: PRIORITY_NONE = 0;
 export const PRIORITY_CONTAINER: PRIORITY_CONTAINER = 1;
 export const PRIORITY_STORAGE: PRIORITY_STORAGE = 2;
-=======
->>>>>>> room自动更新一部分状态
