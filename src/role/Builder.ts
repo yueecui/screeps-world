@@ -8,7 +8,7 @@
 import {
     ENERGY_NEED,
     WORK_IDLE, WORK_BUILD, WORK_REPAIR,
-    MODE_BUILDER, MODE_REPAIRER } from "@/constant";
+    MODE_BUILDER, MODE_REPAIRER, CONTAINER_TYPE_SOURCE } from "@/constant";
 
 const REPAIR_PERCENT = 0.7;  // 耐久度低到什么程度开始修理
 
@@ -149,9 +149,15 @@ export const roleBuilder: Builder = {
 
         if (creep.getEnergyState() == ENERGY_NEED){
             creep.clearTarget();
-            creep.obtainEnergy({
-                storage: true,
-            });
+            if (creep.room.name == 'W37N55'){
+                creep.obtainEnergy({
+                    container: [CONTAINER_TYPE_SOURCE],
+                });
+            }else{
+                creep.obtainEnergy({
+                    storage: true,
+                });
+            }
         }else{
             if (creep.store[RESOURCE_ENERGY] == 0){
                 creep.clearTarget();

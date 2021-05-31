@@ -1,4 +1,4 @@
-import { ENERGY_NEED, MODE_NONE } from "@/constant";
+import { CONTAINER_TYPE_SOURCE, ENERGY_NEED, MODE_NONE } from "@/constant";
 
 /**
  * 本模式主要是用来处理一些临时操作
@@ -61,41 +61,46 @@ export const roleManual: CreepRole = {
                 return;
             }
 
+            if (Game.flags['go'+creep.memory.node]){
+                if (creep.pos.getRangeTo(Game.flags['go'+creep.memory.node]) > 0){
+                    creep.moveTo(Game.flags['go'+creep.memory.node], {visualizePathStyle:{}});
+                }else{
+                    creep.memory.node += 1;
+                }
+            }
+
             creep.updateEnergyStatus();
             creep.recycleNearby();
             if (creep.getEnergyState() == ENERGY_NEED){
-                let source;
-                if (creep.getIndex() == 1){
-                    source = Game.getObjectById('5bbcaaed9099fc012e632727' as Id<Source>)!;
-                }else{
-                    source = Game.getObjectById('5bbcaaed9099fc012e632728' as Id<Source>)!;
-                }
-                if (creep.harvest(source) == ERR_NOT_IN_RANGE){
-                    creep.moveTo(source);
-                }
+                creep.obtainEnergy({
+                    container: [CONTAINER_TYPE_SOURCE],
+                });
+
+                // let source;
+                // if (creep.getIndex() == 1){
+                //     source = Game.getObjectById('5bbcaaed9099fc012e632727' as Id<Source>)!;
+                // }else{
+                //     source = Game.getObjectById('5bbcaaed9099fc012e632728' as Id<Source>)!;
+                // }
+                // if (creep.harvest(source) == ERR_NOT_IN_RANGE){
+                //     creep.moveTo(source);
+                // }
 
             }else{
                 // if (creep.getIndex() == 3){
-                //     const controller = Game.getObjectById('5bbcaaed9099fc012e632726' as Id<StructureController>)!;
-                //     if (creep.upgradeController(controller) == ERR_NOT_IN_RANGE){
-                //         creep.moveTo(controller);
-                //     }
-                //     return;
+                    const controller = Game.getObjectById('5bbcaaed9099fc012e632726' as Id<StructureController>)!;
+                    if (creep.upgradeController(controller) == ERR_NOT_IN_RANGE){
+                        creep.moveTo(controller);
+                    }
+                    return;
                 // }
-                let site;
-                if (creep.getIndex() == 1){
-                    site = Game.getObjectById('60b4af1ffc7919977a027d94' as Id<ConstructionSite>)!;
-                    if (creep.build(site) == ERR_NOT_IN_RANGE){
-                        creep.moveTo(site);
-                    }
-                }else{
-                    const targets = creep.room.find(FIND_CONSTRUCTION_SITES);
-                    if (targets[0]){
-                        if (creep.build(targets[0]) == ERR_NOT_IN_RANGE){
-                            creep.moveTo(targets[0]);
-                        }
-                    }
-                }
+
+                // const targets = creep.room.find(FIND_CONSTRUCTION_SITES);
+                // if (targets[0]){
+                //     if (creep.build(targets[0]) == ERR_NOT_IN_RANGE){
+                //         creep.moveTo(targets[0]);
+                //     }
+                // }
 
 
 

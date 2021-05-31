@@ -51,7 +51,7 @@ const getNewBuilderBody = function(){
 // : Map<string, RoleConfig>
 export const ACTIVE_ROLE_CONFIG: Map<string, RoleConfig> = new Map([
     // ['Guu', { body: BODY_CONFIG['侵略者R5'], amount: 1, memory: {r:'攻击'} }],
-    ['N-BD', { body: getNewBuilderBody(), aheadTime: 500, amount: 2, memory: {r:'手动', mode:0}}],
+
     // ROOM搬运者
     ['TR-S', { body: getMaxCarrierBody(), amount: 1, aheadTime: 160, memory: {r:'运输', mode: 0, stay: [34, 35]} }],
     ['TR-U', { body: getMaxCarrierBody(), amount: 1, aheadTime: 160, memory: {r:'运输', mode: 1, stay: [28, 18]} }],
@@ -77,5 +77,6 @@ export const ACTIVE_ROLE_CONFIG: Map<string, RoleConfig> = new Map([
 
     // 开分矿用c
     // ['N-ENG', { body: getNewEngBody(), amount: 1, memory: {r:'手动', mode:1}}],
+    // ['N-BD', { body: getNewBuilderBody(), aheadTime: 500, amount: 2, memory: {r:'手动', mode:0}}],
 
 ]);
