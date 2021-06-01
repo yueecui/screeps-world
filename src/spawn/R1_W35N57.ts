@@ -58,8 +58,6 @@ export const ACTIVE_ROLE_CONFIG: Map<string, RoleConfig> = new Map([
     ['GA-B', { body: BODY_CONFIG['采集者R4'], amount: 1, aheadTime: 80, memory: {r:'采集', mode:0, node:1} }],
     ['GA-A', { body: BODY_CONFIG['采集者R4'], amount: 1, aheadTime: 80, memory: {r:'采集', mode:0, node:0} }],
 
-    ['R1-BD-B', { body: getMaxBuilderBody(), amount: 1, memory: {r:'建造', mode:0, stay: [29, 27]} }],    // 建造优先
-    ['R1-BD-R', { body: getMaxBuilderBody(), amount: 1, memory: {r:'建造', mode:1, stay: [27, 30]} }],    // 修理优先
     // ['GA1-M', { body: getMinerBody(), amount: 1, aheadTime: 80, memory: {r:'采集', mode:1} }],
     // 中心操作设备
     ['R1-MM', { body: [CARRY, CARRY, CARRY, CARRY, CARRY, CARRY, CARRY, CARRY, MOVE], amount: 1, aheadTime: 80, memory: {r:'主脑'} }],
@@ -71,11 +69,13 @@ export const ACTIVE_ROLE_CONFIG: Map<string, RoleConfig> = new Map([
     ['TRO-E', { body: getOutCarrierBody(), amount: 1, aheadTime: 80, memory: {r:'运输', room:'W34N57', mode:2 }}],
     // ['BDO-R', { body: getMaxBuilderBody(), amount: 1, memory: {r:'建造', mode:1, flag: 'colony', stay: [22, 30]} }],    // 修理优先
 
+    // ['R1-BD-B', { body: getMaxBuilderBody(), amount: 1, memory: {r:'建造', mode:0, stay: [29, 27]} }],    // 建造优先
+    ['R1-BD-R', { body: getMaxBuilderBody(), amount: 1, memory: {r:'建造', mode:1, stay: [27, 30]} }],    // 修理优先
     // ROOM的建造者
     // ['BD-B', { body: getMaxBuilderBody(), amount: 1, memory: {r:'建造', mode:0, stay: [29, 27]} }],    // 建造优先
     // ['BD-R', { body: getMaxBuilderBody(), amount: 1, memory: {r:'建造', mode:1, stay: [27, 30]} }],    // 修理优先
     // ROOM升级者
-    // ['UP-A', { body: BODY_CONFIG['升级者R4'], amount: 2, memory: {r:'升级'} }],
+    ['UP-A', { body: BODY_CONFIG['升级者R4'], amount: 2, memory: {r:'升级'} }],
 
     // 开分矿用c
     // ['N-ENG', { body: getNewEngBody(), amount: 1, memory: {r:'手动', mode:1}}],
