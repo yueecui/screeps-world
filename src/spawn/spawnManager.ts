@@ -67,29 +67,29 @@ export const SpawnManager = {
 
             this.verifyCreeps(config, lived_creeps);
 
-            if (base_name == 'ENG'){
-                if (Game.flags['eng1'].room){
-                    const controller = Game.flags['eng1'].room!.controller!
-                    if (!controller.my && controller.upgradeBlocked && controller.upgradeBlocked > 100){
-                        continue;
-                    }
-                }else{
-                    continue;
-                }
-            }
-            const role_all = all_creeps[base_name] || []
-            const role_valid = valid_creeps[base_name] || []
+            // if (base_name == 'ENG'){
+            //     if (Game.flags['eng1'].room){
+            //         const controller = Game.flags['eng1'].room!.controller!
+            //         if (!controller.my && controller.upgradeBlocked && controller.upgradeBlocked > 100){
+            //             continue;
+            //         }
+            //     }else{
+            //         continue;
+            //     }
+            // }
+            // const role_all = all_creeps[base_name] || []
+            // const role_valid = valid_creeps[base_name] || []
 
-            const count = role_valid.length || 0;
-            if (count >= config.amount){
-                continue;
-            }
-            const max = config.aheadTime ? config.amount + 1 : config.amount
-            for (let index=1;index<=max;index++){
-                if (role_all.indexOf(index) == -1){
-                    return this.spawnCreep(spawn, config, index);
-                }
-            }
+            // const count = role_valid.length || 0;
+            // if (count >= config.amount){
+            //     continue;
+            // }
+            // const max = config.aheadTime ? config.amount + 1 : config.amount
+            // for (let index=1;index<=max;index++){
+            //     if (role_all.indexOf(index) == -1){
+            //         return this.spawnCreep(spawn, config, index);
+            //     }
+            // }
         }
 
         // if (spawn.spawning){

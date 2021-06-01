@@ -7,7 +7,7 @@ interface RoleConfig{
   /**
    * 复杂重生条件
    */
-  condition: RespawnCondition;
+  condition?: RespawnCondition;
 }
 
 interface RespawnCondition{

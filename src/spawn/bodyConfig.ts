@@ -10,8 +10,35 @@ export const getMaxCarrierBody = function(){
     return body
 }
 
+export const getMaxCarrier2Body = function(){
+    const group_number = Math.floor(Game.spawns['Shanghai'].room.energyCapacityAvailable / 150) ;
+    const body: BodyPartConstant[] = []
+    for (let i=0;i<group_number;i++){
+        body.push(CARRY, CARRY);
+    }
+    for (let i=0;i<group_number;i++){
+        body.push(MOVE);
+    }
+    return body
+}
+
 export const getMaxBuilderBody = function(){
     const group_number = Math.floor(Game.spawns['Spawn1'].room.energyCapacityAvailable / 200) ;
+    const body: BodyPartConstant[] = []
+    for (let i=0;i<group_number;i++){
+        body.push(WORK);
+    }
+    for (let i=0;i<group_number;i++){
+        body.push(CARRY);
+    }
+    for (let i=0;i<group_number;i++){
+        body.push(MOVE);
+    }
+    return body
+}
+
+export const getMaxBuilder2Body = function(){
+    const group_number = Math.floor(Game.spawns['Shanghai'].room.energyCapacityAvailable / 200) ;
     const body: BodyPartConstant[] = []
     for (let i=0;i<group_number;i++){
         body.push(WORK);
