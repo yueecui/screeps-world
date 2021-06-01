@@ -3,10 +3,6 @@ type AnySpawnEnergyStoreStructure = StructureExtension | StructureSpawn;
 
 interface Room {
   /**
-   * 缓存room中特定建筑的Id
-   */
-   cacheMyStructuresId(): void;
-  /**
    * 根据id获得建筑的实例
    *
    * 如果cache中有则从cache中获取，否则使用getObjectById
@@ -29,13 +25,17 @@ interface Room {
   /**
    * 检查room的各个任务队列是否存在错误，如果存在就自动修复
    */
-  checkTaskError(): void;
+  errorCheck(): void;
   /**
    * 初始化memory
    */
   initMemory(): void;
   /**
-   * 初始化source数据
+   * 初始化source和mineral数据
    */
-  initSources(): void;
+  initCollection(): void;
+  /**
+   * 缓存room中建筑的Id
+   */
+   cacheStructuresStatus(): void;
 }

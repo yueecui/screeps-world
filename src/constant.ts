@@ -1,10 +1,10 @@
 // Creep的角色名
 
-export const RoleNameHarvester: RoleNameHarvester = '采集';
-export const RoleNameTransporter: RoleNameTransporter = '运输';
-export const RoleNameBuilder: RoleNameBuilder = '建造';
-export const RoleNameUpgrader: RoleNameUpgrader = '升级';
-export const RoleNameAttacker: RoleNameAttacker = '攻击';
+export const ROLE_HARVESTER: ROLE_HARVESTER = '采集';
+export const ROLE_TRANSPORTER: ROLE_TRANSPORTER = '运输';
+export const ROLE_BUILDER: ROLE_BUILDER = '建造';
+export const ROLE_UPGRADER: ROLE_UPGRADER = '升级';
+export const ROLE_ATTACKER: ROLE_ATTACKER = '攻击';
 
 
 // Creep工作进程的状态码
@@ -42,13 +42,21 @@ export const WORK_TRANSPORTER_TOWER: WORK_TRANSPORTER_TOWER = 2;
  */
 export const WORK_TRANSPORTER_CONTROLLER: WORK_TRANSPORTER_CONTROLLER = 3;
 /**
+ * 当前Creep正在担任运输者职责，将当前房间的container里多余的矿物带到storage
+ */
+export const WORK_TRANSPORTER_STORAGE_MINERAL: WORK_TRANSPORTER_STORAGE_MINERAL = 9;
+/**
  * 当前Creep正在担任运输者职责，将当前房间的container里多余的能量带到storage
  */
-export const WORK_TRANSPORTER_STORAGE: WORK_TRANSPORTER_STORAGE = 10;
+export const WORK_TRANSPORTER_STORAGE_ENERGY: WORK_TRANSPORTER_STORAGE_ENERGY = 10;
 /**
  * 当前Creep正在进行采集
  */
-export const WORK_HARVEST: WORK_HARVEST = 11;
+export const WORK_HARVEST_ENERGY: WORK_HARVEST_ENERGY = 21;
+/**
+ * 当前Creep正在进行采集
+ */
+ export const WORK_HARVEST_MINERAL: WORK_HARVEST_MINERAL = 22;
 /**
  * 当前Creep正在升级控制器
  */
@@ -92,9 +100,37 @@ export const CONTAINER_TYPE_SOURCE: CONTAINER_TYPE_SOURCE = 0;
  * container类型：存储供给给upgrader的能量
  */
 export const CONTAINER_TYPE_CONTROLLER: CONTAINER_TYPE_CONTROLLER = 1;
-
+/**
+ * container类型：存储mineral产出
+ *
+ * 存量变多后会转移到storage
+ */
+ export const CONTAINER_TYPE_MINERAL: CONTAINER_TYPE_MINERAL = 2;
 
 // Creep工作模式代码
+
+/**
+ * 无指定模式
+ */
+ export const MODE_NONE: MODE_NONE = -1;
+
+/**
+ * 优先提供孵化器能量的运输者
+ */
+export const MODE_HARVEST_ENERGY: MODE_HARVEST_ENERGY = 0;
+/**
+ * 优先提供控制器能量的运输者
+ */
+export const MODE_HARVEST_MINERAL: MODE_HARVEST_MINERAL = 1;
+
+/**
+ * 优先提供孵化器能量的运输者
+ */
+export const MODE_SPAWN: MODE_SPAWN = 0;
+ /**
+  * 优先提供控制器能量的运输者
+  */
+export const MODE_CONTROLLER: MODE_CONTROLLER = 1;
 
 /**
  * 优先建筑的builder

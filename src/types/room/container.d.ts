@@ -15,10 +15,6 @@ interface Room {
   */
  removeContainer(id: Id<StructureContainer>): void;
  /**
-  * 周期性检查container，移除不存在的
-  */
- checkContainerStatus(): void;
- /**
   * 预定要变化container的energy
   *
   * @param creep_iname 预定使用的creep name
@@ -55,6 +51,12 @@ interface Room {
    * 获取到的将安排任务转存到storage中
    */
   getFullSourceContainers(): StructureContainer[];
+  /**
+   * 获取房间内已经接近满的mineral container
+   *
+   * 获取到的将安排任务转存到storage中
+   */
+  getFullMineralContainers(): StructureContainer[];
   /**
    * 获取房间内已经要空的controller container
    */

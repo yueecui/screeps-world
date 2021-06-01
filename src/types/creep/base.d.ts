@@ -35,7 +35,11 @@ interface Creep {
   /**
    * 获取职责名称
    */
-  getRole(): AnyRoleName;
+  getRole(): ANY_ROLE_NAME;
+  /**
+   * 获取模式代号
+   */
+  getMode(): ANY_CREEP_MODE;
   /**
    * 设定工作状态
    */
@@ -108,6 +112,10 @@ interface Creep {
    * @returns true表示设定成功，false表示已经没有目标了
    */
   setNextTarget(): boolean;
+  /**
+   * 移动到等待地点，如果没有指定则原地发呆
+   */
+  goToStay(): void;
 }
 
 interface obtainEnergyOpt{

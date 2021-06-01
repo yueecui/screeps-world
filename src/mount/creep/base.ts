@@ -1,24 +1,32 @@
-import { roleHarvester } from '@/creeps/role.Harvester';
-import { roleTransporter } from '@/creeps/role.Transporter';
-import { roleBuilder } from '@/creeps/role.Builder';
-import { roleUpgrader } from '@/creeps/role.Upgrader';
-import { roleAttacker } from '@/creeps/role.Attacker';
+import { roleHarvester } from '@/role/Harvester';
+import { roleTransporter } from '@/role/Transporter';
+import { roleBuilder } from '@/role/Builder';
+import { roleUpgrader } from '@/role/Upgrader';
+import { roleAttacker } from '@/role/Attacker';
+import { roleEngineer } from '@/role/Engineer';
+import { roleGoToRecycle } from '@/role/GoToRecycle';
+import { roleManual } from '@/role/Manual';
+import { roleMastermind } from '@/role/Mastermind';
 
 import {
     ENERGY_NEED,
-    WORK_TRANSPORTER_SPAWN, WORK_TRANSPORTER_TOWER, WORK_TRANSPORTER_STORAGE,
-    TASK_WAITING, TASK_ACCEPTED,
+    WORK_TRANSPORTER_SPAWN, WORK_TRANSPORTER_TOWER, WORK_TRANSPORTER_STORAGE_ENERGY,
+    TASK_WAITING, TASK_ACCEPTED, MODE_NONE, WORK_IDLE,
 } from '@/constant';
 
 // 任务队列最大长度
 const TASK_QUEUE_MAX = 5;
 
-const roleMap: Record<AnyRoleName, AnyRole> = {
+const roleMap: Record<ANY_ROLE_NAME, AnyRole> = {
+    '回收': roleGoToRecycle,
+    '手动': roleManual,
+    '主脑': roleMastermind,
     '采集': roleHarvester,
     '运输': roleTransporter,
     '建造': roleBuilder,
     '升级': roleUpgrader,
     '攻击': roleAttacker,
+    '工兵': roleEngineer,
 }
 
 export const creepExtensionBase = function () {
@@ -38,7 +46,7 @@ export const creepExtensionBase = function () {
     };
 
     Creep.prototype.analyzeName = function () {
-        const find = /([^\d]+)(\d+)/.exec(this.name);
+        const find = /^(.+?)(\d+)$/.exec(this.name);
         if (find){
             this.baseName = find[1];
             this.index = parseInt(find[2]) || 0;
@@ -65,6 +73,10 @@ export const creepExtensionBase = function () {
 
     Creep.prototype.getRole = function(){
         return this.memory.r;
+    }
+
+    Creep.prototype.getMode = function(){
+        return this.memory.mode == undefined ? MODE_NONE : this.memory.mode;
     }
 
     Creep.prototype.setWorkState = function(state){
@@ -211,5 +223,15 @@ export const creepExtensionBase = function () {
             }
         }
         this.memory.queue = [];
+    }
+
+    // 去等待位置
+    Creep.prototype.goToStay = function(){
+        // this.getWorkState() == WORK_IDLE
+        if (this.memory.stay){
+            if (this.pos.x != this.memory.stay[0] || this.pos.y != this.memory.stay[1]){
+                this.moveTo(this.memory.stay[0], this.memory.stay[1]);
+            }
+        }
     }
 }
