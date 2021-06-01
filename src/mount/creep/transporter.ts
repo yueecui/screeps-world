@@ -95,6 +95,7 @@ export const creepExtensionTransporter = function () {
     Creep.prototype.doWorkTransporterTower = function(){
         if (this.getEnergyState() == ENERGY_NEED){
             this.obtainEnergy({
+                container: [CONTAINER_TYPE_SOURCE],
                 storage: true,
             });
         }else{
@@ -113,6 +114,7 @@ export const creepExtensionTransporter = function () {
             if (this.store.getFreeCapacity() > 0 && (target.store.getFreeCapacity(RESOURCE_ENERGY) > this.store[RESOURCE_ENERGY])){
                 this.setEnergyState(ENERGY_NEED);
                 this.obtainEnergy({
+                    container: [CONTAINER_TYPE_SOURCE],
                     storage: true,
                 });
             }else{

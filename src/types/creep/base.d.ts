@@ -27,7 +27,7 @@ interface Creep {
   /**
    * 获取基础名称(baseName)，如果还未解析则进行解析
    */
-  getBasename(): string;
+  getBaseName(): string;
   /**
    * 获取编号(index)，如果还未解析则进行解析
    */

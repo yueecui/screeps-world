@@ -46,7 +46,7 @@ export const creepExtensionBase = function () {
     };
 
     Creep.prototype.analyzeName = function () {
-        const find = /^(.+?)(\d+)$/.exec(this.name);
+        const find = /^(.+?)(\d*)$/.exec(this.name);
         if (find){
             this.baseName = find[1];
             this.index = parseInt(find[2]) || 0;
@@ -58,7 +58,7 @@ export const creepExtensionBase = function () {
         }
     }
 
-    Creep.prototype.getBasename = function () {
+    Creep.prototype.getBaseName = function () {
         if (this.baseName == ''){
             this.analyzeName();
         }

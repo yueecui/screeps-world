@@ -178,4 +178,8 @@ export const roomExtensionBase = function () {
             }
         }
     };
+
+    Room.prototype.getMySpawns = function (){
+        return _.filter(Game.spawns, (spawn) => { return spawn.room.name == this.name; });
+    };
 }

@@ -4,6 +4,21 @@ interface RoleConfig{
   amount: number;
   aheadTime?: number;
   memory: Record<string, any>;
+  /**
+   * 复杂重生条件
+   */
+  condition: RespawnCondition;
+}
+
+interface RespawnCondition{
+  /**
+   * 重生提前时间，不设置为不提前
+   *
+   * 设置为0时，会计算生成时间，根据生成时间进行提前
+   *
+   * 设置大于0时，会在生成时间的基础上额外进行加时（例如填写一个移动时间，可以保证前后2个交接顺利）
+   */
+  advanceTime?: number;
 }
 
 type ANY_ROLE_NAME =

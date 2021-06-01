@@ -38,4 +38,8 @@ interface Room {
    * 缓存room中建筑的Id
    */
    cacheStructuresStatus(): void;
+  /**
+   * 获得room中所有我方spawns
+   */
+   getMySpawns(): StructureSpawn[];
 }

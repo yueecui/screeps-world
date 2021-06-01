@@ -52,7 +52,7 @@ export const creepExtensionResource = function () {
             }
             return true;
         }else{
-            this.say('无法获得能量')
+            this.say('饿')
             return false;
         }
     },
