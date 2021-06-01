@@ -51,13 +51,15 @@ const getNewBuilderBody = function(){
 // : Map<string, RoleConfig>
 export const ACTIVE_ROLE_CONFIG: Map<string, RoleConfig> = new Map([
     // ['Guu', { body: BODY_CONFIG['侵略者R5'], amount: 1, memory: {r:'攻击'} }],
-
     // ROOM搬运者
     ['TR-S', { body: getMaxCarrierBody(), amount: 1, aheadTime: 160, memory: {r:'运输', mode: 0, stay: [34, 35]} }],
     ['TR-U', { body: getMaxCarrierBody(), amount: 1, aheadTime: 160, memory: {r:'运输', mode: 1, stay: [28, 18]} }],
     // ROOM收集者
     ['GA-B', { body: BODY_CONFIG['采集者R4'], amount: 1, aheadTime: 80, memory: {r:'采集', mode:0, node:1} }],
     ['GA-A', { body: BODY_CONFIG['采集者R4'], amount: 1, aheadTime: 80, memory: {r:'采集', mode:0, node:0} }],
+
+    ['R1-BD-B', { body: getMaxBuilderBody(), amount: 1, memory: {r:'建造', mode:0, stay: [29, 27]} }],    // 建造优先
+    ['R1-BD-R', { body: getMaxBuilderBody(), amount: 1, memory: {r:'建造', mode:1, stay: [27, 30]} }],    // 修理优先
     // ['GA1-M', { body: getMinerBody(), amount: 1, aheadTime: 80, memory: {r:'采集', mode:1} }],
     // 中心操作设备
     ['R1-MM', { body: [CARRY, CARRY, CARRY, CARRY, CARRY, CARRY, CARRY, CARRY, MOVE], amount: 1, aheadTime: 80, memory: {r:'主脑'} }],
@@ -73,7 +75,7 @@ export const ACTIVE_ROLE_CONFIG: Map<string, RoleConfig> = new Map([
     // ['BD-B', { body: getMaxBuilderBody(), amount: 1, memory: {r:'建造', mode:0, stay: [29, 27]} }],    // 建造优先
     // ['BD-R', { body: getMaxBuilderBody(), amount: 1, memory: {r:'建造', mode:1, stay: [27, 30]} }],    // 修理优先
     // ROOM升级者
-    ['UP-A', { body: BODY_CONFIG['升级者R4'], amount: 2, memory: {r:'升级'} }],
+    // ['UP-A', { body: BODY_CONFIG['升级者R4'], amount: 2, memory: {r:'升级'} }],
 
     // 开分矿用c
     // ['N-ENG', { body: getNewEngBody(), amount: 1, memory: {r:'手动', mode:1}}],

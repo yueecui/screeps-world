@@ -94,6 +94,7 @@ export const ManagerCreeps: Record<string, any> = {
         }
         memory.w = WORK_IDLE;
         const result = spawn.spawnCreep(config.body, config.basename+index, {memory: memory}); //, directions: [RIGHT], TOP_RIGHT, BOTTOM_RIGHT, TOP, TOP_LEFT
+        console.log(spawn.name, ':',result);
         if (result == OK){
             spawn.room.memory.lastSpawnTime = Game.time;
         }
