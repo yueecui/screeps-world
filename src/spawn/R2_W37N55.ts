@@ -21,7 +21,7 @@ export const ROOM_2_CONFIG: Map<string, RoleConfig> = new Map([
     // ['R2-BD-B', { body: getMaxBuilderBody(), amount: 1, memory: {r:'建造', mode:0, stay: [29, 27]} }],    // 建造优先
     ['R2-BD-R', { body: getMaxBuilder2Body(), amount: 1, memory: {r:'建造', mode:1, stay: [20, 26]} }],    // 修理优先
     // ROOM升级者
-    ['R2-UP', { body: BODY_CONFIG['升级者R4'], amount: 2, memory: {r:'升级'} }],
+    ['R2-UP', { body: BODY_CONFIG['升级者R4'], amount: 1, memory: {r:'升级'} }],
 
     // 开分矿用c
     // ['N-ENG', { body: getNewEngBody(), amount: 1, memory: {r:'手动', mode:1}}],

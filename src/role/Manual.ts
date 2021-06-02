@@ -1,17 +1,19 @@
 import { CONTAINER_TYPE_SOURCE, ENERGY_NEED, MODE_NONE } from "@/constant";
+import { createReadStream } from "fs";
 
 /**
  * 本模式主要是用来处理一些临时操作
  */
 export const roleManual: CreepRole = {
     run: function(creep) {
-        // this.updateStatus(creep);
-        this.execute(creep);
+        // creep.moveTo(39, 16)
+        this.updateStatus(creep);
+        // this.execute(creep);
 	},
 
     // 判断工作模式
     updateStatus: function(creep){
-        // const target = Game.getObjectById('60b3ae741923ac26d9390519' as Id<Tombstone>);
+        // const target = Game.getObjectById('60b795189c340decf9656357' as Id<Tombstone>);
         // if (target){
         //     if (target!.store.getUsedCapacity() > 0 && creep.store.getFreeCapacity() > 0){
         //         for (const name in target!.store){
@@ -20,20 +22,15 @@ export const roleManual: CreepRole = {
         //                 break;
         //             };
         //         }
-        //     }else{
+        //     }
+        // }
 
-        //     }
-        // }
-        // if (creep.name == 'TR-S1'){
-        //     creep.moveTo(15, 15);
-        // }else{
-        //     for (const name in creep.store){
-        //         if (creep.transfer(creep.room.storage!, name as ResourceConstant) == ERR_NOT_IN_RANGE){
-        //             creep.moveTo(creep.room.storage!);
-        //             break;
-        //         };
-        //     }
-        // }
+        for (const name in creep.store){
+            if (creep.transfer(creep.room.storage!, name as ResourceConstant) == ERR_NOT_IN_RANGE){
+                creep.moveTo(creep.room.storage!);
+                break;
+            };
+        }
 
 
     },

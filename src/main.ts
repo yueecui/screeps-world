@@ -42,7 +42,7 @@ module.exports.loop = () => {
 
     // 临时运转塔
     var towers = [
-        Game.getObjectById('60abc165b225d38453b62cde' as Id<StructureTower>),
+        Game.getObjectById('60b3322983fca14979ed5f3f' as Id<StructureTower>),
         Game.getObjectById('60adb99b03e40e459ecbd5c2' as Id<StructureTower>),
         Game.getObjectById('60b5b6bb182261042518d265' as Id<StructureTower>)
     ];
