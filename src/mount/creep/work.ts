@@ -118,6 +118,12 @@ export const creepExtensionHarvester = function () {
         if (!source_set.c){
             this.say(`矿藏没有存储容器`);
             return true;
+        }else{
+            const c = Game.getObjectById(source_set.c)
+            if (!c){
+                this.say(`矿藏没有存储容器`);
+                return true;
+            }
         }
         return false;
     }
