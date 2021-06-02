@@ -3,6 +3,7 @@ import {
     WORK_IDLE, WORK_TRANSPORTER_SPAWN, WORK_TRANSPORTER_TOWER, WORK_TRANSPORTER_STORAGE_ENERGY
 } from '@/constant';
 
+import { generateBodyParts } from './bodyGenerator';
 import { ROOM_1_CONFIG } from './R1_W35N57';
 import { ROOM_2_CONFIG } from './R2_W37N55';
 
@@ -14,11 +15,15 @@ const ROOM_SPAWN_CONFIG: Record<string, Map<string, RoleConfig>>= {
 type LivedCreeps = Record<string, number[]>;
 
 
-
 const OTHER_ROLE_CONFIG = new Map([
     // 救灾
     ['Rescue', { body: null, amount: 1, memory: {r:'运输', mode: 0} }],     // W35N57 救灾机器人
 ]);
+
+
+/**
+ * RCL1
+ */
 
 /**
  * 孵化情况检查管理模块
@@ -54,7 +59,12 @@ export const SpawnManager = {
         return lived_creeps;
     },
 
-
+    /**
+     * 按房间检测是否需要重生
+     * @param room_name 房间名称
+     * @param lived_creeps 当前存活的creeps情况
+     * @returns
+     */
     respawnByRoom: function (room_name: string, lived_creeps: LivedCreeps){
         const spawns = Game.rooms[room_name].getMySpawns();
         if (spawns.length == 0){
@@ -64,8 +74,19 @@ export const SpawnManager = {
 
         for (const [base_name, config] of ROOM_SPAWN_CONFIG[room_name]){
             config.basename = base_name;
+            if (config.body_code){
+                config.body = generateBodyParts(config.body_code);
+            }
 
-            this.verifyCreeps(config, lived_creeps);
+            // 该basename的creeps存活数量
+            const config_all = lived_creeps[base_name] || [];
+            const config_valid_creeps = this.verifyCreeps(config, lived_creeps);
+
+            if (config_valid_creeps.length >= config_all.length){
+                continue;
+            }
+
+            // basename数量不足时进行刷新
 
             // if (base_name == 'ENG'){
             //     if (Game.flags['eng1'].room){
@@ -104,15 +125,20 @@ export const SpawnManager = {
     },
 
     verifyCreeps: function(config: RoleConfig, lived_creeps: LivedCreeps): number[] {
-        const basename = config.basename!;
-        if (!(basename in lived_creeps)){
-            return [];
-        }
+        const base_name = config.basename!;
         const valid_creeps: number[] = [];
-        for (const index of lived_creeps[basename!]){
-            let creep = index == 0 ? Game.creeps[basename] : Game.creeps[basename+index];
-            if (this.isValidCreep(creep, config)){
-                valid_creeps.push(creep.getIndex());
+        if (base_name in lived_creeps){
+            if (config.named){
+                if (base_name in Game.creeps){
+                    valid_creeps.push(0);
+                }
+            }else{
+                for (const index of lived_creeps[base_name]){
+                    const creep = Game.creeps[base_name+index];
+                    if (this.isValidCreep(creep, config)){
+                        valid_creeps.push(creep.getIndex());
+                    }
+                }
             }
         }
         return valid_creeps;
@@ -125,7 +151,17 @@ export const SpawnManager = {
      * @returns true表示视为存活，false表示不存活（会进行respawn）
      */
     isValidCreep: function (creep: Creep, config: RoleConfig) {
-        return false;
+        // 没定义任何重生条件的creep，死了以后再孵化下一个
+        if (config.liveCondition == undefined){
+            return true;
+        }
+        if (config.liveCondition.advanceTime){
+            const advance_tick = config.body!.length * 3 + config.liveCondition.advanceTime;
+            if (!creep.ticksToLive || creep.ticksToLive <= advance_tick){
+                return false;
+            }
+        }
+        return true;
     },
 
     roomCheck: function(spawn: StructureSpawn, room_spawn_config: Map<string, RoleConfig>){

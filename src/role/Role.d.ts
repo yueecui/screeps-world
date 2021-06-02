@@ -1,16 +1,45 @@
 interface RoleConfig{
   basename?: string;
-  body: BodyPartConstant[] | null;
+  /**
+   * 身体配件组成
+   */
+  body?: BodyPartConstant[];
+  /**
+   * 身体配件组成生成代码，如果填写此项的话，会根据对应code，用算法来生成身体配件方案
+   */
+  body_code?: string;
+  /**
+   * 有专用名字的
+   *
+   * 该类配置不生成编号
+   */
+  named?: boolean;
+  /**
+   * 维持数量
+   */
   amount: number;
+  /**
+   * （预计废弃）提前生成时间
+   */
   aheadTime?: number;
+  /**
+   * 初期memory，因为不一定是完整的memory所以这里不声明成 CreepMemory
+   */
   memory: Record<string, any>;
   /**
-   * 复杂重生条件
+   * 视为存活的条件
    */
-  condition?: RespawnCondition;
+  liveCondition?: LivedCondition;
+  /**
+   * 重生条件
+   */
+  respawnCondition?: RespawnCondition;
 }
 
-interface RespawnCondition{
+/**
+ * 视为存活的条件
+ */
+interface LivedCondition{
   /**
    * 重生提前时间，不设置为不提前
    *
@@ -18,7 +47,14 @@ interface RespawnCondition{
    *
    * 设置大于0时，会在生成时间的基础上额外进行加时（例如填写一个移动时间，可以保证前后2个交接顺利）
    */
-  advanceTime?: number;
+   advanceTime?: number;
+}
+
+/**
+ * 重生条件
+ */
+interface RespawnCondition{
+
 }
 
 type ANY_ROLE_NAME =
