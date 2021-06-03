@@ -145,10 +145,12 @@ export const roleBuilder: Builder = {
 
             return;
         }
+        // 以上是临时代码
+
         creep.recycleNearby(); // 回收周围的能量
 
-        if (creep.getEnergyState() == ENERGY_NEED){
-            creep.clearTarget();
+        const obtain_energy = (creep: Creep) => {
+            creep.clearEnergyTarget();
             if (creep.room.name == 'W37N55'){
                 creep.obtainEnergy({
                     container: [CONTAINER_TYPE_SOURCE],
@@ -158,13 +160,15 @@ export const roleBuilder: Builder = {
                     storage: true,
                 });
             }
+        }
+
+
+        if (creep.getEnergyState() == ENERGY_NEED){
+            obtain_energy(creep);
         }else{
             if (creep.store[RESOURCE_ENERGY] == 0){
-                creep.clearTarget();
                 creep.setEnergyState(ENERGY_NEED);
-                creep.obtainEnergy({
-                    storage: true,
-                });
+                obtain_energy(creep);
             }
             let target;
             if (creep.getWorkState() == WORK_REPAIR){
@@ -175,6 +179,14 @@ export const roleBuilder: Builder = {
                 target = this.findBuildTarget(creep);
                 if (target){
                     return this.buildTarget(creep, target);
+                }
+                target = this.findRepairRampart(creep);
+                if (target){
+                    return this.repairTargetRampart(creep, target);
+                }
+                target = this.findRepairWall(creep);
+                if (target){
+                    return this.repairTargetWall(creep, target);
                 }
                 creep.goToStay();
                 // creep.moveTo(28,29+creep.getIndex());
@@ -218,7 +230,7 @@ export const roleBuilder: Builder = {
     // 寻找一个可以修理的目标
     findRepairTarget: function(creep){
         let targets = creep.room.find(FIND_STRUCTURES, { filter: function(s){
-            return (s.structureType != STRUCTURE_WALL) && (s.hits < s.hitsMax);
+            return (s.structureType != STRUCTURE_WALL && s.structureType != STRUCTURE_RAMPART) && (s.hits < s.hitsMax);
         }})
         const last_target = targets.filter((s) => { return s.id == creep.memory.t; });
         if (last_target[0]){
@@ -242,6 +254,70 @@ export const roleBuilder: Builder = {
     },
     // 修理目标
     repairTarget: function(creep, target){
+        if (creep.repair(target) == ERR_NOT_IN_RANGE){
+            creep.moveTo(target);
+        }
+    },
+    // 寻找一个可以修理的目标
+    findRepairWall: function(creep){
+        let targets = creep.room.find(FIND_STRUCTURES, { filter: function(s){
+            return s.structureType == STRUCTURE_WALL && s.hits < 100000;
+        }}) as StructureWall[];
+        const last_target = targets.filter((s) => { return s.id == creep.memory.t as Id<StructureRampart | StructureWall>; });
+        if (last_target[0]){
+            return last_target[0];
+        }else{
+            targets.sort((a, b) => {
+                return creep.pos.getRangeTo(a) - creep.pos.getRangeTo(b);
+            })
+
+            if (targets[0]){
+                creep.memory.t = targets[0].id;
+                return targets[0];
+            }else{
+                creep.memory.t = null;
+                return null;
+            }
+        }
+    },
+    // 修理目标
+    repairTargetWall: function(creep, target){
+        if (target.hits >= 100000){
+            creep.clearTarget();
+            return;
+        }
+        if (creep.repair(target) == ERR_NOT_IN_RANGE){
+            creep.moveTo(target);
+        }
+    },
+    // 寻找一个可以修理的目标
+    findRepairRampart: function(creep){
+        const target = creep.getTargetObject() as StructureRampart | null;
+        if (target && target.hits < 100000){
+            return target;
+        }
+
+        let targets = creep.room.find(FIND_STRUCTURES, { filter: function(s){
+            return s.structureType == STRUCTURE_RAMPART && s.hits < 50000;
+        }}) as StructureRampart[];
+
+        if (targets[0]){
+            targets.sort((a, b) => {
+                return creep.pos.getRangeTo(a) - creep.pos.getRangeTo(b);
+            })
+            creep.memory.t = targets[0].id;
+            return targets[0];
+        }else{
+            creep.memory.t = null;
+            return null;
+        }
+    },
+    // 修理目标
+    repairTargetRampart: function(creep, target){
+        if (target.hits >= 100000){
+            creep.clearTarget();
+            return;
+        }
         if (creep.repair(target) == ERR_NOT_IN_RANGE){
             creep.moveTo(target);
         }

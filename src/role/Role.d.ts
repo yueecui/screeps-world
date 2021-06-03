@@ -106,6 +106,10 @@ interface Builder extends CreepRole{
   repairTarget(creep: Creep, target: Structure): void;
   findBuildTarget(creep: Creep): ConstructionSite|null;
   buildTarget(creep: Creep, target:ConstructionSite): void;
+  findRepairWall(creep: Creep): StructureWall|null;
+  repairTargetWall(creep: Creep, target: StructureWall): void;
+  findRepairRampart(creep: Creep): StructureRampart|null;
+  repairTargetRampart(creep: Creep, target: StructureRampart): void;
 }
 
 interface Upgrader extends CreepRole{

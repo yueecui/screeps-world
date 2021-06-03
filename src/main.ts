@@ -32,33 +32,33 @@ module.exports.loop = () => {
                )
            ){
             room.tickCheck();
+
+            // 检查塔
+            if (room.memory.towers){
+                for (const tower_id of room.memory.towers){
+                    const tower = Game.getObjectById(tower_id);
+                    if (tower){
+                        var closestHostile = tower.pos.findClosestByRange(FIND_HOSTILE_CREEPS);
+                        if(closestHostile) {
+                            tower.attack(closestHostile);
+                            continue
+                        }
+
+                        const found = room.find(FIND_MY_STRUCTURES, {filter: (struct) => {
+                            return struct.structureType == STRUCTURE_RAMPART && struct.hits < 300;
+                        }})
+                        if (found.length){
+                            tower.repair(found[0]);
+                        }
+                    }
+                }
+            }
         }
     }
 
     // 运转所有小虫
     for(const name in Game.creeps) {
         Game.creeps[name].run();
-    }
-
-    // 临时运转塔
-    var towers = [
-        Game.getObjectById('60b3322983fca14979ed5f3f' as Id<StructureTower>),
-        Game.getObjectById('60adb99b03e40e459ecbd5c2' as Id<StructureTower>),
-        Game.getObjectById('60b5b6bb182261042518d265' as Id<StructureTower>)
-    ];
-    for (const tower of towers){
-        if(tower) {
-            // var closestDamagedStructure = tower.pos.findClosestByRange(FIND_STRUCTURES, {
-            //     filter: (structure) => structure.hits < structure.hitsMax
-            // });
-            // if(closestDamagedStructure) {
-            //     tower.repair(closestDamagedStructure);
-            // }
-            var closestHostile = tower.pos.findClosestByRange(FIND_HOSTILE_CREEPS);
-            if(closestHostile) {
-                tower.attack(closestHostile);
-            }
-        }
     }
 
     // 临时运转LINK
