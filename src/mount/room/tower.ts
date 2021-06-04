@@ -10,7 +10,7 @@ export const roomExtensionTower = function () {
     // 检查tower的能量
     Room.prototype.checkTowerEnergy = function(){
         if (this.memory.towers.length > 0){
-            let towers = _.map(this.memory.towers, (id)=> {return this.getStructureById(id)});
+            let towers = _.map(this.memory.towers, (id)=> {return Game.getObjectById(id)});
             towers = _.filter(towers, (tower) => {
                 if (tower == null) { this.memory.flagPurge = true;return false; }
                 return tower.store.getFreeCapacity(RESOURCE_ENERGY) > 0;
@@ -33,11 +33,13 @@ export const roomExtensionTower = function () {
                 };
             });
         }
-        const [result, missed_id] = this.getStructureByIdArray(id_list);
-        // 如果出现了没查到数据的建筑，则移除掉这些数据
-        if (missed_id.length > 0){
-            for (const id of missed_id){
-                delete this.memory.taskTowers[id];
+        const result: StructureTower[] = [];
+        for (const id of id_list){
+            const struct = Game.getObjectById(id);
+            if (struct){
+                result.push(struct);
+            }else{
+                delete this.memory.taskSpawn[id];
             }
         }
         return result;

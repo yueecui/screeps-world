@@ -11,11 +11,6 @@ const cleanCreepsMemory = function() : void{
 // 全局定期自动事务
 export const Automatic = {
     run: function(): void{
-        // 初始化tick缓存
-        Game.cache = {
-            structure: {}
-        }
-
         if (Game.time % 1000 == 0){
             cleanCreepsMemory();
         }

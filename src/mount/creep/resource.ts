@@ -71,7 +71,7 @@ export const creepExtensionResource = function () {
                     return opt!.container!.indexOf(info.type) > -1;
                 }),
                 (info) => {
-                    const container = this.room.getStructureById(info.id);
+                    const container = Game.getObjectById(info.id);
                     if (container && container.store[RESOURCE_ENERGY] > 0){
                         structures.push(container);
                     }

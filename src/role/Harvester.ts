@@ -74,7 +74,7 @@ export const roleHarvester: Harvester = {
             const source_set = creep.room.memory.sources[creep.memory.node];
             // console.log(JSON.stringify(source_set));
             const source_node = Game.getObjectById(source_set.s as Id<Source>)!;
-            const container = creep.room.getStructureById(source_set.c as Id<StructureContainer>)!;
+            const container = Game.getObjectById(source_set.c as Id<StructureContainer>)!;
 
             if (creep.pos.getRangeTo(container) > 0){
                 creep.moveTo(container);
@@ -89,8 +89,7 @@ export const roleHarvester: Harvester = {
             const found = creep.pos.findInRange(FIND_STRUCTURES, 3, {filter: (struct) => {
                 // 返回生命值不满，是路或是容器或是我自己的建筑
                 return struct.hits < struct.hitsMax && (struct.structureType == STRUCTURE_CONTAINER
-                    || struct.structureType == STRUCTURE_ROAD
-                    || ('my' in struct && struct.my));
+                    || struct.structureType == STRUCTURE_ROAD);
                 }});
 
             if (found.length > 0){

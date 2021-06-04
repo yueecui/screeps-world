@@ -8,7 +8,7 @@ export const roomExtensionContainer = function () {
             console.log(`${id} 已经添加过了`);
             return;
         }
-        const container = this.getStructureById(id);
+        const container = Game.getObjectById(id);
         if (!container){
             console.log(`${id} 为非法的ObjectId`);
         }else if(container.structureType != STRUCTURE_CONTAINER){
@@ -104,7 +104,7 @@ export const roomExtensionContainer = function () {
     // 获得接近全满的source container
     Room.prototype.getFullSourceContainers = function(){
         let containers = _.map(this.memory.containers, (c) => {
-            return c.type == CONTAINER_TYPE_SOURCE ? this.getStructureById(c.id) : null;
+            return c.type == CONTAINER_TYPE_SOURCE ? Game.getObjectById(c.id) : null;
         });
 
         return _.filter(containers, (container) => {
@@ -116,7 +116,7 @@ export const roomExtensionContainer = function () {
     // 获得接近全满的mineral container
     Room.prototype.getFullMineralContainers = function(){
         let containers = _.map(this.memory.containers, (c) => {
-            return c.type == CONTAINER_TYPE_MINERAL ? this.getStructureById(c.id) : null;
+            return c.type == CONTAINER_TYPE_MINERAL ? Game.getObjectById(c.id) : null;
         });
 
         return _.filter(containers, (container) => {
@@ -128,7 +128,7 @@ export const roomExtensionContainer = function () {
     // 获得接近空的controller container
     Room.prototype.getEmptyControllerContainers = function(){
         let containers = _.map(this.memory.containers, (c) => {
-            return c.type == CONTAINER_TYPE_CONTROLLER ? this.getStructureById(c.id) : null;
+            return c.type == CONTAINER_TYPE_CONTROLLER ? Game.getObjectById(c.id) : null;
         });
 
         return _.filter(containers, (container) => {

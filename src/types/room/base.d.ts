@@ -3,22 +3,6 @@ type AnySpawnEnergyStoreStructure = StructureExtension | StructureSpawn;
 
 interface Room {
   /**
-   * 根据id获得建筑的实例
-   *
-   * 如果cache中有则从cache中获取，否则使用getObjectById
-   * @return 建筑实例
-   */
-  getStructureById<T extends AnyStructure>(id: Id<T>): T | null;
-  /**
-   * 根据id list获得一组建筑的实例
-   *
-   * 如果cache中有则从cache中获取，否则使用getObjectById
-   * @returns result 每个元素是建筑实例
-   * @returns missed_id 没有查找到的id
-   */
-  getStructureByIdArray<T extends AnyStructure>(id_list: Id<T>[]): [T[], Id<T>[]];
-
-  /**
    * 房间定期检查
    */
   tickCheck(): void;
@@ -42,4 +26,8 @@ interface Room {
    * 获得room中所有我方spawns
    */
    getMySpawns(): StructureSpawn[];
+    /**
+     * 计算订单收益
+     */
+    calcPrice(order_id: string, amount?: number): void;
 }

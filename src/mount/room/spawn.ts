@@ -33,7 +33,6 @@ export const roomExtensionSpawn = function () {
 
         const newtaskSpawn = {} as Record<string, taskInfo>;
         found.forEach((find) => {
-            Game.cache.structure[find.id] = find;  // 缓存所有查询到的房间数据，减少本tick查询
             // 将ID存储到Memory
             if (find.id in this.memory.taskSpawn){
                 const oldTaskInfo = this.memory.taskSpawn[find.id];
@@ -62,10 +61,12 @@ export const roomExtensionSpawn = function () {
                 };
             });
         }
-        const [result, missed_id] = this.getStructureByIdArray(id_list);
-        // 如果出现了没查到数据的建筑，则移除掉这些数据
-        if (missed_id.length > 0){
-            for (const id of missed_id){
+        const result: AnySpawnEnergyStoreStructure[] = [];
+        for (const id of id_list){
+            const struct = Game.getObjectById(id);
+            if (struct){
+                result.push(struct);
+            }else{
                 delete this.memory.taskSpawn[id];
             }
         }

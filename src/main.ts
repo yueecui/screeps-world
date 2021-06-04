@@ -63,9 +63,9 @@ module.exports.loop = () => {
 
     // 临时运转LINK
     const room = Game.rooms['W35N57'];
-    const mm_link = room.getStructureById(room.memory.links[0])!;
+    const mm_link = Game.getObjectById(room.memory.links[0])!;
     for (let i=1;i<room.memory.links.length;i++){
-        const link = room.getStructureById(room.memory.links[i])!;
+        const link = Game.getObjectById(room.memory.links[i])!;
         if (link.store[RESOURCE_ENERGY] > 0){
             link.transferEnergy(mm_link);
         }

@@ -35,7 +35,7 @@ export const creepExtensionHarvester = function () {
         if (this.errorCheckHarvestEnergy()) return;
 
         const source_set = this.room.memory.sources[this.memory.node];
-        const container = this.room.getStructureById(source_set.c!)!;
+        const container = Game.getObjectById(source_set.c!)!;
 
         if (this.pos.getRangeTo(container) > 0){
             this.moveTo(container);
@@ -104,7 +104,7 @@ export const creepExtensionHarvester = function () {
         this.repair(target);
         if (this.store[RESOURCE_ENERGY] < this.getActiveBodyparts(WORK)){
             const source_set = this.room.memory.sources[this.memory.node];
-            const container = this.room.getStructureById(source_set.c!)!;
+            const container = Game.getObjectById(source_set.c!)!;
             if (this.withdraw(container, RESOURCE_ENERGY) == ERR_NOT_ENOUGH_RESOURCES){
                 this.clearTarget();
                 this.setWorkState(WORK_IDLE);
@@ -133,7 +133,7 @@ export const creepExtensionHarvester = function () {
         if (this.errorCheckHarvestMineral()) return;
 
         const set = this.room.memory.mineral;
-        const container = this.room.getStructureById(set.c!)!;
+        const container = Game.getObjectById(set.c!)!;
 
         if (this.pos.getRangeTo(container) > 0){
             this.moveTo(container);
@@ -149,7 +149,7 @@ export const creepExtensionHarvester = function () {
 
         const set = this.room.memory.mineral;
         const node = Game.getObjectById(set.s as Id<Mineral>)!;
-        const container = this.room.getStructureById(set.c!)!;
+        const container = Game.getObjectById(set.c!)!;
 
         if (this.pos.isNearTo(node)){
             if (node.mineralAmount > 0 && container.store.getFreeCapacity() > 200){

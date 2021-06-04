@@ -3,34 +3,6 @@ import { all } from "lodash";
 
 
 export const roomExtensionBase = function () {
-    // 从tick cache获取建筑物信息，如果没有则请求→缓存→返回
-    Room.prototype.getStructureById = function<T extends AnyStructure>(id: Id<T>): T|null{
-        if (!(id in Game.cache.structure)){
-            Game.cache.structure[id] = Game.getObjectById(id) as T;
-        }
-        return Game.cache.structure[id] ? Game.cache.structure[id] as T : null;
-    };
-
-    // 从tick cache获取建筑物信息，如果没有则请求→缓存→返回
-    Room.prototype.getStructureByIdArray = function<T extends AnyStructure>(id_list: Id<T>[]){
-        const result: T[] = [];
-        const missed_id: Id<T>[] = [];
-        for (const id of id_list){
-            if (id == ''){
-                continue;
-            }
-            if (!(id in Game.cache.structure)){
-                Game.cache.structure[id] = Game.getObjectById(id as Id<T>);
-            }
-            if (Game.cache.structure[id]){
-                result.push(Game.cache.structure[id] as T);
-            }else{
-                missed_id.push(id as Id<T>);
-            }
-        }
-        return [result, missed_id];
-    };
-
     // 每tick检查的主方法
     Room.prototype.tickCheck = function() {
         // 初始化memory
@@ -146,10 +118,6 @@ export const roomExtensionBase = function () {
      // 缓存特定建筑的Id
      Room.prototype.cacheStructuresStatus = function(){
         const all_structures = this.find(FIND_STRUCTURES);
-        // 缓存下来，本tick当单id查询，就不必再请求getObjectById了
-        _.each(all_structures, (structure)=>{
-            Game.cache.structure[structure.id] = structure;
-        })
 
         // 所有的塔
         this.memory.towers = _.map(_.filter(all_structures, {structureType: STRUCTURE_TOWER}) as StructureTower[], 'id');
@@ -172,7 +140,7 @@ export const roomExtensionBase = function () {
         // container检查
         // TODO 需重新写
         for (const status of this.memory.containers){
-            const container = this.getStructureById(status.id);
+            const container = Game.getObjectById(status.id);
             if (!container){
                 this.removeContainer(status.id);
             }
@@ -181,5 +149,20 @@ export const roomExtensionBase = function () {
 
     Room.prototype.getMySpawns = function (){
         return _.filter(Game.spawns, (spawn) => { return spawn.room.name == this.name; });
+    };
+
+    Room.prototype.calcPrice = function (order_id: string, amount: number){
+        const order = Game.market.getOrderById(order_id);
+        if (!order){
+            console.log(`订单 ${order_id} 不存在`);
+            return;
+        }
+        if (order.type != ORDER_BUY){
+            console.log(`订单 ${order_id} 不是个买入订单`);
+            return;
+        }
+        amount = amount ? (amount > order.amount ? order.amount : amount) : order.amount;
+        const cost = Game.market.calcTransactionCost(amount, this.name, order.roomName!);
+        console.log(`订单 ${order_id}：以${order.price}的价格出售 ${order.resourceType} ${amount}个，手续费${cost}能量（${(cost/amount).toFixed(3)}/个），总收益${order.price * amount}`)
     };
 }
