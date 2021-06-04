@@ -85,6 +85,16 @@ export const roomExtensionBase = function () {
         if (this.memory.energyPlan == undefined){
             this.memory.energyPlan = [];
         }
+
+        if (this.memory.data == undefined){
+            this.memory.data = {
+                source: [],
+                mineral: null,
+                container: [],
+                link: [],
+                tower: [],
+            }
+        }
     }
 
     // 初始化所有资源点数据
@@ -165,4 +175,23 @@ export const roomExtensionBase = function () {
         const cost = Game.market.calcTransactionCost(amount, this.name, order.roomName!);
         console.log(`订单 ${order_id}：以${order.price}的价格出售 ${order.resourceType} ${amount}个，手续费${cost}能量（${(cost/amount).toFixed(3)}/个），总收益${order.price * amount}`)
     };
+
+    Object.defineProperty(Room.prototype, 'sources', {
+        get: function () {
+            if (this.memory.data && this.memory.data.source.length == 0){
+                const sources: sourceInfo[] = [];
+                for (const source of this.find(FIND_SOURCES)){
+                    sources.push({
+                        id: source.id,
+                        container: null,
+                        link: null,
+                        workPos: [0, 0],
+                    })
+                }
+            }
+            return this.memory.data.source;
+        },
+        enumerable: false,
+        configurable: true
+    })
 }

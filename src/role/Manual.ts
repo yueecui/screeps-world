@@ -34,7 +34,12 @@ export const roleManual: CreepRole = {
                 }
             }
             if (creep.store.getUsedCapacity() == 0){
-                creep.memory.node = 1;
+                if (creep.ticksToLive! > 500){
+                    creep.memory.node = 1;
+                }else{
+                    creep.memory.r = '回收'
+                }
+
             }
         }
         // 去中转点
@@ -70,19 +75,41 @@ export const roleManual: CreepRole = {
         }
         // 搬东西
         else if (creep.memory.node == 4){
-            if (creep.store.getUsedCapacity() == 0){
+            if (creep.store.getFreeCapacity() == 0){
                 creep.memory.node = 1;
             }
             let target = creep.getTargetObject() as AnyStoreStructure | null;
             if (target){
-                if (Object.keys(target.store).length == 0){
+                let energy = 0;
+                let other = 0;
+                for (const name in target.store){
+                    if (name == RESOURCE_ENERGY){
+                        energy += target.store[RESOURCE_ENERGY];
+                    }else{
+                        other += target.store[name as ResourceConstant]
+                    }
+                }
+                if (other == 0 && energy <= 300){
                     target = null;
                 }
             }
             if (!target){
-                const structures = creep.room.find(FIND_STRUCTURES, {filter: (struct) => {
-                    if ('store' in struct){
-                        return Object.keys(struct.store).length > 0;
+                const structures = creep.room.find(FIND_STRUCTURES, {filter: (target) => {
+                    if ('store' in target){
+                        let energy = 0;
+                        let other = 0;
+                        for (const name in target.store){
+                            if (name == RESOURCE_ENERGY){
+                                energy += target.store[RESOURCE_ENERGY];
+                            }else{
+                                other += target.store[name as ResourceConstant]
+                            }
+                        }
+                        if (other == 0 && energy <= 300){
+                            return false;
+                        }else{
+                            return true;
+                        }
                     }
                     return false;
                 }});
@@ -92,12 +119,18 @@ export const roleManual: CreepRole = {
             }
             if (target){
                 if (!creep.pos.isNearTo(target)){
-                    creep.moveTo(target);
+                    creep.moveTo(target, {visualizePathStyle: {}});
                 }else{
-                    for (const name in target.store){
-                        creep.withdraw(target, name as ResourceConstant);
+                    if (RESOURCE_GHODIUM in target.store){
+                        creep.withdraw(target, RESOURCE_GHODIUM);
+                    }else{
+                        for (const name in target.store){
+                            creep.withdraw(target, name as ResourceConstant);
+                        }
                     }
                 }
+            }else{
+                creep.memory.node = 1;
             }
         }
     },

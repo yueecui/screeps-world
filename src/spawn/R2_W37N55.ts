@@ -29,7 +29,7 @@ export const ROOM_2_CONFIG: Map<string, RoleConfig> = new Map([
     // 中心操作设备
     // ['R1-MM', { body: [CARRY, CARRY, CARRY, CARRY, CARRY, CARRY, CARRY, CARRY, MOVE], amount: 1, aheadTime: 80, memory: {r:'主脑'} }],
 
-    // ['R2-ST', { body: getMaxCarrier3Body(), amount: 1, aheadTime: 80, memory: {r:'手动', mode: 0, stay: [26, 26]} }],
+    // ['R2-ST', { body: getMaxCarrier3Body(), amount: 3, aheadTime: 600, memory: {r:'手动', mode: 0, stay: [26, 26]} }],
 
     // ROOM的建造者
     // ['R2-BD-B', { body: getMaxBuilderBody(), amount: 1, memory: {r:'建造', mode:0, stay: [29, 27]} }],    // 建造优先

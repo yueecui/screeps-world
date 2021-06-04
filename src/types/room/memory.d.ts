@@ -8,13 +8,13 @@ interface RoomMemory {
      *
      * 只生成一次，只要sources这个key存在就不会再刷新
      */
-    sources: Array<sourceInfo>;
+    sources: Array<sourceNodeInfo>;
     /**
      * room里的mineral缓存
      *
      * 只生成一次，只要mineral这个key存在就不会再刷新
      */
-    mineral: sourceInfo;
+    mineral: sourceNodeInfo;
     /**
      * 本房间最后一次孵化的时间
      *
@@ -49,13 +49,55 @@ interface RoomMemory {
      * 用于辅助计算能量存储建筑可用能量
      */
     energyPlan: EnergyPlan[];
+
+
+    /** 房间数据 */
+    data: {
+        source: sourceInfo[],
+        mineral: mineralInfo | null,
+        container: containerInfo[],
+        link: Id<StructureLink>[];
+        tower: Id<StructureTower>[];
+    };
 }
+
+/** source的配置数据 */
+interface sourceInfo{
+    id: Id<Source>;
+    container: Id<StructureContainer> | null;
+    link: Id<StructureLink> | null;
+    /** 工作坐标 */
+    workPos: [number, number];
+}
+
+/** source的配置数据 */
+interface mineralInfo{
+    id: Id<Source>;
+    container: Id<StructureContainer> | null;
+    /** 工作坐标 */
+    workPos: [number, number];
+}
+
+/** container的配置数据 */
+ interface containerInfo{
+    id: Id<StructureContainer>;
+    type: ANY_CONTAINER_TYPE;
+}
+
+type ANY_CONTAINER_TYPE =
+        | CONTAINER_TYPE_SOURCE
+        | CONTAINER_TYPE_CONTROLLER
+        | CONTAINER_TYPE_MINERAL;
+type CONTAINER_TYPE_SOURCE = 0;    // 临接source的container，存量变多后会转移到storage
+type CONTAINER_TYPE_CONTROLLER = 1;    // 用于给upgrader提取能量的container
+type CONTAINER_TYPE_MINERAL = 2;    // 临接mineral的container，存量变多后会转移到storage
+
 
 
 /**
- * source缓存的状态
+ * source缓存的状态（预计过期）
  */
- interface sourceInfo {
+ interface sourceNodeInfo {
     /**
      * source ID
      */
@@ -84,22 +126,6 @@ type TASK_STATUS =
 type TASK_WAITING = 0;
 type TASK_ACCEPTED = 1;
 
-
-/**
- * container缓存的状态
- */
-interface containerInfo{
-    id: Id<StructureContainer>;
-    type: ANY_CONTAINER_TYPE;
-}
-
-type ANY_CONTAINER_TYPE =
-        | CONTAINER_TYPE_SOURCE
-        | CONTAINER_TYPE_CONTROLLER
-        | CONTAINER_TYPE_MINERAL;
-type CONTAINER_TYPE_SOURCE = 0;    // 临接source的container，存量变多后会转移到storage
-type CONTAINER_TYPE_CONTROLLER = 1;    // 用于给upgrader提取能量的container
-type CONTAINER_TYPE_MINERAL = 2;    // 临接mineral的container，存量变多后会转移到storage
 
 /**
  * 运输中的能量计划
