@@ -54,8 +54,6 @@ const findOverlapPos = function(a: findPosParam, b: findPosParam): [number, numb
     return result;
 }
 
-
-
 /**
  * 计算工作坐标位置
  * @param target 目标工作对象
@@ -128,7 +126,7 @@ export const roomExtensionBase = function () {
         const newPlan = [];
         for (const plan of this.memory.energyPlan){
             if (plan.cName in Game.creeps
-                && _.filter(this.memory.containers, (c)=>{ return c.id == plan.sid }).length > 0){
+                && _.filter(this.memory.data.containers, (c)=>{ return c.id == plan.sid }).length > 0){
                 newPlan.push(plan);
             }
         }
@@ -166,14 +164,8 @@ export const roomExtensionBase = function () {
         if (this.memory.taskSpawn == undefined){
             this.memory.taskSpawn = {}
         }
-        if (this.memory.towers == undefined){
-            this.updateRoomStatus();
-        }
         if (this.memory.taskTowers == undefined){
             this.memory.taskTowers = {};
-        }
-        if (this.memory.containers == undefined){
-            this.memory.containers = [];
         }
         if (this.memory.energyPlan == undefined){
             this.memory.energyPlan = [];
@@ -221,8 +213,6 @@ export const roomExtensionBase = function () {
 
 
         // 以下为旧版本保留
-        this.memory.towers = _.map(_.filter(all_structures, {structureType: STRUCTURE_TOWER}) as StructureTower[], 'id');
-
         // 所有的LINK
         this.memory.links = [];
         const all_links = _.filter(all_structures, {structureType: STRUCTURE_LINK}) as StructureLink[];
@@ -238,14 +228,6 @@ export const roomExtensionBase = function () {
         })
         this.memory.links.push(...all_links.map((link) => {return link.id}));
 
-        // container检查
-        // TODO 需重新写
-        for (const status of this.memory.containers){
-            const container = Game.getObjectById(status.id);
-            if (!container){
-                this.removeContainer(status.id);
-            }
-        }
     };
 
     Room.prototype.updateRoomStatus_Container = function(all_containers){
@@ -418,6 +400,8 @@ export const roomExtensionBase = function () {
         amount = amount ? (amount > order.amount ? order.amount : amount) : order.amount;
         const cost = Game.market.calcTransactionCost(amount, this.name, order.roomName!);
         console.log(`订单 ${order_id}：以${order.price}的价格出售 ${order.resourceType} ${amount}个，手续费${cost}能量（${(cost/amount).toFixed(3)}/个），总收益${order.price * amount}`)
+
+
     };
 
     Object.defineProperty(Room.prototype, 'sources', {
@@ -454,6 +438,50 @@ export const roomExtensionBase = function () {
                 }
             }
             return this.memory.data.mineral;
+        },
+        enumerable: false,
+        configurable: true
+    });
+
+    Object.defineProperty(Room.prototype, 'containers', {
+        get: function () {
+            if (this.memory.data && this.memory.data.containers == null){
+                this.memory.data.containers = [];
+            }
+            return this.memory.data.containers;
+        },
+        enumerable: false,
+        configurable: true
+    });
+
+    Object.defineProperty(Room.prototype, 'links', {
+        get: function () {
+            if (this.memory.data && this.memory.data.links == null){
+                this.memory.data.links = [];
+            }
+            return this.memory.data.links;
+        },
+        enumerable: false,
+        configurable: true
+    });
+
+    Object.defineProperty(Room.prototype, 'towers', {
+        get: function () {
+            if (this.memory.data && this.memory.data.towers == null){
+                this.memory.data.towers = [];
+            }
+            return this.memory.data.towers;
+        },
+        enumerable: false,
+        configurable: true
+    });
+
+    Object.defineProperty(Room.prototype, 'my', {
+        get: function () {
+            return this.controller
+                   && (this.controller.my
+                       || (this.controller.reservation && this.controller.reservation.username == 'Yuee')
+                   );
         },
         enumerable: false,
         configurable: true

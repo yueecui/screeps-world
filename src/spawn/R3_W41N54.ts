@@ -36,10 +36,12 @@ const getMaxBuilder3Body = function(){
 export const ROOM_3_CONFIG: Map<string, RoleConfig> = new Map([
     // ['Guu', { body: BODY_CONFIG['侵略者R5'], amount: 1, memory: {r:'攻击'} }],
     // ROOM搬运者
-    ['R3-TR-T', { body: [CARRY, CARRY, CARRY, CARRY, CARRY, CARRY, MOVE, MOVE,  MOVE], amount: 1, aheadTime: 80, memory: {r:'运输', mode: 0, stay: [33, 33]} }],
 
     // ROOM收集者
     ['R3-GA-A', { body: BODY_CONFIG['采集者R2'], amount: 1, aheadTime: 80, memory: {r:'采集', mode:0, node:0} }],
+    ['R3-TR-T', { body: [CARRY, CARRY, CARRY, CARRY, CARRY, CARRY, MOVE, MOVE,  MOVE], amount: 1, aheadTime: 80, memory: {r:'运输', mode: 0, stay: [33, 33]} }],
+
+
     ['R3-GA-B', { body: BODY_CONFIG['采集者R2'], amount: 1, aheadTime: 80, memory: {r:'采集', mode:0, node:1} }],
 
     ['R3-TR-U', { body: [CARRY, CARRY, CARRY, CARRY, CARRY, CARRY, MOVE, MOVE,  MOVE], amount: 2, aheadTime: 80, memory: {r:'运输', mode: 1, stay: [30, 28]} }],

@@ -115,7 +115,7 @@ export const roleTransporter: Transporter = {
                 return;
             }
 
-            for (const info of creep.room.memory.containers){
+            for (const info of creep.room.memory.data.containers){
                 const container = Game.getObjectById(info.id)!;
                 if (container.store.getFreeCapacity() < 1200){
                     if (creep.withdraw(container, RESOURCE_ENERGY) == ERR_NOT_IN_RANGE){

@@ -9,8 +9,8 @@ export const roomExtensionTower = function () {
 
     // 检查tower的能量
     Room.prototype.checkTowerEnergy = function(){
-        if (this.memory.towers.length > 0){
-            let towers = _.map(this.memory.towers, (id)=> {return Game.getObjectById(id)});
+        if (this.memory.data.towers.length > 0){
+            let towers = _.map(this.memory.data.towers, (id)=> {return Game.getObjectById(id)});
             towers = _.filter(towers, (tower) => {
                 if (tower == null) { this.memory.flagPurge = true;return false; }
                 return tower.store.getFreeCapacity(RESOURCE_ENERGY) > 0;

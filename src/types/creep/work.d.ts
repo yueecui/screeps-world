@@ -13,11 +13,16 @@ interface Creep{
     /** 采集者执行 WORK_REPAIR */
     harvesterDoWorkRepair(): void;
 
-
     /**
-     * 执行 WORK_UPGRADE
+     * 升级者
+     * @returns true表示有错误，false表示无错误
      */
-    doWorkUpgrade(): void;
+    upgraderErrorCheck(): boolean;
+    /** 执行 WORK_UPGRADE */
+    upgraderDoWork(): void;
+
+
+
 
     /**
      * 查找房间内可以建造的目标，如果找到就

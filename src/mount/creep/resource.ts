@@ -67,7 +67,7 @@ export const creepExtensionResource = function () {
         let structures: Array<StructureContainer | StructureStorage> = [];
         if (opt.container){
             _.each(
-                _.filter(this.room.memory.containers, (info) => {
+                _.filter(this.room.memory.data.containers, (info) => {
                     return opt!.container!.indexOf(info.type) > -1;
                 }),
                 (info) => {

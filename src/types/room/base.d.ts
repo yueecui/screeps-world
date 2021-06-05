@@ -5,8 +5,10 @@ interface Room {
     sources: sourceInfo[]
     mineral: mineralInfo
     containers: containerInfo[]
-    links: Id<StructureLink>[]
+    links: linkInfo[]
     towers: Id<StructureTower>[]
+    /** 显示房间是否为我的，或是是否由我预定了 */
+    my: boolean
 
     /**
      * 房间定期检查

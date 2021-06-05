@@ -78,6 +78,13 @@ type ROLE_ATTACKER = '攻击';
 type ROLE_ENGINEER = '工兵';
 type ROLE_MASTERMIND = '主脑';
 
+type AnyRole =
+    | CreepRole
+    | Transporter
+    | Builder
+    | Upgrader
+    | Attacker
+    | Engineer;
 
 interface CreepRole {
   run(creep: Creep): void;
@@ -85,17 +92,6 @@ interface CreepRole {
   execute(creep: Creep): void;
 }
 
-type AnyRole =
-    | Harvester
-    | Transporter
-    | Builder
-    | Upgrader
-    | Attacker
-    | Engineer;
-
-interface Harvester extends CreepRole{
-  otherRoom(creep: Creep): void;
-}
 
 interface Transporter extends CreepRole{
   otherRoom(creep: Creep): void;

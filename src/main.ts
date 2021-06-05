@@ -26,16 +26,12 @@ module.exports.loop = () => {
     // 检查所有自己的房间
     for(const name in Game.rooms) {
         const room = Game.rooms[name];
-        if (room.controller
-            && (room.controller.my
-                || (room.controller.reservation && room.controller.reservation.username == 'Yuee')
-               )
-           ){
+        if (room.my){
             room.tickCheck();
 
             // 检查塔
-            if (room.memory.towers){
-                for (const tower_id of room.memory.towers){
+            if (room.memory.data.towers){
+                for (const tower_id of room.memory.data.towers){
                     const tower = Game.getObjectById(tower_id);
                     if (tower){
                         var closestHostile = tower.pos.findClosestByRange(FIND_HOSTILE_CREEPS);

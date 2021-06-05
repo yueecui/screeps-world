@@ -1,19 +1,4 @@
 interface Room {
-  /**
-   * 添加一个container
-   *
-   * 这个方法一般手工调用
-   * @param id 需要添加的container id
-   * @param type container的类型，用于用途判断
-   */
- addContainer(id: Id<StructureContainer>, type: ANY_CONTAINER_TYPE): void;
- /**
-  * 移除一个container
-  *
-  * 这个方法会在定期检查时自动调用
-  * @param id 需要移除的container id
-  */
- removeContainer(id: Id<StructureContainer>): void;
  /**
   * 预定要变化container的energy
   *

@@ -24,7 +24,7 @@ export const roleUpgrader: Upgrader = {
 
         switch(creep.getWorkState()){
             case WORK_UPGRADE:
-                creep.doWorkUpgrade();
+                creep.upgraderDoWork();
                 break;
             case WORK_IDLE:
                 break;

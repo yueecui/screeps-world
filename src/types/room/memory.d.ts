@@ -33,12 +33,7 @@ interface RoomMemory {
      * 当前还需要补充能量的塔
      */
     taskTowers: Record<string, taskInfo>;
-    /**
-     * room中，container的ID缓存
-     *
-     * container需要手工调用Room.addContainer添加（但会定期自动检测是否存在，不存在就会自动移除）
-     */
-    containers: Array<containerInfo>;
+
     /**
      * room中，LINK的ID缓存
      */

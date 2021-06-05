@@ -43,7 +43,7 @@ export const creepExtensionHarvester = function () {
     }
 
 
-    // 采集能量的错误检查
+    // 采集者的错误检查
     Creep.prototype.harvesterErrorCheck = function(){
         const room = this.memory.room ? Game.rooms[this.memory.room] : this.room;
         let room_memory = room ? room.memory : Memory.rooms[this.memory.room];
@@ -79,7 +79,6 @@ export const creepExtensionHarvester = function () {
         }
         return false;
     }
-
 
      // 前往采集点
      Creep.prototype.harvesterGoTo = function(){
@@ -178,58 +177,59 @@ export const creepExtensionHarvester = function () {
 
 
     // ------------------------------------------------------
-    // 升级
+    // 升级者
     // ------------------------------------------------------
 
+    // 升级者的错误检查
+    Creep.prototype.upgraderErrorCheck = function(){
+        const controller = this.room.controller;
+        if (!controller){
+            this.say('ROOM无控制器');
+            return true;
+        }else if (controller.my){
+            this.say('ROOM不属于我')
+            return true;
+        }else{
+            const controller_info = this.room.memory.data.controller;
+            if (controller_info.id == null){
+                this.say('无升级用存储器');
+                return true;
+            }
+            if (this.getIndex() > controller_info.workPos.length){
+                this.say('没有可用工作位置');
+                return true;
+            }
+        }
+        return false;
+    }
+
     // 执行 WORK_UPGRADE
-    Creep.prototype.doWorkUpgrade = function(){
-        if (this.getEnergyState() == ENERGY_NEED){
+    Creep.prototype.upgraderDoWork = function(){
+        const obtain_energy = () => {
             this.obtainEnergy({
                 container: [CONTAINER_TYPE_CONTROLLER],
                 storage: false,
             });
+        }
+
+        if (this.getEnergyState() == ENERGY_NEED){
+            obtain_energy();
         }else{
             if (this.store[RESOURCE_ENERGY] == 0){
                 this.setEnergyState(ENERGY_NEED);
-                this.obtainEnergy({
-                    container: [CONTAINER_TYPE_CONTROLLER],
-                    storage: false,
-                });
+                obtain_energy();
             }
-            if (this.room.name == 'W35N57'){
-                if (this.pos.x != 29 || this.pos.y != 20+this.getIndex()){
-                    this.moveTo(29, 20+this.getIndex())
-                }
-            }else if (this.room.name == 'W41N54'){
-                if (this.getIndex() >= 4){
-                    if (this.pos.x != 9 || this.pos.y != 3+this.getIndex()){
-                        this.moveTo(9, 3+this.getIndex())
-                    }
-                }else{
-                    if (this.pos.x != 8 || this.pos.y != 6+this.getIndex()){
-                        this.moveTo(8, 6+this.getIndex())
-                    }
-                }
-            }else{
-                if (this.getIndex() >= 4){
-                    if (this.pos.x != 42 || this.pos.y != 11+this.getIndex()){
-                        this.moveTo(42, 11+this.getIndex())
-                    }
-                }else{
-                    if (this.pos.x != 42 || this.pos.y != 14+this.getIndex()){
-                        this.moveTo(42, 14+this.getIndex())
-                    }
-                }
+            const controller_info = this.room.memory.data.controller;
+            const work_pos = controller_info.workPos[this.getIndex()-1];
 
+            if (this.pos.x != work_pos[0] || this.pos.y != work_pos[1]){
+                this.moveTo(work_pos[0], work_pos[1])
             }
 
             switch(this.upgradeController(this.room.controller!)){
                 case ERR_NOT_ENOUGH_RESOURCES:
                     this.setEnergyState(ENERGY_NEED);
-                    this.obtainEnergy({
-                        container: [CONTAINER_TYPE_CONTROLLER],
-                        storage: false,
-                    });
+                    obtain_energy();
                     break;
             }
         }
