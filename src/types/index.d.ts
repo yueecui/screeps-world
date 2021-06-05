@@ -30,3 +30,9 @@ declare namespace NodeJS {
     log: any;
   }
 }
+
+
+interface Memory{
+  /** 临时用旗标，什么都可以写 */
+  tempFlags: Record<string, any>;
+}

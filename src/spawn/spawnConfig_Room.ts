@@ -9,7 +9,7 @@ export const SPAWN_CONFIG: Map<string, RoleConfig> = new Map([
     // 采集者
     ['GA-A', { amount: 1, aheadTime: 80, memory: {r:'采集', mode:0, node:0} }],
     ['GA-B', { amount: 1, aheadTime: 80, memory: {r:'采集', mode:0, node:1} }],
-    ['GA-M', { amount: 1, aheadTime: 80, memory: {r:'采集', mode:1} }],
+    ['GA-M', { amount: 1, aheadTime: 80, memory: {r:'采集', mode:1 } }],
 
     // 中心操作者
     ['MM', { body: [CARRY, CARRY, CARRY, CARRY, CARRY, CARRY, CARRY, CARRY, MOVE], amount: 1, aheadTime: 80, memory: {r:'主脑'} }],

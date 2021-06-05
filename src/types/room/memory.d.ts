@@ -53,11 +53,13 @@ interface RoomMemory {
 
     /** 房间数据 */
     data: {
-        source: sourceInfo[],
+        sources: sourceInfo[],
         mineral: mineralInfo | null,
-        container: containerInfo[],
-        link: Id<StructureLink>[];
-        tower: Id<StructureTower>[];
+        containers: containerInfo[],
+        links: linkInfo[];
+        towers: Id<StructureTower>[];
+        controller: controllerInfo,
+        storage: storageInfo,
     };
 }
 
@@ -70,12 +72,10 @@ interface sourceInfo{
     workPos: [number, number];
 }
 
-/** source的配置数据 */
+/** mineral的配置数据 */
 interface mineralInfo{
-    id: Id<Source>;
+    id: Id<Mineral>;
     container: Id<StructureContainer> | null;
-    /** 工作坐标 */
-    workPos: [number, number];
 }
 
 /** container的配置数据 */
@@ -85,14 +85,47 @@ interface mineralInfo{
 }
 
 type ANY_CONTAINER_TYPE =
+        | CONTAINER_TYPE_NONE
         | CONTAINER_TYPE_SOURCE
         | CONTAINER_TYPE_CONTROLLER
         | CONTAINER_TYPE_MINERAL;
-type CONTAINER_TYPE_SOURCE = 0;    // 临接source的container，存量变多后会转移到storage
+type CONTAINER_TYPE_NONE = 0;   // 未设定
 type CONTAINER_TYPE_CONTROLLER = 1;    // 用于给upgrader提取能量的container
-type CONTAINER_TYPE_MINERAL = 2;    // 临接mineral的container，存量变多后会转移到storage
+type CONTAINER_TYPE_SOURCE = 2;    // 临接source的container，存量变多后会转移到storage
+type CONTAINER_TYPE_MINERAL = 3;    // 临接mineral的container，存量变多后会转移到storage
 
 
+/** link的配置数据 */
+interface linkInfo{
+    id: Id<StructureLink>;
+    type: ANY_LINK_TYPE;
+}
+
+type ANY_LINK_TYPE =
+        | LINK_TYPE_NONE
+        | LINK_TYPE_SOURCE
+        | LINK_TYPE_CONTROLLER
+        | LINK_TYPE_STORAGE
+
+/** 未设定类型 */
+type LINK_TYPE_NONE = 0;
+/** 临接storage的link */
+type LINK_TYPE_STORAGE = 1;
+/** 临接controller的link */
+type LINK_TYPE_CONTROLLER = 2;
+/** 临接source的link */
+type LINK_TYPE_SOURCE = 3;
+
+/** controller的能量来源 */
+interface controllerInfo{
+    id: Id<StructureLink | StructureContainer> | null;
+    type: STRUCTURE_CONTAINER | STRUCTURE_LINK | null;
+    workPos: [number, number][];
+}
+
+interface storageInfo{
+    link: Id<StructureLink> | null;
+}
 
 /**
  * source缓存的状态（预计过期）

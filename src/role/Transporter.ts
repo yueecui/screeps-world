@@ -1,7 +1,7 @@
 import {
     ENERGY_NEED, ENERGY_ENOUGH,
     WORK_IDLE, WORK_TRANSPORTER_SPAWN, WORK_TRANSPORTER_TOWER, WORK_TRANSPORTER_STORAGE_ENERGY, WORK_TRANSPORTER_CONTROLLER,
-    MODE_SPAWN, MODE_CONTROLLER, WORK_TRANSPORTER_STORAGE_MINERAL
+    MODE_SPAWN, MODE_CONTROLLER, WORK_TRANSPORTER_STORAGE_MINERAL, WORK_TRANSPORTER_TOMBSTONE
 } from '@/constant';
 
 const IDLE_POS = { x: 28, y: 27 }
@@ -35,11 +35,13 @@ export const roleTransporter: Transporter = {
             if (creep.getWorkState() == WORK_IDLE){
                 // if (creep.checkWorkTransporterController()) return;
                 if (creep.checkWorkTransporterSpawn()) return;
+                if (creep.checkWorkTransporterStorage_Energy()) return;
+                if (creep.checkWorkTransporterTombstone()) return;
                 if (creep.checkWorkTransporterTower()) return;
                 // if (creep.checkWorkTransporterStorage_Mineral()) return;
-                if (creep.checkWorkTransporterStorage_Energy()) return;
             }
         }else {
+            // if (creep.checkWorkTransporterTombstone()) return;
             if (creep.checkWorkTransporterSpawn()) return;
 
             // 空闲下才会执行的任务
@@ -74,6 +76,9 @@ export const roleTransporter: Transporter = {
                 break;
             case WORK_TRANSPORTER_STORAGE_MINERAL:
                 creep.doWorkTransporterStorage_Mineral();
+                break;
+            case WORK_TRANSPORTER_TOMBSTONE:
+                creep.doWorkTransporterTombstone();
                 break;
             case WORK_IDLE:
                 if (creep.store[RESOURCE_ENERGY] > 0){

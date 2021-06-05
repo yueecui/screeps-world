@@ -1,4 +1,4 @@
-import {getMaxCarrier2Body, getMaxBuilder2Body, getMinerBody, BODY_CONFIG} from './bodyConfig'
+import {getMaxCarrier2Body, getMaxBuilder2Body, BODY_CONFIG} from './bodyConfig'
 
 export const getMaxCarrier3Body = function(){
     const group_number = Math.floor(Game.spawns['Shanghai'].room.energyCapacityAvailable / 100) ;
@@ -29,15 +29,16 @@ export const ROOM_2_CONFIG: Map<string, RoleConfig> = new Map([
     // 中心操作设备
     // ['R1-MM', { body: [CARRY, CARRY, CARRY, CARRY, CARRY, CARRY, CARRY, CARRY, MOVE], amount: 1, aheadTime: 80, memory: {r:'主脑'} }],
 
-    // ['R2-ST', { body: getMaxCarrier3Body(), amount: 3, aheadTime: 600, memory: {r:'手动', mode: 0, stay: [26, 26]} }],
-
     // ROOM的建造者
     // ['R2-BD-B', { body: getMaxBuilderBody(), amount: 1, memory: {r:'建造', mode:0, stay: [29, 27]} }],    // 建造优先
     ['R2-BD-R', { body: getMaxBuilder2Body(), amount: 1, memory: {r:'建造', mode:1, stay: [20, 26]} }],    // 修理优先
     // ROOM升级者
     ['R2-UP', { body: BODY_CONFIG['升级者R4'], amount: 1, memory: {r:'升级'} }],
 
+    // ['R2-ST', { body: getMaxCarrier3Body(), amount: 8, aheadTime: 400, memory: {r:'手动', mode: 0, stay: [26, 26]} }],
+
     // 开分矿用c
-    // ['N-ENG', { body: getNewEngBody(), amount: 1, memory: {r:'手动', mode:1}}],
-    // ['N-BD', { body: getNewBuilderBody(), amount: 1, memory: {r:'手动', mode:0}}],
+    // ['N-ENG', { body: [CLAIM, MOVE], amount: 1, memory: {r:'手动', mode:1}}],
+    // ['N-BD-A', { body: getMaxBuilder2Body(), amount: 1, aheadTime: 220, memory: {r:'手动', mode:0, node:0}}],
+    // ['N-BD-B', { body: getMaxBuilder2Body(), amount: 1, aheadTime: 220, memory: {r:'手动', mode:0, node:1}}],
 ]);

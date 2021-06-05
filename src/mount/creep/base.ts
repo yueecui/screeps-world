@@ -75,6 +75,10 @@ export const creepExtensionBase = function () {
         return this.memory.r;
     }
 
+    Creep.prototype.setRole = function(name: ANY_ROLE_NAME){
+        this.memory.r = name;
+    }
+
     Creep.prototype.getMode = function(){
         return this.memory.mode == undefined ? MODE_NONE : this.memory.mode;
     }

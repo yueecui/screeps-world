@@ -1,6 +1,6 @@
 import {
     ENERGY_NEED, ENERGY_ENOUGH,
-    WORK_IDLE, WORK_TRANSPORTER_SPAWN, WORK_TRANSPORTER_TOWER, WORK_TRANSPORTER_STORAGE_ENERGY,
+    WORK_IDLE, WORK_TRANSPORTER_SPAWN, WORK_TRANSPORTER_TOWER, WORK_TRANSPORTER_STORAGE_ENERGY, WORK_TRANSPORTER_TOMBSTONE,
     TASK_WAITING, TASK_ACCEPTED,
     CONTAINER_TYPE_SOURCE,
     WORK_TRANSPORTER_CONTROLLER,
@@ -315,6 +315,57 @@ export const creepExtensionTransporter = function () {
                         break;
                 }
             }
+        }
+    }
+
+    // ------------------------------------------------------
+    // source container转存到storage
+    // ------------------------------------------------------
+
+    // 检查是否需要设置工作状态为搬运孵化能量
+    Creep.prototype.checkWorkTransporterTombstone = function(){
+        if (this.getWorkState() != WORK_TRANSPORTER_TOMBSTONE && this.room.storage){
+            const found = this.room.find(FIND_TOMBSTONES, { filter: (tomestone) => {
+                return tomestone.creep.owner.username == 'Invader' && tomestone.store.getUsedCapacity() > 0;
+            }});
+            if (found.length > 0){
+                // 设定工作状态
+                this.clearQueue();
+                if (this.store[RESOURCE_ENERGY] > 0){
+                    this.setEnergyState(ENERGY_ENOUGH);
+                    this.setWorkState(WORK_TRANSPORTER_STORAGE_ENERGY);
+                    return true;
+                }else{
+                    this.setWorkState(WORK_TRANSPORTER_TOMBSTONE);
+                    this.setTarget(found[0].id);
+                }
+                return true;
+            }
+        }
+        return false;
+    }
+
+    // 执行 WORK_TRANSPORTER_TOMBSTONE
+    Creep.prototype.doWorkTransporterTombstone = function(){
+        const target = this.getTargetObject() as Tombstone | null;
+        if (target && target.store.getUsedCapacity() > 0){
+            if (this.pos.isNearTo(target)){
+                for (const name in target.store){
+                    this.withdraw(target, name as ResourceConstant);
+                }
+            }else{
+                this.moveTo(target);
+            }
+        }else if (this.store.getUsedCapacity() > 0){
+            if (this.pos.isNearTo(this.room.storage!)){
+                for (const name in this.store){
+                    this.transfer(this.room.storage!, name as ResourceConstant);
+                }
+            }else{
+                this.moveTo(this.room.storage!);
+            }
+        }else{
+            this.setWorkState(WORK_IDLE);
         }
     }
 }

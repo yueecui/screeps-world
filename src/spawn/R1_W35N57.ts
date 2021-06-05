@@ -58,14 +58,14 @@ export const ROOM_1_CONFIG: Map<string, RoleConfig> = new Map([
     ['GA-B', { body: BODY_CONFIG['采集者R4'], amount: 1, aheadTime: 80, memory: {r:'采集', mode:0, node:1} }],
     ['GA-A', { body: BODY_CONFIG['采集者R4'], amount: 1, aheadTime: 80, memory: {r:'采集', mode:0, node:0} }],
 
-    ['GA1-M', { body: getMinerBody(), amount: 1, aheadTime: 80, memory: {r:'采集', mode:1} }],
+    // ['GA1-M', { body: getMinerBody(), amount: 1, aheadTime: 80, memory: {r:'采集', mode:1} }],
     // 中心操作设备
     ['R1-MM', { body: [CARRY, CARRY, CARRY, CARRY, CARRY, CARRY, CARRY, CARRY, MOVE], amount: 1, aheadTime: 80, memory: {r:'主脑'} }],
 
     // ROOM外建造者
     ['ENG', { body: [CLAIM, CLAIM, MOVE, MOVE], amount: 1, aheadTime: 80, memory: {r:'工兵', mode:1, flag: 'eng1'}}],
-    ['GAO-A', { body: BODY_CONFIG['采集者R4+'], amount: 1, aheadTime: 100,  memory: {r:'采集', room:'W34N57', node:0 }}],
-    ['GAO-B', { body: BODY_CONFIG['采集者R4+'], amount: 1, aheadTime: 100,  memory: {r:'采集', room:'W34N57', node:1 }}],
+    ['GAO-A', { body: BODY_CONFIG['采集者R4+'], amount: 1, aheadTime: 100,  memory: {r:'采集', mode:0, node:0, room:'W34N57' }}],
+    ['GAO-B', { body: BODY_CONFIG['采集者R4+'], amount: 1, aheadTime: 100,  memory: {r:'采集', mode:0, node:1, room:'W34N57' }}],
     ['TRO-E', { body: getOutCarrierBody(), amount: 1, aheadTime: 80, memory: {r:'运输', room:'W34N57', mode:2 }}],
     // ['BDO-R', { body: getMaxBuilderBody(), amount: 1, memory: {r:'建造', mode:1, flag: 'colony', stay: [22, 30]} }],    // 修理优先
 

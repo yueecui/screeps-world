@@ -6,10 +6,12 @@ import {
 
 import { ROOM_1_CONFIG } from './R1_W35N57';
 import { ROOM_2_CONFIG } from './R2_W37N55';
+import { ROOM_3_CONFIG } from './R3_W41N54';
 
 const ROOM_SPAWN_CONFIG: Record<string, Map<string, RoleConfig>>= {
     'W35N57': ROOM_1_CONFIG,  // 第一个房间
     'W37N55': ROOM_2_CONFIG,  // 第二个房间
+    'W41N54': ROOM_3_CONFIG,
 }
 
 
@@ -71,6 +73,10 @@ export const ManagerCreeps: Record<string, any> = {
                     continue;
                 }
             }
+            // 临时
+            if (Memory.tempFlags.s == 1 && config.basename == 'R2-ST'){
+                return;
+            }
             const role_all = all_creeps[basename] || []
             const role_valid = valid_creeps[basename] || []
 
@@ -94,7 +100,7 @@ export const ManagerCreeps: Record<string, any> = {
         }
         memory.w = WORK_IDLE;
         const result = spawn.spawnCreep(config.body, config.basename+index, {memory: memory}); //, directions: [RIGHT], TOP_RIGHT, BOTTOM_RIGHT, TOP, TOP_LEFT
-        console.log(spawn.name, ':',result);
+        console.log(spawn.name,'-', config.basename, ':',result);
         if (result == OK){
             spawn.room.memory.lastSpawnTime = Game.time;
         }

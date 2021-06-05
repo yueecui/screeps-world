@@ -11,6 +11,9 @@ const cleanCreepsMemory = function() : void{
 // 全局定期自动事务
 export const Automatic = {
     run: function(): void{
+        if (Memory.tempFlags == undefined){
+            Memory.tempFlags = {};
+        }
         if (Game.time % 1000 == 0){
             cleanCreepsMemory();
         }

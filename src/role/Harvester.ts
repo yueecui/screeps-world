@@ -1,4 +1,5 @@
-import { WORK_IDLE, WORK_GOTO, WORK_HARVEST_ENERGY, WORK_REPAIR, MODE_HARVEST_ENERGY, MODE_HARVEST_MINERAL } from "@/constant";
+import { WORK_IDLE, WORK_GOTO, WORK_HARVEST, WORK_REPAIR, MODE_HARVEST_ENERGY, MODE_HARVEST_MINERAL } from "@/constant";
+import { createPrivateKey } from "crypto";
 
 // 如果目标无视野，则先走到下面的位置
 const MAP_POS: Record<string, [number,number]> = {
@@ -7,30 +8,30 @@ const MAP_POS: Record<string, [number,number]> = {
 
 export const roleHarvester: Harvester = {
     run: function(creep) {
-        if (creep.memory.room != undefined){
-            this.otherRoom(creep);
-        }else{
+        // if (creep.memory.room != undefined){
+            // this.otherRoom(creep);
+        // }else{
             this.updateStatus(creep);
             this.execute(creep);
-        }
+        // }
     },
 
     // 判断工作模式
     updateStatus: function(creep){
+        if (creep.harvesterErrorCheck()){
+            creep.setWorkState(WORK_IDLE);
+            return;
+        }
         switch(creep.getWorkState()){
             case WORK_GOTO:
                 // 状态切换在执行时
                 break;
-            case WORK_HARVEST_ENERGY:
+            case WORK_HARVEST:
                 // 状态切换在执行时
                 break;
             case WORK_REPAIR:
             case WORK_IDLE:
-                if (creep.getMode() == MODE_HARVEST_MINERAL){
-                    creep.setWorkState(WORK_GOTO);
-                }else{
-                    creep.checkSourceNodeEnergy();
-                }
+                creep.harvesterIdleCheck();
                 break;
         }
     },
@@ -41,20 +42,13 @@ export const roleHarvester: Harvester = {
 
         switch(creep.getWorkState()){
             case WORK_GOTO:
-                if (creep.getMode() == MODE_HARVEST_MINERAL){
-                    creep.goToMineralNode();
-                }else{
-                    creep.goToSourceNode();
-                }
+                creep.harvesterGoTo();
                 break;
-            case WORK_HARVEST_ENERGY:
-                creep.doWorkHarvestEnergy();
+            case WORK_HARVEST:
+                creep.harvesterDoWork();
                 break;
             case WORK_REPAIR:  // 只有挖能量的会有这个操作
-                creep.doWorkRepair_Harvester();
-                break;
-            case WORK_HARVEST_ENERGY:
-                creep.doWorkHarvestEnergy();
+                creep.harvesterDoWorkRepair();
                 break;
             case WORK_IDLE:
                 break;

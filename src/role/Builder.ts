@@ -151,7 +151,7 @@ export const roleBuilder: Builder = {
 
         const obtain_energy = (creep: Creep) => {
             creep.clearEnergyTarget();
-            if (creep.room.name == 'W37N55'){
+            if (creep.room.name == 'W41N54'){
                 creep.obtainEnergy({
                     container: [CONTAINER_TYPE_SOURCE],
                 });
@@ -180,13 +180,13 @@ export const roleBuilder: Builder = {
                 if (target){
                     return this.buildTarget(creep, target);
                 }
-                target = this.findRepairRampart(creep);
-                if (target){
-                    return this.repairTargetRampart(creep, target);
-                }
                 target = this.findRepairWall(creep);
                 if (target){
                     return this.repairTargetWall(creep, target);
+                }
+                target = this.findRepairRampart(creep);
+                if (target){
+                    return this.repairTargetRampart(creep, target);
                 }
                 creep.goToStay();
                 // creep.moveTo(28,29+creep.getIndex());
