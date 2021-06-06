@@ -55,10 +55,10 @@ export const creepExtensionProperty = function () {
 
     Object.defineProperty(Creep.prototype, 'belong', {
         get: function () {
-            return this.memory.room ? this.memory.room : '??';
+            return this.memory.belong ? this.memory.belong : '??';
         },
         set: function(new_value: string){
-            this.memory.room = new_value;
+            this.memory.belong = new_value;
         },
         enumerable: false,
         configurable: true
