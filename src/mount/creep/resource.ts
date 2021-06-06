@@ -10,25 +10,25 @@ import {
 export const creepExtensionResource = function () {
     // 更新虫子当前的能量状态
     Creep.prototype.updateEnergyStatus = function(){
-        if (this.getEnergyState() == ENERGY_NEED && this.store.getFreeCapacity() == 0){
-            this.setEnergyState(ENERGY_ENOUGH);
-        }else if (this.getEnergyState() == ENERGY_ENOUGH && this.store[RESOURCE_ENERGY] == 0){
-            this.setEnergyState(ENERGY_NEED);
+        if (this.energy == ENERGY_NEED && this.store.getFreeCapacity() == 0){
+            this.energy = ENERGY_ENOUGH;
+        }else if (this.energy == ENERGY_ENOUGH && this.store[RESOURCE_ENERGY] == 0){
+            this.energy = ENERGY_NEED;
         }
     },
 
     // 从房间里存储器获取能量
     Creep.prototype.obtainEnergy = function(opt){
         if (this.store.getFreeCapacity() == 0){
-            this.setEnergyState(ENERGY_ENOUGH);
+            this.energy = ENERGY_ENOUGH;
             this.room.unbookingContainer(this.name);
             return false;
         }
-        let target = this.getEnergyTargetObject() as StructureContainer | StructureStorage | null;
+        let target = Game.getObjectById(this.energyTarget!) as StructureContainer | StructureStorage | null;
 
         if (target && target.store[RESOURCE_ENERGY] == 0){
             this.room.unbookingContainer(this.name);
-            this.clearEnergyTarget();
+            this.energyTarget = null;
             target = null;
         }
 
@@ -44,7 +44,7 @@ export const creepExtensionResource = function () {
                     return true;
                 }
                 if (this.withdraw(target, RESOURCE_ENERGY) == OK){
-                    this.setEnergyState(ENERGY_ENOUGH);
+                    this.energy = ENERGY_ENOUGH;
                     this.room.unbookingContainer(this.name);
                 };
             }else{
@@ -52,7 +52,7 @@ export const creepExtensionResource = function () {
             }
             return true;
         }else{
-            this.say('无法获得能量')
+            this.say('饿')
             return false;
         }
     },
@@ -67,11 +67,11 @@ export const creepExtensionResource = function () {
         let structures: Array<StructureContainer | StructureStorage> = [];
         if (opt.container){
             _.each(
-                _.filter(this.room.memory.containers, (info) => {
+                _.filter(this.room.memory.data.containers, (info) => {
                     return opt!.container!.indexOf(info.type) > -1;
                 }),
                 (info) => {
-                    const container = this.room.getStructureById(info.id);
+                    const container = Game.getObjectById(info.id);
                     if (container && container.store[RESOURCE_ENERGY] > 0){
                         structures.push(container);
                     }
@@ -111,14 +111,14 @@ export const creepExtensionResource = function () {
                 return this.pos.getRangeTo(a) - this.pos.getRangeTo(b);
             })
             const structure = structures[0];
-            this.setEnergyTarget(structure.id);
+            this.energyTarget = structure.id;
             if (structure.structureType == STRUCTURE_CONTAINER){
                 this.room.bookingContainer(this.name, structure.id, PLAN_PAY, this.store.getFreeCapacity(RESOURCE_ENERGY));
             }
             return structure;
         }else{
             this.room.unbookingContainer(this.name);
-            this.clearEnergyTarget();
+            this.energyTarget = null;
             return null;
         }
     }

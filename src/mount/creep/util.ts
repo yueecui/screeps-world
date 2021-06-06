@@ -29,110 +29,36 @@ const roleMap: Record<ANY_ROLE_NAME, AnyRole> = {
     '工兵': roleEngineer,
 }
 
-export const creepExtensionBase = function () {
-    Creep.prototype.baseName = '';
-    Creep.prototype.index = 0;
-    Creep.prototype.recycling = false;
-
+export const creepExtensionUtil = function () {
     Creep.prototype.run = function(){
         if (this.spawning){
             return;
         }
-        if (this.getRole() == undefined){
-            this.say('没有配置角色');
+        if (this.role){
+            roleMap[this.role].run(this);
         }else{
-            roleMap[this.getRole()].run(this);
+            this.say('没有配置角色');
         }
     };
 
     Creep.prototype.analyzeName = function () {
-        const find = /^(.+?)(\d+)$/.exec(this.name);
-        if (find){
-            this.baseName = find[1];
-            this.index = parseInt(find[2]) || 0;
-            return true;
+        if (this.named){
+            this._roomCode = '无';
+            this._baseName = this.name;
+            this._index = 0;
         }else{
-            this.baseName = '未知';
-            this.index = -1;
-            return false;
+            const find = /^(.+?)-(.+?)(\d*)$/.exec(this.name);
+            if (find){
+                this._roomCode = find[1];
+                this._baseName = find[2];
+                this._index = parseInt(find[3]) || 0;
+            }else{
+                this.say('名字解析错误')
+                this._roomCode = '?';
+                this._baseName = '未知'
+                this._index = 0;
+            }
         }
-    }
-
-    Creep.prototype.getBasename = function () {
-        if (this.baseName == ''){
-            this.analyzeName();
-        }
-        return this.baseName;
-    }
-    Creep.prototype.getIndex = function(){
-        if (this.index == 0){
-            this.analyzeName();
-        }
-        return this.index;
-    }
-
-    Creep.prototype.getRole = function(){
-        return this.memory.r;
-    }
-
-    Creep.prototype.getMode = function(){
-        return this.memory.mode == undefined ? MODE_NONE : this.memory.mode;
-    }
-
-    Creep.prototype.setWorkState = function(state){
-        this.memory.w = state;
-    }
-
-    Creep.prototype.getWorkState = function(){
-        return this.memory.w;
-    }
-
-    Creep.prototype.setEnergyState = function(state){
-        this.clearEnergyTarget();
-        this.memory.e = state;
-    }
-
-    Creep.prototype.getEnergyState = function(){
-        return this.memory.e;
-    }
-
-    Creep.prototype.setTarget = function(id){
-        this.memory.t = id;
-    }
-
-    Creep.prototype.getTarget = function(){
-        return this.memory.t;
-    }
-
-    Creep.prototype.getTargetObject = function(){
-        return this.memory.t ? Game.getObjectById(this.memory.t) : null;
-    }
-
-    Creep.prototype.clearTarget = function(){
-        this.memory.t = null;
-    }
-
-    Creep.prototype.setEnergyTarget = function(id){
-        this.memory.et = id;
-    }
-
-    Creep.prototype.getEnergyTarget = function(){
-        return this.memory.et ? this.memory.et : null;
-    }
-
-    Creep.prototype.getEnergyTargetObject = function(){
-        return this.memory.et ? Game.getObjectById(this.memory.et) : null;
-    }
-
-    Creep.prototype.clearEnergyTarget = function(){
-        delete this.memory.et;
-    }
-
-    Creep.prototype.unshiftTarget = function(){
-        if (this.memory.queue && this.memory.t){
-            this.memory.queue.unshift(this.memory.t)
-        }
-        this.clearTarget();
     }
 
     Creep.prototype.inTaskQueue = function(id){
@@ -147,18 +73,18 @@ export const creepExtensionBase = function () {
     // 根据任务队列，设定下一个目标
     Creep.prototype.setNextTarget = function(){
         // 如果已经有目标了，则直接继续
-        if (this.getTarget()){
+        if (this.target){
             return true;
         }
         // 更新队列
         let result = this.acceptTaskSpawn();
         // 从队列里获取第一个目标，如果没有则完成事务
         if (result){
-            this.setTarget(_.head(this.memory.queue!));
+            this.target = _.head(this.memory.queue!);
             this.memory.queue = _.drop(this.memory.queue!);
             return true;
         }else{
-            this.clearTarget();
+            this.target = null;
             return false;
         }
     }
@@ -169,7 +95,7 @@ export const creepExtensionBase = function () {
         if (!this.memory.queue || this.memory.queue.length == 0){
             let targets;
             // 获取目标队列
-            switch(this.getWorkState()){
+            switch(this.work){
                 case WORK_TRANSPORTER_SPAWN:
                     targets = this.room.getUnqueueTaskSpawn();
                     break;
@@ -202,7 +128,7 @@ export const creepExtensionBase = function () {
     Creep.prototype.clearQueue = function(){
         if (this.memory.queue){
             for (const id in this.memory.queue){
-                switch(this.getWorkState()){
+                switch(this.work){
                     case WORK_TRANSPORTER_SPAWN:
                         if (id in this.room.memory.taskSpawn){
                             this.room.memory.taskSpawn[id] = {
@@ -227,7 +153,6 @@ export const creepExtensionBase = function () {
 
     // 去等待位置
     Creep.prototype.goToStay = function(){
-        // this.getWorkState() == WORK_IDLE
         if (this.memory.stay){
             if (this.pos.x != this.memory.stay[0] || this.pos.y != this.memory.stay[1]){
                 this.moveTo(this.memory.stay[0], this.memory.stay[1]);

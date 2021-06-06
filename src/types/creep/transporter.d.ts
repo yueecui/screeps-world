@@ -51,4 +51,7 @@ interface Creep {
      * 执行 WORK_TRANSPORTER_STORAGE_MINERAL
      */
     doWorkTransporterStorage_Mineral(): void;
+
+    checkWorkTransporterTombstone(): boolean;
+    doWorkTransporterTombstone(): void;
 }

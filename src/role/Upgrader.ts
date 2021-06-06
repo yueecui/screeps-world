@@ -9,11 +9,11 @@ export const roleUpgrader: Upgrader = {
 
     // 判断工作模式
     updateStatus: function(creep){
-        switch(creep.getWorkState()){
+        switch(creep.work){
             case WORK_UPGRADE:
                 break;
             case WORK_IDLE:
-                creep.setWorkState(WORK_UPGRADE);
+                creep.work = WORK_UPGRADE;
                 break;
         }
     },
@@ -22,14 +22,14 @@ export const roleUpgrader: Upgrader = {
     execute: function(creep){
         creep.recycleNearby(); // 回收周围的能量
 
-        switch(creep.getWorkState()){
+        switch(creep.work){
             case WORK_UPGRADE:
-                creep.doWorkUpgrade();
+                creep.upgraderDoWork();
                 break;
             case WORK_IDLE:
                 break;
             default:
-                creep.setWorkState(WORK_IDLE);
+                creep.work = WORK_IDLE;
         }
     },
 };

@@ -1,10 +1,14 @@
 // Creep的角色名
 
+export const ROLE_GOTO_RECYCLE: ROLE_GOTO_RECYCLE = '回收';
+export const ROLE_MANUAL: ROLE_MANUAL = '手动';
 export const ROLE_HARVESTER: ROLE_HARVESTER = '采集';
 export const ROLE_TRANSPORTER: ROLE_TRANSPORTER = '运输';
 export const ROLE_BUILDER: ROLE_BUILDER = '建造';
 export const ROLE_UPGRADER: ROLE_UPGRADER = '升级';
 export const ROLE_ATTACKER: ROLE_ATTACKER = '攻击';
+export const ROLE_ENGINEER: ROLE_ENGINEER = '工兵';
+export const ROLE_MASTERMIND: ROLE_MASTERMIND = '主脑';
 
 
 // Creep工作进程的状态码
@@ -42,6 +46,10 @@ export const WORK_TRANSPORTER_TOWER: WORK_TRANSPORTER_TOWER = 2;
  */
 export const WORK_TRANSPORTER_CONTROLLER: WORK_TRANSPORTER_CONTROLLER = 3;
 /**
+ * 捡拾墓碑
+ */
+export const WORK_TRANSPORTER_TOMBSTONE: WORK_TRANSPORTER_TOMBSTONE = 4;
+/**
  * 当前Creep正在担任运输者职责，将当前房间的container里多余的矿物带到storage
  */
 export const WORK_TRANSPORTER_STORAGE_MINERAL: WORK_TRANSPORTER_STORAGE_MINERAL = 9;
@@ -52,11 +60,8 @@ export const WORK_TRANSPORTER_STORAGE_ENERGY: WORK_TRANSPORTER_STORAGE_ENERGY = 
 /**
  * 当前Creep正在进行采集
  */
-export const WORK_HARVEST_ENERGY: WORK_HARVEST_ENERGY = 21;
-/**
- * 当前Creep正在进行采集
- */
- export const WORK_HARVEST_MINERAL: WORK_HARVEST_MINERAL = 22;
+export const WORK_HARVEST: WORK_HARVEST = 21;
+
 /**
  * 当前Creep正在升级控制器
  */
@@ -90,22 +95,23 @@ export const PLAN_INCOME: PLAN_INCOME = 0;
  */
 export const PLAN_PAY: PLAN_PAY = 1;
 
-/**
- * container类型：存储source产出
- *
- * 存量变多后会转移到storage
- */
-export const CONTAINER_TYPE_SOURCE: CONTAINER_TYPE_SOURCE = 0;
-/**
- * container类型：存储供给给upgrader的能量
- */
+/** container类型：未设定类型 */
+export const CONTAINER_TYPE_NONE: CONTAINER_TYPE_NONE = 0;
+/** container类型：存储供给给upgrader的能量 */
 export const CONTAINER_TYPE_CONTROLLER: CONTAINER_TYPE_CONTROLLER = 1;
-/**
- * container类型：存储mineral产出
- *
- * 存量变多后会转移到storage
- */
- export const CONTAINER_TYPE_MINERAL: CONTAINER_TYPE_MINERAL = 2;
+/** container类型：存储source产出 */
+export const CONTAINER_TYPE_SOURCE: CONTAINER_TYPE_SOURCE = 2;
+/** container类型：存储mineral产出 */
+export const CONTAINER_TYPE_MINERAL: CONTAINER_TYPE_MINERAL = 3;
+
+/** 未设定类型 */
+export const LINK_TYPE_NONE: LINK_TYPE_NONE = 0;
+ /** 临接storage的link */
+export const LINK_TYPE_STORAGE: LINK_TYPE_STORAGE = 1;
+/** 临接controller的link */
+export const LINK_TYPE_CONTROLLER: LINK_TYPE_CONTROLLER = 2;
+/** 临接source的link */
+export const LINK_TYPE_SOURCE: LINK_TYPE_SOURCE = 3;
 
 // Creep工作模式代码
 

@@ -26,12 +26,37 @@ module.exports.loop = () => {
     // 检查所有自己的房间
     for(const name in Game.rooms) {
         const room = Game.rooms[name];
-        if (room.controller
-            && (room.controller.my
-                || (room.controller.reservation && room.controller.reservation.username == 'Yuee')
-               )
-           ){
+        if (room.my){
             room.tickCheck();
+
+            // 检查塔
+            if (room.memory.data.towers){
+                for (const tower_id of room.memory.data.towers){
+                    const tower = Game.getObjectById(tower_id);
+                    if (tower){
+                        const closestHostile = tower.pos.findClosestByRange(FIND_HOSTILE_CREEPS);
+                        if(closestHostile) {
+                            tower.attack(closestHostile);
+                            continue
+                        }
+
+                        const my_creep = tower.room.find(FIND_MY_CREEPS, {filter: (creep) => {
+                            return creep.hits < creep.hitsMax;
+                        }});
+                        if (my_creep.length){
+                            tower.heal(my_creep[0]);
+                            continue;
+                        }
+
+                        const found = room.find(FIND_MY_STRUCTURES, {filter: (struct) => {
+                            return struct.structureType == STRUCTURE_RAMPART && struct.hits < 300;
+                        }})
+                        if (found.length){
+                            tower.repair(found[0]);
+                        }
+                    }
+                }
+            }
         }
     }
 
@@ -40,31 +65,11 @@ module.exports.loop = () => {
         Game.creeps[name].run();
     }
 
-    // 临时运转塔
-    var towers = [
-        Game.getObjectById('60abc165b225d38453b62cde' as Id<StructureTower>),
-        Game.getObjectById('60adb99b03e40e459ecbd5c2' as Id<StructureTower>),
-    ];
-    for (const tower of towers){
-        if(tower) {
-            // var closestDamagedStructure = tower.pos.findClosestByRange(FIND_STRUCTURES, {
-            //     filter: (structure) => structure.hits < structure.hitsMax
-            // });
-            // if(closestDamagedStructure) {
-            //     tower.repair(closestDamagedStructure);
-            // }
-            var closestHostile = tower.pos.findClosestByRange(FIND_HOSTILE_CREEPS);
-            if(closestHostile) {
-                tower.attack(closestHostile);
-            }
-        }
-    }
-
     // 临时运转LINK
     const room = Game.rooms['W35N57'];
-    const mm_link = room.getStructureById(room.memory.links[0])!;
-    for (let i=1;i<room.memory.links.length;i++){
-        const link = room.getStructureById(room.memory.links[i])!;
+    const mm_link = Game.getObjectById(room.links[0].id)!;
+    for (let i=1;i<room.links.length;i++){
+        const link = Game.getObjectById(room.links[i].id)!;
         if (link.store[RESOURCE_ENERGY] > 0){
             link.transferEnergy(mm_link);
         }

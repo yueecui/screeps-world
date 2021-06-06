@@ -1,7 +1,7 @@
 import {
     ENERGY_NEED, ENERGY_ENOUGH,
     WORK_IDLE, WORK_TRANSPORTER_SPAWN, WORK_TRANSPORTER_TOWER, WORK_TRANSPORTER_STORAGE_ENERGY, WORK_TRANSPORTER_CONTROLLER,
-    MODE_SPAWN, MODE_CONTROLLER, WORK_TRANSPORTER_STORAGE_MINERAL
+    MODE_SPAWN, MODE_CONTROLLER, WORK_TRANSPORTER_STORAGE_MINERAL, WORK_TRANSPORTER_TOMBSTONE
 } from '@/constant';
 
 const IDLE_POS = { x: 28, y: 27 }
@@ -27,27 +27,29 @@ export const roleTransporter: Transporter = {
         // 优先级最高任务
         // 判断是否需要补充孵化能量
         // 会中断其他工作优先进行本工作
-        if (creep.getMode() == MODE_CONTROLLER){
+        if (creep.mode == MODE_CONTROLLER){
             if (creep.checkWorkTransporterStorage_Mineral()) return;
             if (creep.checkWorkTransporterController()) return;
 
             // 空闲下才会执行的任务
-            if (creep.getWorkState() == WORK_IDLE){
+            if (creep.work == WORK_IDLE){
                 // if (creep.checkWorkTransporterController()) return;
                 if (creep.checkWorkTransporterSpawn()) return;
+                if (creep.checkWorkTransporterStorage_Energy()) return;
+                if (creep.checkWorkTransporterTombstone()) return;
                 if (creep.checkWorkTransporterTower()) return;
                 // if (creep.checkWorkTransporterStorage_Mineral()) return;
-                if (creep.checkWorkTransporterStorage_Energy()) return;
             }
         }else {
+            // if (creep.checkWorkTransporterTombstone()) return;
             if (creep.checkWorkTransporterSpawn()) return;
 
             // 空闲下才会执行的任务
-            if (creep.getWorkState() == WORK_IDLE){
+            if (creep.work == WORK_IDLE){
                 if (creep.checkWorkTransporterTower()) return;
+                if (creep.checkWorkTransporterStorage_Energy()) return;
                 if (creep.checkWorkTransporterController()) return;
                 // if (creep.checkWorkTransporterStorage_Mineral()) return;
-                if (creep.checkWorkTransporterStorage_Energy()) return;
             }
         }
 
@@ -55,11 +57,11 @@ export const roleTransporter: Transporter = {
 
     // 根据工作模式执行
     execute: function(creep){
-        if (creep.getWorkState() != WORK_TRANSPORTER_STORAGE_MINERAL){
+        if (creep.work != WORK_TRANSPORTER_STORAGE_MINERAL){
             creep.recycleNearby(); // 回收周围的能量
         }
 
-        switch(creep.getWorkState()){
+        switch(creep.work){
             case WORK_TRANSPORTER_SPAWN:
                 creep.doWorkTransporterSpawn();
                 break;
@@ -75,29 +77,32 @@ export const roleTransporter: Transporter = {
             case WORK_TRANSPORTER_STORAGE_MINERAL:
                 creep.doWorkTransporterStorage_Mineral();
                 break;
+            case WORK_TRANSPORTER_TOMBSTONE:
+                creep.doWorkTransporterTombstone();
+                break;
             case WORK_IDLE:
                 if (creep.store[RESOURCE_ENERGY] > 0){
-                    creep.setEnergyState(ENERGY_ENOUGH);
-                    creep.setWorkState(WORK_TRANSPORTER_STORAGE_ENERGY);
+                    creep.energy = ENERGY_ENOUGH;
+                    creep.work = WORK_TRANSPORTER_STORAGE_ENERGY;
                 }else{
                     creep.goToStay();
                 }
                 break;
             default:
-                creep.setWorkState(WORK_IDLE);
+                creep.work = WORK_IDLE;
         }
     },
 
     // ROOM外采集测试
     otherRoom: function(creep){
         creep.updateEnergyStatus();
-        if (creep.getEnergyState() == ENERGY_ENOUGH){
+        if (creep.energy == ENERGY_ENOUGH){
             const link = Game.getObjectById('60b383415912304d8a2f1a7e' as Id<StructureLink>)!;
             if (creep.transfer(link, RESOURCE_ENERGY) == ERR_NOT_IN_RANGE){
                 creep.moveTo(link);
             }
             if (creep.store.getUsedCapacity() == 0){
-                creep.setEnergyState(ENERGY_NEED);
+                creep.energy = ENERGY_NEED;
             }
         }else{
             creep.recycleNearby(); // 回收周围的能量
@@ -110,8 +115,8 @@ export const roleTransporter: Transporter = {
                 return;
             }
 
-            for (const info of creep.room.memory.containers){
-                const container = creep.room.getStructureById(info.id)!;
+            for (const info of creep.room.memory.data.containers){
+                const container = Game.getObjectById(info.id)!;
                 if (container.store.getFreeCapacity() < 1200){
                     if (creep.withdraw(container, RESOURCE_ENERGY) == ERR_NOT_IN_RANGE){
                         creep.moveTo(container);
@@ -121,7 +126,7 @@ export const roleTransporter: Transporter = {
             }
 
             if (creep.store[RESOURCE_ENERGY] > 800){
-                creep.setEnergyState(ENERGY_ENOUGH);
+                creep.energy = ENERGY_ENOUGH;
             }
 
             creep.moveTo(move_target);
