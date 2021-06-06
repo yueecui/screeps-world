@@ -19,26 +19,26 @@ export const creepExtensionHarvester = function () {
         const room = this.memory.room ? Game.rooms[this.memory.room] : this.room;
         // 没有视野的情况下先移动过去开视野
         if (!room){
-            this.setWorkState(WORK_GOTO);
+            this.work = WORK_GOTO;
             return;
         }
-        if (this.getMode() == MODE_HARVEST_ENERGY){
-            const source_node = Game.getObjectById(this.room.sources[this.memory.node].id)!;
+        if (this.mode == MODE_HARVEST_ENERGY){
+            const source_node = Game.getObjectById(room.sources[this.memory.node].id)!;
             // 如果采集点没有能量，则不变化状态
-            if (source_node.energy > 0){
-                if (this.pos.isNearTo(source_node)){
-                    this.setWorkState(WORK_HARVEST)
-                }else{
-                    this.setWorkState(WORK_GOTO);
+            if (this.pos.isNearTo(source_node)){
+                if (source_node.energy > 0){
+                    this.work = WORK_HARVEST;
                 }
+            }else{
+                this.work = WORK_GOTO;
             }
-        }else if (this.getMode() == MODE_HARVEST_MINERAL){
+        }else if (this.mode == MODE_HARVEST_MINERAL){
             const mineral_node = Game.getObjectById(this.room.mineral.id)!;
             // 矿点储藏量挖光的话，就自动回收
             if (mineral_node.mineralAmount == 0 && mineral_node.ticksToRegeneration > 0){
-                this.setRole(ROLE_GOTO_RECYCLE);
+                this.role = ROLE_GOTO_RECYCLE;
             }
-            this.setWorkState(WORK_GOTO);
+            this.work = WORK_GOTO;
         }
     }
 
@@ -51,7 +51,7 @@ export const creepExtensionHarvester = function () {
             this.say('ROOM没有数据');
             return true;
         }
-        if (this.getMode() == MODE_HARVEST_ENERGY){
+        if (this.mode == MODE_HARVEST_ENERGY){
             if (this.memory.node == undefined){
                 this.say('没配置采集点');
                 return true;
@@ -65,7 +65,7 @@ export const creepExtensionHarvester = function () {
                 return true;
             }
             return false;
-        }else if (this.getMode() == MODE_HARVEST_MINERAL){
+        }else if (this.mode == MODE_HARVEST_MINERAL){
             const mineral_info = room_memory.data.mineral;
             if (mineral_info){
                 if (mineral_info.container == null || !Game.getObjectById(mineral_info.container)){
@@ -85,7 +85,7 @@ export const creepExtensionHarvester = function () {
         const room = this.memory.room ? Game.rooms[this.memory.room] : this.room;
 
         let target: RoomPosition|null = null;
-        if (this.getMode() == MODE_HARVEST_ENERGY){
+        if (this.mode == MODE_HARVEST_ENERGY){
             if (room){
                 const node_info = room.sources[this.memory.node];
                 target = new RoomPosition(node_info.workPos[0], node_info.workPos[1], room.name);
@@ -95,7 +95,7 @@ export const creepExtensionHarvester = function () {
             }else{
                 this.say('没有目标ROOM的视野');
             }
-        }else if (this.getMode() == MODE_HARVEST_MINERAL){
+        }else if (this.mode == MODE_HARVEST_MINERAL){
             const container = Game.getObjectById(this.room.mineral.container!);
             if (container){
                 target = container.pos;
@@ -104,7 +104,7 @@ export const creepExtensionHarvester = function () {
         if (!target) return;
 
         if (this.pos.getRangeTo(target) == 0){
-            this.setWorkState(WORK_HARVEST);
+            this.work = WORK_HARVEST;
             this.harvesterDoWork();
         }else{
             if (room && room.name == this.room.name){
@@ -120,34 +120,44 @@ export const creepExtensionHarvester = function () {
         const room = this.memory.room ? Game.rooms[this.memory.room] : this.room;
         if (!room){
             this.say('目标ROOM无视野');
-            this.setWorkState(WORK_GOTO)
+            this.work = WORK_GOTO;
             this.harvesterGoTo();
         }
 
         let target: Source | Mineral | Deposit | null = null;
-        if (this.getMode() == MODE_HARVEST_ENERGY){
+        if (this.mode == MODE_HARVEST_ENERGY){
             target = Game.getObjectById(this.room.sources[this.memory.node].id)!;
-        }else if (this.getMode() == MODE_HARVEST_MINERAL){
+        }else if (this.mode == MODE_HARVEST_MINERAL){
             target = Game.getObjectById(this.room.mineral.id)!;
         }
         if (!target) return;
 
         if (this.pos.isNearTo(target)){
             // TODO：需要调整下LINK版
-            if (target instanceof Source && target.energy == 0){
-                this.setWorkState(WORK_REPAIR);
-                this.harvesterDoWorkRepair();
-            }else if (target instanceof Mineral && target.mineralAmount == 0 && target.ticksToRegeneration > 0){
-                this.setRole(ROLE_GOTO_RECYCLE);
-            }else{
-                this.harvest(target);
+            if (target instanceof Source){
+                if (target.energy == 0){
+                    this.work = WORK_REPAIR;
+                    this.harvesterDoWorkRepair();
+                    return;
+                }
+            }else if (target instanceof Mineral){
+                const container = Game.getObjectById(this.room.mineral.container!)!;
+                if (container.store.getFreeCapacity() < this.getActiveBodyparts(WORK)){
+                    this.say('满');
+                    return;
+                }
+                if (target.mineralAmount == 0 && target.ticksToRegeneration > 0){
+                    this.role = ROLE_GOTO_RECYCLE;
+                    return;
+                }
             }
+            this.harvest(target);
         }
     }
 
     // 执行 WORK_REPAIR
     Creep.prototype.harvesterDoWorkRepair = function(){
-        let target = this.getTargetObject() as AnyStructure | null;
+        let target = Game.getObjectById(this.target!) as AnyStructure | null;
         // 目标不存在或是不值得修一下的话就换个目标
         if (!target || (target.hitsMax - target.hits < this.getActiveBodyparts(WORK) * 100)){
             const found = this.pos.findInRange(FIND_STRUCTURES, 3, {filter: (struct) => {
@@ -157,10 +167,10 @@ export const creepExtensionHarvester = function () {
             }});
             if (found.length > 0){
                 target = found[0];
-                this.setTarget(target.id);
+                this.target = target.id;
             }else{
-                this.clearTarget();
-                this.setWorkState(WORK_IDLE);
+                this.target = null;
+                this.work = WORK_IDLE;
                 return;
             }
         }
@@ -169,8 +179,8 @@ export const creepExtensionHarvester = function () {
         if (this.store[RESOURCE_ENERGY] < this.getActiveBodyparts(WORK)){
             const container = Game.getObjectById(this.room.sources[this.memory.node].container!)!;
             if (this.withdraw(container, RESOURCE_ENERGY) == ERR_NOT_ENOUGH_RESOURCES){
-                this.clearTarget();
-                this.setWorkState(WORK_IDLE);
+                this.target = null;
+                this.work = WORK_IDLE;
             }
         }
     }
@@ -195,7 +205,7 @@ export const creepExtensionHarvester = function () {
                 this.say('无升级用存储器');
                 return true;
             }
-            if (this.getIndex() > controller_info.workPos.length){
+            if (this.index > controller_info.workPos.length){
                 this.say('没有可用工作位置');
                 return true;
             }
@@ -212,15 +222,15 @@ export const creepExtensionHarvester = function () {
             });
         }
 
-        if (this.getEnergyState() == ENERGY_NEED){
+        if (this.energy == ENERGY_NEED){
             obtain_energy();
         }else{
             if (this.store[RESOURCE_ENERGY] == 0){
-                this.setEnergyState(ENERGY_NEED);
+                this.energy = ENERGY_NEED;
                 obtain_energy();
             }
             const controller_info = this.room.memory.data.controller;
-            const work_pos = controller_info.workPos[this.getIndex()-1];
+            const work_pos = controller_info.workPos[this.index-1];
 
             if (this.pos.x != work_pos[0] || this.pos.y != work_pos[1]){
                 this.moveTo(work_pos[0], work_pos[1])
@@ -228,29 +238,11 @@ export const creepExtensionHarvester = function () {
 
             switch(this.upgradeController(this.room.controller!)){
                 case ERR_NOT_ENOUGH_RESOURCES:
-                    this.setEnergyState(ENERGY_NEED);
+                    this.energy = ENERGY_NEED;
                     obtain_energy();
                     break;
             }
         }
     }
 
-    // ------------------------------------------------------
-    // 建造
-    // ------------------------------------------------------
-
-    // 寻找一个需要建造的目标
-    // 如果找到就设定上工作状态
-    // Creep.prototype.findBuildTarget = function(){
-    //     if (this.getWorkState() != WORK_TRANSPORTER_SPAWN
-    //         && this.room.hasUnqueueTaskSpawn()){
-    //         // 设定工作状态
-    //         this.clearQueue();
-    //         this.clearTarget();
-    //         this.setWorkState(WORK_TRANSPORTER_SPAWN);
-    //         this.acceptTaskSpawn();
-    //         return true;
-    //     }
-    //     return false;
-    // }
 }

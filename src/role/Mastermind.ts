@@ -31,7 +31,7 @@ export const roleMastermind: CreepRole = {
         }
 
 
-        const link = Game.getObjectById(creep.room.memory.links[0])!;
+        const link = Game.getObjectById(creep.room.links[0].id)!;
         const terminal = Game.getObjectById('60b34555e97e270ece412ee5' as Id<StructureTerminal>)!;
         const storage = creep.room.storage!;
         if (link.store[RESOURCE_ENERGY] > 0){
@@ -45,7 +45,7 @@ export const roleMastermind: CreepRole = {
         if (creep.store.getUsedCapacity() > 0){
             for (const name in creep.store){
                 if (name == RESOURCE_ENERGY){
-                    if (terminal.store[RESOURCE_ENERGY] < 20000){
+                    if (terminal.store[RESOURCE_ENERGY] < 50000){
                         creep.transfer(terminal, RESOURCE_ENERGY);
                     }else{
                         creep.transfer(storage, RESOURCE_ENERGY);

@@ -7,6 +7,8 @@ import { generateBodyParts } from './bodyGenerator';
 import { ROOM_1_CONFIG } from './R1_W35N57';
 import { ROOM_2_CONFIG } from './R2_W37N55';
 
+import { BASE_SPAWN_CONFIG } from './spawnConfigBase'
+
 const ROOM_SPAWN_CONFIG: Record<string, Map<string, RoleConfig>>= {
     'W35N57': ROOM_1_CONFIG,  // 第一个房间
     'W37N55': ROOM_2_CONFIG,  // 第二个房间
@@ -45,7 +47,7 @@ export const SpawnManager = {
         const lived_creeps: LivedCreeps = {};
         for (const name in Game.creeps){
             const creep = Game.creeps[name];
-            const base_name = creep.getBaseName();
+            const base_name = creep.baseName;
             if (base_name == '未知'){
                 continue;
             }
@@ -54,7 +56,7 @@ export const SpawnManager = {
             lived_creeps[base_name] = lived_creeps[base_name] || [];
 
             // 统计各base_name的creep的index
-            lived_creeps[base_name].push(creep.getIndex());
+            lived_creeps[base_name].push(creep.index);
         }
         return lived_creeps;
     },
@@ -66,18 +68,15 @@ export const SpawnManager = {
      * @returns
      */
     respawnByRoom: function (room_name: string, lived_creeps: LivedCreeps){
-        const spawns = Game.rooms[room_name].getMySpawns();
+        const spawns = Game.rooms[room_name].spawns;
         if (spawns.length == 0){
-            console.log(`房间${room_name}没有找到Spawn`);
+            console.log(`房间[${room_name}]没有找到Spawn`);
             return;
         }
 
-        for (const [base_name, config] of ROOM_SPAWN_CONFIG[room_name]){
+        // 基本运作必要蚂蚁
+        for (const [base_name, config] of BASE_SPAWN_CONFIG){
             config.basename = base_name;
-            if (config.body_code){
-                config.body = generateBodyParts(config.body_code);
-            }
-
             // 该basename的creeps存活数量
             const config_all = lived_creeps[base_name] || [];
             const config_valid_creeps = this.verifyCreeps(config, lived_creeps);
@@ -87,25 +86,12 @@ export const SpawnManager = {
             }
 
             // basename数量不足时进行刷新
+            const max = config.aheadTime ? config.amount + 1 : config.amount
 
-            // if (base_name == 'ENG'){
-            //     if (Game.flags['eng1'].room){
-            //         const controller = Game.flags['eng1'].room!.controller!
-            //         if (!controller.my && controller.upgradeBlocked && controller.upgradeBlocked > 100){
-            //             continue;
-            //         }
-            //     }else{
-            //         continue;
-            //     }
-            // }
-            // const role_all = all_creeps[base_name] || []
-            // const role_valid = valid_creeps[base_name] || []
+            if (config.body_code){
+                config.body = generateBodyParts(config.body_code, Game.rooms[room_name]);
+            }
 
-            // const count = role_valid.length || 0;
-            // if (count >= config.amount){
-            //     continue;
-            // }
-            // const max = config.aheadTime ? config.amount + 1 : config.amount
             // for (let index=1;index<=max;index++){
             //     if (role_all.indexOf(index) == -1){
             //         return this.spawnCreep(spawn, config, index);
@@ -136,7 +122,7 @@ export const SpawnManager = {
                 for (const index of lived_creeps[base_name]){
                     const creep = Game.creeps[base_name+index];
                     if (this.isValidCreep(creep, config)){
-                        valid_creeps.push(creep.getIndex());
+                        valid_creeps.push(creep.index);
                     }
                 }
             }
@@ -164,20 +150,21 @@ export const SpawnManager = {
         return true;
     },
 
+    // 以下为旧的
     roomCheck: function(spawn: StructureSpawn, room_spawn_config: Map<string, RoleConfig>){
         const all_creeps = {} as Record<string, any>;
         const valid_creeps = {} as Record<string, any>;
         for (const name in Game.creeps){
             const creep = Game.creeps[name];
-            const m = creep.getBaseName();
+            const m = creep.baseName;
             if (m != 'unknown'){
                 all_creeps[m] = all_creeps[m] || [];
                 valid_creeps[m] = valid_creeps[m] || [];
-                all_creeps[m].push(creep.getIndex());
+                all_creeps[m].push(creep.index);
 
                 const config = room_spawn_config.get(m);
                 if (!(config && config.aheadTime && creep.ticksToLive! <= config.aheadTime)){
-                    valid_creeps[m].push(creep.getIndex());
+                    valid_creeps[m].push(creep.index);
                 }
             }
         }

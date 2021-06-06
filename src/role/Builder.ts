@@ -20,16 +20,16 @@ export const roleBuilder: Builder = {
 
     // 判断工作模式
     updateStatus: function(creep){
-        switch(creep.getWorkState()){
+        switch(creep.work){
             case WORK_BUILD:
                 break;
             case WORK_REPAIR:
                 break;
             case WORK_IDLE:
                 if (creep.memory.mode == MODE_BUILDER){
-                    creep.setWorkState(WORK_BUILD);
+                    creep.work = WORK_BUILD;
                 }else if (creep.memory.mode == MODE_REPAIRER){
-                    creep.setWorkState(WORK_REPAIR);
+                    creep.work = WORK_REPAIR;
                 }
                 break;
         }
@@ -68,7 +68,7 @@ export const roleBuilder: Builder = {
 
             creep.updateEnergyStatus();
 
-            if (creep.getEnergyState() == ENERGY_NEED){
+            if (creep.energy == ENERGY_NEED){
                 if (creep.room.name != 'W34N57'){
                     creep.moveTo(flag);
                     return;
@@ -77,15 +77,6 @@ export const roleBuilder: Builder = {
                 if (creep.harvest(source!) == ERR_NOT_IN_RANGE){
                     creep.moveTo(source!);
                 }
-
-                // if (creep.room.name != 'W34N57'){
-                //     creep.moveTo(Game.rooms['W35N57']!.storage!);
-                // }else{
-                //     creep.clearTarget();
-                //     creep.obtainEnergy({
-                //         storage: true,
-                //     });
-                // }
 
             }else{
                 if (creep.room.name != 'W34N57'){
@@ -150,7 +141,6 @@ export const roleBuilder: Builder = {
         creep.recycleNearby(); // 回收周围的能量
 
         const obtain_energy = (creep: Creep) => {
-            creep.clearEnergyTarget();
             if (creep.room.name == 'W41N54'){
                 creep.obtainEnergy({
                     container: [CONTAINER_TYPE_SOURCE],
@@ -163,15 +153,16 @@ export const roleBuilder: Builder = {
         }
 
 
-        if (creep.getEnergyState() == ENERGY_NEED){
+        if (creep.energy == ENERGY_NEED){
             obtain_energy(creep);
         }else{
             if (creep.store[RESOURCE_ENERGY] == 0){
-                creep.setEnergyState(ENERGY_NEED);
+                creep.energy = ENERGY_NEED;
                 obtain_energy(creep);
+                return;
             }
             let target;
-            if (creep.getWorkState() == WORK_REPAIR){
+            if (creep.work == WORK_REPAIR){
                 target = this.findRepairTarget(creep);
                 if (target){
                     return this.repairTarget(creep, target);
@@ -189,7 +180,6 @@ export const roleBuilder: Builder = {
                     return this.repairTargetRampart(creep, target);
                 }
                 creep.goToStay();
-                // creep.moveTo(28,29+creep.getIndex());
             }else{
                 target = this.findBuildTarget(creep);
                 if (target){
@@ -200,7 +190,6 @@ export const roleBuilder: Builder = {
                     return this.repairTarget(creep, target);
                 }
                 creep.goToStay();
-                // creep.moveTo(27,29+creep.getIndex());
             }
         }
     },
@@ -283,7 +272,7 @@ export const roleBuilder: Builder = {
     // 修理目标
     repairTargetWall: function(creep, target){
         if (target.hits >= 100000){
-            creep.clearTarget();
+            creep.target = null;
             return;
         }
         if (creep.repair(target) == ERR_NOT_IN_RANGE){
@@ -292,7 +281,7 @@ export const roleBuilder: Builder = {
     },
     // 寻找一个可以修理的目标
     findRepairRampart: function(creep){
-        const target = creep.getTargetObject() as StructureRampart | null;
+        const target = Game.getObjectById(creep.target!) as StructureRampart | null;
         if (target && target.hits < 100000){
             return target;
         }
@@ -315,7 +304,7 @@ export const roleBuilder: Builder = {
     // 修理目标
     repairTargetRampart: function(creep, target){
         if (target.hits >= 100000){
-            creep.clearTarget();
+            creep.target = null;
             return;
         }
         if (creep.repair(target) == ERR_NOT_IN_RANGE){

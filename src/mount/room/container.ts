@@ -44,32 +44,9 @@ export const roomExtensionContainer = function () {
         }
     }
 
-    // 添加一个source container时，判断是否在某个source边上
-    Room.prototype.addSourceContainer = function(container){
-        for (const status of this.memory.sources){
-            const source = Game.getObjectById(status.s as Id<Source>)!;
-            if (source.pos.getRangeTo(container) == 1){
-                status.c = container.id;
-                console.log(`container ${container.id} 成功绑定到 source ${source.id} 上`);
-                return;
-            }
-        }
-    }
-
-    // 移除一个container时，判断是否受到影响
-    Room.prototype.removeSourceContainer = function(container_id){
-        for (const status of this.memory.sources){
-            if (status.c == container_id){
-                status.c = null;
-                console.log(`source ${status.s} 解绑了原有的container（${status.c}）`);
-                return;
-            }
-        }
-    }
-
     // 获得接近全满的source container
     Room.prototype.getFullSourceContainers = function(){
-        let containers = _.map(this.memory.data.containers, (c) => {
+        let containers = _.map(this.containers, (c) => {
             return c.type == CONTAINER_TYPE_SOURCE ? Game.getObjectById(c.id) : null;
         });
 
@@ -81,7 +58,7 @@ export const roomExtensionContainer = function () {
 
     // 获得接近全满的mineral container
     Room.prototype.getFullMineralContainers = function(){
-        let containers = _.map(this.memory.data.containers, (c) => {
+        let containers = _.map(this.containers, (c) => {
             return c.type == CONTAINER_TYPE_MINERAL ? Game.getObjectById(c.id) : null;
         });
 
@@ -93,7 +70,7 @@ export const roomExtensionContainer = function () {
 
     // 获得接近空的controller container
     Room.prototype.getEmptyControllerContainers = function(){
-        let containers = _.map(this.memory.data.containers, (c) => {
+        let containers = _.map(this.containers, (c) => {
             return c.type == CONTAINER_TYPE_CONTROLLER ? Game.getObjectById(c.id) : null;
         });
 

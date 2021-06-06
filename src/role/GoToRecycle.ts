@@ -21,7 +21,7 @@ export const roleGoToRecycle: CreepRole = {
             target = Game.spawns['Shanghai'];
         }
 
-
+        creep.say('♻️');
         if (creep.pos.isNearTo(target)){
             target.recycleCreep(creep);
         }else{

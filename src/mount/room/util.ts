@@ -75,7 +75,7 @@ const calcWorkPos = function(target:Source|Mineral|StructureController, containe
     return [0, 0];
 }
 
-export const roomExtensionBase = function () {
+export const roomExtensionUtil = function () {
     // 每tick检查的主方法
     Room.prototype.tickCheck = function() {
         // 初始化memory
@@ -126,7 +126,7 @@ export const roomExtensionBase = function () {
         const newPlan = [];
         for (const plan of this.memory.energyPlan){
             if (plan.cName in Game.creeps
-                && _.filter(this.memory.data.containers, (c)=>{ return c.id == plan.sid }).length > 0){
+                && _.filter(this.containers, (c)=>{ return c.id == plan.sid }).length > 0){
                 newPlan.push(plan);
             }
         }
@@ -151,13 +151,20 @@ export const roomExtensionBase = function () {
                 }
             }
         }
+        if (this.memory.config == undefined){
+            this.memory.config = {
+                code: this.name,
+                alias: [],
+            }
+        }
+        if (this.memory.spawnConfig == undefined){
+            this.memory.spawnConfig = {}
+        }
 
         if (this.memory.flagPurge == undefined){
             this.memory.flagPurge = true;
         }
-        if (this.memory.sources == undefined || this.memory.mineral == undefined){
-            this.initCollection();
-        }
+
         if (this.memory.lastSpawnTime == undefined){
             this.memory.lastSpawnTime = 0;
         }
@@ -167,38 +174,12 @@ export const roomExtensionBase = function () {
         if (this.memory.taskTowers == undefined){
             this.memory.taskTowers = {};
         }
+
         if (this.memory.energyPlan == undefined){
             this.memory.energyPlan = [];
         }
     }
 
-    // 初始化所有资源点数据
-    // 每个room从上到下，从左到右存储，作为那个地图的资源点node顺序
-    Room.prototype.initCollection = function(){
-        const found_sources = this.find(FIND_SOURCES);
-        found_sources.sort((a, b) => {
-            if (a.pos.x == b.pos.x){
-                return a.pos.y - b.pos.y;
-            }else{
-                return a.pos.x - b.pos.x;
-            }
-        })
-        this.memory.sources = []
-        for (const source of found_sources){
-            this.memory.sources.push({
-                s: source.id,
-                c: null,
-            })
-        }
-
-        const found_mineral = this.find(FIND_MINERALS);
-        if (found_mineral.length){
-            this.memory.mineral = {
-                s: found_mineral[0].id,
-                c: null,
-            }
-        }
-    }
 
      // 缓存特定建筑的Id
      Room.prototype.updateRoomStatus = function(){
@@ -210,24 +191,6 @@ export const roomExtensionBase = function () {
         this.updateRoomStatus_Container(_.filter(all_structures, {structureType: STRUCTURE_CONTAINER}) as StructureContainer[]);
         // 所有的link
         this.updateRoomStatus_Link(_.filter(all_structures, {structureType: STRUCTURE_LINK}) as StructureLink[]);
-
-
-        // 以下为旧版本保留
-        // 所有的LINK
-        this.memory.links = [];
-        const all_links = _.filter(all_structures, {structureType: STRUCTURE_LINK}) as StructureLink[];
-        if (this.storage){
-            const near_to_storage_link = _.filter(all_links, (link) => { return this.storage!.pos.getRangeTo(link) <= 2; });
-            if (near_to_storage_link.length > 0){
-                this.memory.links.push(near_to_storage_link[0].id);
-                _.remove(all_links, { id: near_to_storage_link[0].id });
-            }
-        }
-        all_links.sort((a, b) => {
-            return a.pos.y  == b.pos.y ? a.pos.x - b.pos.x : a.pos.y - b.pos.y;
-        })
-        this.memory.links.push(...all_links.map((link) => {return link.id}));
-
     };
 
     Room.prototype.updateRoomStatus_Container = function(all_containers){
@@ -238,13 +201,13 @@ export const roomExtensionBase = function () {
                 type: CONTAINER_TYPE_NONE,
             }
         }
-        for (const container of this.memory.data.containers){
+        for (const container of this.containers){
             if (container.id in new_containers_info_map){
                 new_containers_info_map[container.id].type = container.type
             }
         }
         // 重新生成数据
-        this.memory.data.containers = [];
+        this.containers = [];
         for (const container_id in new_containers_info_map){
             const container_info = new_containers_info_map[container_id];
             if (container_info.type == CONTAINER_TYPE_NONE){
@@ -281,16 +244,21 @@ export const roomExtensionBase = function () {
                                     range: 3
                                 })
                             }
+                            this.memory.data.controller.workPos.sort((a, b) => {
+                                const pos_a = new RoomPosition(a[0], a[1], this.name);
+                                const pos_b = new RoomPosition(b[0], b[1], this.name);
+                                return pos_a.getRangeTo(this.controller!) - pos_b.getRangeTo(this.controller!);
+                            })
 
                             return CONTAINER_TYPE_CONTROLLER;
                     }
                     return CONTAINER_TYPE_NONE;
                 })(container_id as Id<StructureContainer>);
             }
-            this.memory.data.containers.push(container_info);
+            this.containers.push(container_info);
         }
         // 重新排序
-        this.memory.data.containers.sort((a, b) => {
+        this.containers.sort((a, b) => {
             if (a.type && b.type){
                 return a.type - b.type;
             }else if (a.type){
@@ -382,11 +350,6 @@ export const roomExtensionBase = function () {
         });
     }
 
-
-    Room.prototype.getMySpawns = function (){
-        return _.filter(Game.spawns, (spawn) => { return spawn.room.name == this.name; });
-    };
-
     Room.prototype.calcPrice = function (order_id: string, amount: number){
         const order = Game.market.getOrderById(order_id);
         if (!order){
@@ -403,87 +366,4 @@ export const roomExtensionBase = function () {
 
 
     };
-
-    Object.defineProperty(Room.prototype, 'sources', {
-        get: function () {
-            if (this.memory.data && this.memory.data.sources.length == 0){
-                const found = this.find(FIND_SOURCES) as Source[];
-                found.sort((a, b) => {
-                    return a.pos.x == b.pos.x ? a.pos.y - b.pos.y : a.pos.x - b.pos.x;
-                })
-                for (const source of found){
-                    this.memory.data.sources.push({
-                        id: source.id,
-                        container: null,
-                        link: null,
-                        workPos: [0, 0],
-                    })
-                }
-            }
-            return this.memory.data.sources;
-        },
-        enumerable: false,
-        configurable: true
-    });
-
-    Object.defineProperty(Room.prototype, 'mineral', {
-        get: function () {
-            if (this.memory.data && this.memory.data.mineral == null){
-                const found = this.find(FIND_MINERALS) as Mineral[];
-                if (found.length > 0){
-                    this.memory.data.mineral = {
-                        id: found[0].id,
-                        container: null,
-                    };
-                }
-            }
-            return this.memory.data.mineral;
-        },
-        enumerable: false,
-        configurable: true
-    });
-
-    Object.defineProperty(Room.prototype, 'containers', {
-        get: function () {
-            if (this.memory.data && this.memory.data.containers == null){
-                this.memory.data.containers = [];
-            }
-            return this.memory.data.containers;
-        },
-        enumerable: false,
-        configurable: true
-    });
-
-    Object.defineProperty(Room.prototype, 'links', {
-        get: function () {
-            if (this.memory.data && this.memory.data.links == null){
-                this.memory.data.links = [];
-            }
-            return this.memory.data.links;
-        },
-        enumerable: false,
-        configurable: true
-    });
-
-    Object.defineProperty(Room.prototype, 'towers', {
-        get: function () {
-            if (this.memory.data && this.memory.data.towers == null){
-                this.memory.data.towers = [];
-            }
-            return this.memory.data.towers;
-        },
-        enumerable: false,
-        configurable: true
-    });
-
-    Object.defineProperty(Room.prototype, 'my', {
-        get: function () {
-            return this.controller
-                   && (this.controller.my
-                       || (this.controller.reservation && this.controller.reservation.username == 'Yuee')
-                   );
-        },
-        enumerable: false,
-        configurable: true
-    });
 }

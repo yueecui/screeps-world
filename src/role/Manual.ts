@@ -22,7 +22,7 @@ export const roleManual: CreepRole = {
         if (creep.room.name != 'W41N54'){
             return;
         }
-        if (creep.getMode() == 1){
+        if (creep.mode == 1){
             const controller = creep.room.controller!;
             if (creep.pos.isNearTo(controller)){
                 if (creep.claimController(controller) == OK){
@@ -34,7 +34,7 @@ export const roleManual: CreepRole = {
         }else{
             creep.recycleNearby(); // 回收周围的能量
             creep.updateEnergyStatus();
-            if (creep.getEnergyState() == ENERGY_NEED){
+            if (creep.energy == ENERGY_NEED){
                 creep.obtainEnergy({
                     container: [CONTAINER_TYPE_SOURCE],
                     storage: false,

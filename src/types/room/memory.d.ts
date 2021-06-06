@@ -4,18 +4,6 @@ interface RoomMemory {
      */
     flagPurge: boolean;
     /**
-     * room里的source缓存
-     *
-     * 只生成一次，只要sources这个key存在就不会再刷新
-     */
-    sources: Array<sourceNodeInfo>;
-    /**
-     * room里的mineral缓存
-     *
-     * 只生成一次，只要mineral这个key存在就不会再刷新
-     */
-    mineral: sourceNodeInfo;
-    /**
      * 本房间最后一次孵化的时间
      *
      * 用于判断是否要再次进行孵化
@@ -25,19 +13,12 @@ interface RoomMemory {
      * 当前还需要补充能量的孵化用建筑物
      */
     taskSpawn: Record<string, taskInfo>;
-    /**
-     * room中tower的id缓存
-     */
-    towers: Array<Id<StructureTower>>;
+
     /**
      * 当前还需要补充能量的塔
      */
     taskTowers: Record<string, taskInfo>;
 
-    /**
-     * room中，LINK的ID缓存
-     */
-    links: Array<Id<StructureLink>>;
     /**
      * 目前运输的能量计划
      *
@@ -56,6 +37,12 @@ interface RoomMemory {
         controller: controllerInfo,
         storage: storageInfo,
     };
+    config: {
+        code: string;
+        alias: string[];
+    };
+    /** 孵化配置，这部分比较自由，就不做严格限制了 */
+    spawnConfig: Record<string, any>
 }
 
 /** source的配置数据 */

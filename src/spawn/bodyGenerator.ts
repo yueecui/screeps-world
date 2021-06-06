@@ -1,6 +1,6 @@
 
 
-export function generateBodyParts(code: string): BodyPartConstant[]{
+export function generateBodyParts(code: string, room: Room): BodyPartConstant[]{
 
     return [];
 }

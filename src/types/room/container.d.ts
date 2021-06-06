@@ -23,14 +23,6 @@ interface Room {
   getStructureEnergyCapacity(structure: StructureContainer | StructureStorage): number;
 
   /**
-   * 试图添加source对应的container
-   */
-  addSourceContainer(container: StructureContainer): void;
-  /**
-  * 移除了一个container，检查是否为source对应的，如果是就移除
-  */
-  removeSourceContainer(container_id: Id<StructureContainer>): void;
-  /**
    * 获取房间内已经接近满的source container
    *
    * 获取到的将安排任务转存到storage中

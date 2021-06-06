@@ -34,10 +34,18 @@ module.exports.loop = () => {
                 for (const tower_id of room.memory.data.towers){
                     const tower = Game.getObjectById(tower_id);
                     if (tower){
-                        var closestHostile = tower.pos.findClosestByRange(FIND_HOSTILE_CREEPS);
+                        const closestHostile = tower.pos.findClosestByRange(FIND_HOSTILE_CREEPS);
                         if(closestHostile) {
                             tower.attack(closestHostile);
                             continue
+                        }
+
+                        const my_creep = tower.room.find(FIND_MY_CREEPS, {filter: (creep) => {
+                            return creep.hits < creep.hitsMax;
+                        }});
+                        if (my_creep.length){
+                            tower.heal(my_creep[0]);
+                            continue;
                         }
 
                         const found = room.find(FIND_MY_STRUCTURES, {filter: (struct) => {
@@ -59,9 +67,9 @@ module.exports.loop = () => {
 
     // 临时运转LINK
     const room = Game.rooms['W35N57'];
-    const mm_link = Game.getObjectById(room.memory.links[0])!;
-    for (let i=1;i<room.memory.links.length;i++){
-        const link = Game.getObjectById(room.memory.links[i])!;
+    const mm_link = Game.getObjectById(room.links[0].id)!;
+    for (let i=1;i<room.links.length;i++){
+        const link = Game.getObjectById(room.links[i].id)!;
         if (link.store[RESOURCE_ENERGY] > 0){
             link.transferEnergy(mm_link);
         }

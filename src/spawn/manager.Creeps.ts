@@ -48,18 +48,22 @@ export const ManagerCreeps: Record<string, any> = {
         const valid_creeps = {} as Record<string, any>;
         for (const name in Game.creeps){
             const creep = Game.creeps[name];
-            const m = creep.getBaseName();
+            const m = creep.roomCode + '-' + creep.baseName;
             if (m != 'unknown'){
                 all_creeps[m] = all_creeps[m] || [];
                 valid_creeps[m] = valid_creeps[m] || [];
-                all_creeps[m].push(creep.getIndex());
+                all_creeps[m].push(creep.index);
 
                 const config = room_spawn_config.get(m);
                 if (!(config && config.aheadTime && creep.ticksToLive! <= config.aheadTime)){
-                    valid_creeps[m].push(creep.getIndex());
+                    valid_creeps[m].push(creep.index);
                 }
             }
         }
+
+        // console.log('=======================')
+        // console.log('all_creeps',JSON.stringify(all_creeps));
+        // console.log('valid_creeps:',JSON.stringify(valid_creeps));
 
         for (const [basename,config] of room_spawn_config){
             config.basename = basename;
