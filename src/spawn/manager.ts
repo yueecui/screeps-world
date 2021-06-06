@@ -7,7 +7,7 @@ import { generateBodyParts } from './bodyGenerator';
 import { ROOM_1_CONFIG } from './R1_W35N57';
 import { ROOM_2_CONFIG } from './R2_W37N55';
 
-import { BASE_SPAWN_CONFIG } from './spawnConfigBase'
+import { SPAWN_CONFIG_BASE } from './configBase'
 
 const ROOM_SPAWN_CONFIG: Record<string, Map<string, RoleConfig>>= {
     'W35N57': ROOM_1_CONFIG,  // 第一个房间
@@ -75,7 +75,7 @@ export const SpawnManager = {
         }
 
         // 基本运作必要蚂蚁
-        for (const [base_name, config] of BASE_SPAWN_CONFIG){
+        for (const [base_name, config] of SPAWN_CONFIG_BASE){
             config.basename = base_name;
             // 该basename的creeps存活数量
             const config_all = lived_creeps[base_name] || [];
@@ -200,9 +200,9 @@ export const SpawnManager = {
     spawnCreep: function(spawn: StructureSpawn, config: Record<string, any>, index: number){
         const memory = JSON.parse(JSON.stringify(config.memory));
         if (config.body.indexOf(CARRY) > -1){
-            memory.e = ENERGY_NEED;
+            memory.energy = ENERGY_NEED;
         }
-        memory.w = WORK_IDLE;
+        memory.work = WORK_IDLE;
         const result = spawn.spawnCreep(config.body, config.basename+index, {memory: memory}); //, directions: [RIGHT], TOP_RIGHT, BOTTOM_RIGHT, TOP, TOP_LEFT
         console.log(spawn.name, ':',result);
         if (result == OK){

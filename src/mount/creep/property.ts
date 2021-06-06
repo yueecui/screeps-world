@@ -88,7 +88,11 @@ export const creepExtensionProperty = function () {
 
     Object.defineProperty(Creep.prototype, 'work', {
         get: function () {
-            return this.memory.work ? this.memory.work : this.memory.w;
+            if (this.memory.work != undefined){
+                return this.memory.work;
+            }else{
+                return this.memory.w;
+            }
         },
         set: function(new_value: WORK_STATUS){
             this.memory.work = new_value;

@@ -100,9 +100,10 @@ export const ManagerCreeps: Record<string, any> = {
     spawnCreep: function(spawn: StructureSpawn, config: Record<string, any>, index: number){
         const memory = JSON.parse(JSON.stringify(config.memory));
         if (config.body.indexOf(CARRY) > -1){
-            memory.e = ENERGY_NEED;
+            memory.energy = ENERGY_NEED;
         }
-        memory.w = WORK_IDLE;
+        memory.work = WORK_IDLE;
+        memory.belong = spawn.room.name;
         const result = spawn.spawnCreep(config.body, config.basename+index, {memory: memory}); //, directions: [RIGHT], TOP_RIGHT, BOTTOM_RIGHT, TOP, TOP_LEFT
         console.log(spawn.name,'-', config.basename, ':',result);
         if (result == OK){

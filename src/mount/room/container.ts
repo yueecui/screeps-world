@@ -1,5 +1,5 @@
 import { CONTAINER_TYPE_CONTROLLER, CONTAINER_TYPE_SOURCE, CONTAINER_TYPE_MINERAL, PLAN_PAY } from "@/constant";
-import { CONTROLLER_CONTAINER_EMPTY, SOURCE_CONTAINER_FULL } from "@/config"
+import { CONTROLLER_CONTAINER_EMPTY, SOURCE_CONTAINER_FULL, MINERAL_CONTAINER_FULL } from "@/config"
 
 export const roomExtensionContainer = function () {
     // 预定一个container的能量变化
@@ -64,7 +64,7 @@ export const roomExtensionContainer = function () {
 
         return _.filter(containers, (container) => {
             if (container == null) { return false; }
-            return container.store.getUsedCapacity() >= SOURCE_CONTAINER_FULL; }
+            return container.store.getUsedCapacity() >= MINERAL_CONTAINER_FULL; }
         ) as StructureContainer[];
     };
 
