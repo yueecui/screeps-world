@@ -45,6 +45,9 @@ interface Room {
     getSpawnAdvanceTime(base_name: string): number;
     /** 获取本房间对应role的生成数量 */
     getSpawnAmount(base_name: string): number;
+
+    /** 更新视觉效果 */
+    updateVisual(): void;
     /**
      * 计算订单收益
      */

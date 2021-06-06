@@ -32,7 +32,7 @@ const role_HELP: SpawnConfig = {
     needSpawn: (room: Room) => {
         return room.find(FIND_MY_CREEPS).length == 0 && room.energyAvailable >= 300;
     },
-    body: generateBodyTransporterHelp
+    body: generateBodyTransporter
 }
 
 

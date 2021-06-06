@@ -78,7 +78,8 @@ export const roomExtensionUtil = function () {
         this.memory.flagPurge = false;
 
         // 每tick任务
-        this.checkSpawnEnergy();
+        this.checkSpawnEnergy();  // 只有刷新时间不为0时才执行
+        this.updateVisual();  // 刷新界面显示
     };
 
     Room.prototype.errorCheck = function(){
@@ -133,7 +134,6 @@ export const roomExtensionUtil = function () {
         if (this.memory.config == undefined){
             this.memory.config = {
                 code: this.name,
-                alias: [],
             }
         }
         if (this.memory.spawnConfig == undefined){
@@ -198,8 +198,11 @@ export const roomExtensionUtil = function () {
                     // 判断是否为mineral的container
                     if (this.mineral.container == null
                         && container.pos.getRangeTo(Game.getObjectById(this.mineral.id)!) <= 2){
-                            this.mineral.container = container_id;
-                            return CONTAINER_TYPE_MINERAL;
+                            const found = Game.getObjectById(this.mineral.id)!.pos.lookFor(LOOK_STRUCTURES);
+                            if (found[0] && found[0].structureType == STRUCTURE_EXTRACTOR){
+                                this.mineral.container = container_id;
+                                return CONTAINER_TYPE_MINERAL;
+                            }
                     }
                     // 判断是否为source的container
                     for(const source_info of this.sources){
@@ -339,6 +342,19 @@ export const roomExtensionUtil = function () {
     Room.prototype.getSpawnAmount = function (base_name: string){
         if (!('amount' in this.spawnConfig)) this.spawnConfig.amount = {};
         return this.spawnConfig.amount[base_name] ? this.spawnConfig.amount[base_name] : 0;
+    }
+
+    Room.prototype.updateVisual = function (){
+        if (this.controller && this.controller.my){
+            this.visual.text(
+                ((this.controller.progress /this.controller.progressTotal) * 100).toFixed(2) + '%',
+                this.controller.pos.x, this.controller.pos.y-1,
+                {
+                    font: 0.5,
+                    stroke: '#000000'
+                }
+            )
+        }
     }
 
     Room.prototype.calcPrice = function (order_id: string, amount: number){

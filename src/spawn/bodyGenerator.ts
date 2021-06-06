@@ -8,6 +8,22 @@
 // 7: 5600
 // 8: 12900
 
+
+export const generateBodyTransporterHelp = function(room: Room){
+    // 后续需要调整成可以带WORK的
+
+    // 最少可能只有300
+    const group_amount = Math.max(Math.floor(room.energyAvailable / 150), 16) ;
+    const body: BodyPartConstant[] = []
+    for (let i=0;i<group_amount;i++){
+        body.push(CARRY, CARRY);
+    }
+    for (let i=0;i<group_amount;i++){
+        body.push(MOVE);
+    }
+    return body
+}
+
 export const generateBodyTransporter = function(room: Room){
     // 50/3=16.6666666667
     const group_amount = Math.max(Math.floor(room.energyCapacityAvailable / 150), 16) ;

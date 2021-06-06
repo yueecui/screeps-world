@@ -1,17 +1,8 @@
 import {
-    ENERGY_NEED, ENERGY_ENOUGH,
-    WORK_IDLE, WORK_TRANSPORTER_SPAWN, WORK_TRANSPORTER_TOWER, WORK_TRANSPORTER_STORAGE_ENERGY
+    ENERGY_NEED, WORK_IDLE
 } from '@/constant';
 
-import { ROOM_1_CONFIG } from './R1_W35N57';
-import { ROOM_2_CONFIG } from './R2_W37N55';
-
-import { SPAWN_CONFIG_BASE } from './configBase'
-
-const ROOM_SPAWN_CONFIG: Record<string, Map<string, RoleConfig>>= {
-    'W35N57': ROOM_1_CONFIG,  // 第一个房间
-    'W37N55': ROOM_2_CONFIG,  // 第二个房间
-}
+import { SPAWN_CONFIG_PRIORITY_HIGH, SPAWN_CONFIG_PRIORITY_MID, SPAWN_CONFIG_PRIORITY_LOW } from './configBase'
 
 type LivedCreeps = Record<string, number[]>;
 
@@ -74,36 +65,28 @@ export const SpawnManager = {
         }
 
         // 检查房间必要蚂蚁
-        for (const [base_name, config] of SPAWN_CONFIG_BASE){
-            // 该basename的creeps存活数量
-            const config_all = lived_creeps[base_name] || [];
-            const config_valid_creeps = this.verifyCreeps(room, config, lived_creeps);
+        for (const spawn_config of [SPAWN_CONFIG_PRIORITY_HIGH, SPAWN_CONFIG_PRIORITY_MID, SPAWN_CONFIG_PRIORITY_LOW]){
+            for (const [base_name, config] of spawn_config){
+                // 该basename的creeps存活数量
+                const config_all = lived_creeps[base_name] || [];
+                const config_valid_creeps = this.verifyCreeps(room, config, lived_creeps);
 
-            const amount = config.amount(room);
-            if (config_valid_creeps.length >= amount){
-                continue;
-            }
+                const amount = config.amount(room);
 
-            // basename数量不足时进行刷新
-            const max = config.advance ? amount + 1 : amount
+                if (config_valid_creeps.length >= amount) continue;
+                if (!config.needSpawn(room)) continue;
 
-            for (let index=1;index<=max;index++){
-                if (config_all.indexOf(index) == -1){
-                    this.spawnCreep(room, config, index);
-                    return;
+                // basename数量不足时进行刷新
+                const max = config.advance ? amount + 1 : amount
+
+                for (let index=1;index<=max;index++){
+                    if (config_all.indexOf(index) == -1){
+                        this.spawnCreep(room, config, index);
+                        return;
+                    }
                 }
             }
         }
-
-        // if (spawn.spawning){
-        //     return;
-        // }
-        // // 如果房间中没有活着的spawn了，那么启用救灾流程
-        // if (spawn.room.find(FIND_MY_CREEPS).length == 0){
-        //     this.selfRescue(spawn);
-        //     return;
-        // }
-
     },
 
     verifyCreeps: function(room: Room, config: SpawnConfig, lived_creeps: LivedCreeps): number[] {

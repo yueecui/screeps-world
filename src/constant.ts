@@ -131,6 +131,10 @@ export const MODE_SPAWN: MODE_SPAWN = 0;
   * 优先提供控制器能量的运输者
   */
 export const MODE_CONTROLLER: MODE_CONTROLLER = 1;
+ /**
+  * 优先提供控制器能量的运输者
+  */
+export const MODE_HELP: MODE_HELP = 2;
 
 /**
  * 优先建筑的builder

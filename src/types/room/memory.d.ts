@@ -39,7 +39,6 @@ interface RoomMemory {
     };
     config: {
         code: string;
-        alias: string[];
     };
     /** 孵化配置 */
     spawnConfig: {
