@@ -36,6 +36,18 @@ interface RoleConfig{
   respawnCondition?: RespawnCondition;
 }
 
+interface SpawnConfig{
+  baseName: string
+  memory: Record<string, any>
+  advance: boolean
+  amount: (room: Room) => number
+  body: (room: Room) => BodyPartConstant[]
+  /** 判断是否将当前creep视为存活状态 */
+  isLive: (room: Room, creep: Creep) => boolean
+  /** 判断当前room的状态是否满足重新孵化的条件 */
+  needSpawn: (room: Room) => boolean
+}
+
 /**
  * 视为存活的条件
  */

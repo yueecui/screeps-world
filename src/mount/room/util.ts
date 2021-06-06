@@ -54,27 +54,6 @@ const findOverlapPos = function(a: findPosParam, b: findPosParam): [number, numb
     return result;
 }
 
-/**
- * 计算工作坐标位置
- * @param target 目标工作对象
- * @param container 能量存储容器对象
- * @returns 工作坐标位置
- */
-const calcWorkPos = function(target:Source|Mineral|StructureController, container:StructureContainer|StructureLink): [number, number]{
-    if (target instanceof Source){
-        if(container.structureType == STRUCTURE_CONTAINER){
-            return [container.pos.x, container.pos.y];
-        }else if (container.structureType == STRUCTURE_LINK){
-
-        }
-    }else if (target instanceof Mineral && container.structureType == STRUCTURE_CONTAINER){
-        return [container.pos.x, container.pos.y];
-    }else if (target instanceof StructureController){
-
-    }
-    return [0, 0];
-}
-
 export const roomExtensionUtil = function () {
     // 每tick检查的主方法
     Room.prototype.tickCheck = function() {
@@ -158,7 +137,10 @@ export const roomExtensionUtil = function () {
             }
         }
         if (this.memory.spawnConfig == undefined){
-            this.memory.spawnConfig = {}
+            this.memory.spawnConfig = {
+                advance: {},
+                amount: {},
+            }
         }
 
         if (this.memory.flagPurge == undefined){
@@ -348,6 +330,15 @@ export const roomExtensionUtil = function () {
                 return a.id.localeCompare(b.id);
             }
         });
+    }
+
+    Room.prototype.getSpawnAdvanceTime = function (base_name: string){
+        if (!('advance' in this.spawnConfig)) this.spawnConfig.advance = {};
+        return this.spawnConfig.advance[base_name] ? this.spawnConfig.advance[base_name] : 0;
+    }
+    Room.prototype.getSpawnAmount = function (base_name: string){
+        if (!('amount' in this.spawnConfig)) this.spawnConfig.amount = {};
+        return this.spawnConfig.amount[base_name] ? this.spawnConfig.amount[base_name] : 0;
     }
 
     Room.prototype.calcPrice = function (order_id: string, amount: number){

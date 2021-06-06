@@ -102,8 +102,10 @@ export const ManagerCreeps: Record<string, any> = {
         if (config.body.indexOf(CARRY) > -1){
             memory.energy = ENERGY_NEED;
         }
-        memory.work = WORK_IDLE;
-        memory.belong = spawn.room.name;
+        if (config.body.indexOf(WORK) > -1){
+            memory.work = WORK_IDLE;
+        }
+        memory.born = spawn.room.name;
         const result = spawn.spawnCreep(config.body, config.basename+index, {memory: memory}); //, directions: [RIGHT], TOP_RIGHT, BOTTOM_RIGHT, TOP, TOP_LEFT
         console.log(spawn.name,'-', config.basename, ':',result);
         if (result == OK){

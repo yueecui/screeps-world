@@ -115,18 +115,12 @@ export const LINK_TYPE_SOURCE: LINK_TYPE_SOURCE = 3;
 
 // Creep工作模式代码
 
-/**
- * 无指定模式
- */
- export const MODE_NONE: MODE_NONE = -1;
+/** 无指定模式 */
+export const MODE_NONE: MODE_NONE = -1;
 
-/**
- * 优先提供孵化器能量的运输者
- */
+/** 采集能量的采集者 */
 export const MODE_HARVEST_ENERGY: MODE_HARVEST_ENERGY = 0;
-/**
- * 优先提供控制器能量的运输者
- */
+/** 采集矿物的采集者 */
 export const MODE_HARVEST_MINERAL: MODE_HARVEST_MINERAL = 1;
 
 /**

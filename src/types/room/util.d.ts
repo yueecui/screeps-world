@@ -41,6 +41,10 @@ interface Room {
     /** 更新link的数据 */
     updateRoomStatus_Link(all_links: StructureLink[]): void;
 
+    /** 获取本房间对应role的提前生成时间 */
+    getSpawnAdvanceTime(base_name: string): number;
+    /** 获取本房间对应role的生成数量 */
+    getSpawnAmount(base_name: string): number;
     /**
      * 计算订单收益
      */

@@ -53,9 +53,17 @@ export const creepExtensionProperty = function () {
         configurable: true
     });
 
-    Object.defineProperty(Creep.prototype, 'belong', {
+    Object.defineProperty(Creep.prototype, 'bornRoom', {
         get: function () {
-            return this.memory.belong ? this.memory.belong : '??';
+            return this.memory.born ? this.memory.born : '??';
+        },
+        enumerable: false,
+        configurable: true
+    });
+
+    Object.defineProperty(Creep.prototype, 'belongRoom', {
+        get: function () {
+            return this.memory.belong ? this.memory.belong : this.memory.born;
         },
         set: function(new_value: string){
             this.memory.belong = new_value;
@@ -114,7 +122,11 @@ export const creepExtensionProperty = function () {
 
     Object.defineProperty(Creep.prototype, 'energy', {
         get: function () {
-            return this.memory.energy ? this.memory.energy : this.memory.e;
+            if (this.memory.energy != undefined){
+                return this.memory.energy;
+            }else{
+                return this.memory.e;
+            }
         },
         set: function(new_value: ENERGY_STATUS){
             this.memory.energy = new_value;

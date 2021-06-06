@@ -41,8 +41,13 @@ interface RoomMemory {
         code: string;
         alias: string[];
     };
-    /** 孵化配置，这部分比较自由，就不做严格限制了 */
-    spawnConfig: Record<string, any>
+    /** 孵化配置 */
+    spawnConfig: {
+        /**各roll数量，不指定或是为0的时候采取自动配置 */
+        amount: Record<string, number>,
+        /**各roll提前生成时间，主要是生成后到工作位置的到位时间 */
+        advance: Record<string, number>
+    }
 }
 
 /** source的配置数据 */

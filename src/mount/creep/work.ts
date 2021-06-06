@@ -17,25 +17,19 @@ export const creepExtensionHarvester = function () {
 
     Creep.prototype.harvesterIdleCheck = function(){
         const room = this.memory.room ? Game.rooms[this.memory.room] : this.room;
-        this.say('1');
         // 没有视野的情况下先移动过去开视野
         if (!room){
-            this.say('2');
             this.work = WORK_MOVE;
             return;
         }
-        this.say('3');
         if (this.mode == MODE_HARVEST_ENERGY){
-            this.say('4');
             const source_node = Game.getObjectById(room.sources[this.memory.node].id)!;
             // 如果采集点没有能量，则不变化状态
             if (this.pos.isNearTo(source_node)){
-                this.say('5');
                 if (source_node.energy > 0){
                     this.work = WORK_HARVEST;
                 }
             }else{
-                this.say('6');
                 this.work = WORK_MOVE;
             }
         }else if (this.mode == MODE_HARVEST_MINERAL){
