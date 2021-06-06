@@ -13,13 +13,15 @@ export const roleGoToRecycle: CreepRole = {
     // 根据工作模式执行
     execute: function(creep){
         let target;
-        if (creep.room.name == 'W35N57'){
+        if (creep.room.name == 'W35N57' || creep.room.name == 'W34N57'){
             target = Game.spawns['Spawn1'];
+        }else if (creep.room.name == 'W41N54'){
+            target = Game.spawns['Beijing'];
         }else{
             target = Game.spawns['Shanghai'];
         }
 
-
+        creep.say('♻️');
         if (creep.pos.isNearTo(target)){
             target.recycleCreep(creep);
         }else{
