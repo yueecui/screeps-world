@@ -64,20 +64,21 @@ export const SpawnManager = {
      * @returns 是否成功生成
      */
     checkSpawn: function (room: Room, all_lived_creeps: Record<string, LivedCreeps>){
+        const code_lived_creeps = all_lived_creeps[room.code] || {};
         // 检查本房间高优先级蚂蚁
-        if (this.checkSpawnBase(room, all_lived_creeps[room.code], SPAWN_BASE_PRIORITY_HIGH)) return;
+        if (this.checkSpawnBase(room, code_lived_creeps, SPAWN_BASE_PRIORITY_HIGH)) return;
         // 检查本房间相关外矿的高优先级
         for (const outside_room_name of room.memory.roomConfig.outside){
             if (this.checkSpawnOutside(room, all_lived_creeps, outside_room_name, SPAWN_OUTSIDE_PRIORITY_HIGH)) return;
         }
         // 检查本房间中优先级蚂蚁
-        if (this.checkSpawnBase(room, all_lived_creeps[room.code], SPAWN_BASE_PRIORITY_MID)) return;
+        if (this.checkSpawnBase(room, code_lived_creeps, SPAWN_BASE_PRIORITY_MID)) return;
         // 检查本房间相关外矿的低优先级
         for (const outside_room_name of room.memory.roomConfig.outside){
             if (this.checkSpawnOutside(room, all_lived_creeps, outside_room_name, SPAWN_OUTSIDE_PRIORITY_LOW)) return;
         }
         // 检查本房间低优先级蚂蚁
-        if (this.checkSpawnBase(room, all_lived_creeps[room.code], SPAWN_BASE_PRIORITY_LOW)) return;
+        if (this.checkSpawnBase(room, code_lived_creeps, SPAWN_BASE_PRIORITY_LOW)) return;
     },
 
     checkSpawnBase: function(room: Room, lived_creeps: LivedCreeps, spawn_config : Map<string, SpawnConfig>) {
@@ -223,9 +224,9 @@ export const SpawnManager = {
             case ERR_INVALID_ARGS:
                 console.log(`${spawn.name}: ${new_name}的身体代码不正确`);
                 break;
-            case ERR_NOT_ENOUGH_ENERGY:
-                console.log(`${spawn.name}: ${new_name}能量不足`);
-                break;
+            // case ERR_NOT_ENOUGH_ENERGY:
+            //     console.log(`${spawn.name}: ${new_name}能量不足`);
+            //     break;
         }
         return true;
     },

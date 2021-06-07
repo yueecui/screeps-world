@@ -311,10 +311,10 @@ export const SPAWN_BASE_PRIORITY_HIGH: Map<string, SpawnConfig> = new Map([
     // 全灭后的救灾蚂蚁
     ['HELP', role_HELP],
 
-    // 优先搬运孵化能量的搬运者
-    ['TS', role_TS],
     // ROOM内能量采集者，A和B对应2个采集点
     ['GA', role_GA],
+    // 优先搬运孵化能量的搬运者
+    ['TS', role_TS],
 ]);
 
 // 中优先级
