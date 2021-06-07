@@ -1,4 +1,4 @@
-import { TASK_WAITING } from "@/constant";
+import { BOOLEAN_TRUE, TASK_WAITING } from "@/constant";
 
 export const roomExtensionTower = function () {
 
@@ -9,10 +9,10 @@ export const roomExtensionTower = function () {
 
     // 检查tower的能量
     Room.prototype.checkTowerEnergy = function(){
-        if (this.memory.data.towers.length > 0){
-            let towers = _.map(this.memory.data.towers, (id)=> {return Game.getObjectById(id)});
+        if (this.towers.length > 0){
+            let towers = _.map(this.towers, (id)=> {return Game.getObjectById(id)});
             towers = _.filter(towers, (tower) => {
-                if (tower == null) { this.memory.flagPurge = true;return false; }
+                if (tower == null) { this.memory.flagPurge = BOOLEAN_TRUE;return false; }
                 return tower.store.getFreeCapacity(RESOURCE_ENERGY) > 0;
             });
             this.memory.taskTowers = {};

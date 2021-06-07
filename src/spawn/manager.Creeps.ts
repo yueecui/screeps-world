@@ -25,12 +25,13 @@ export const ManagerCreeps: Record<string, any> = {
     check: function() {
         for (const room_name in ROOM_SPAWN_CONFIG){
             // 暂时先就找一个
-            const spawn = _.find(Game.spawns, (spawn) => { return spawn.room.name == room_name; });
-            if (spawn == undefined){
+            const spawns = _.filter(Game.spawns, (spawn) => { return spawn.room.name == room_name; });
+            if (spawns.length == 0){
                 console.log(`房间${room_name}没有找到Spawn`);
                 continue;
             }
-            if (spawn.spawning){
+            const spawn = _.find(spawns, (spawn) => { return !spawn.spawning });
+            if (!spawn){
                 continue;
             }
             if (spawn.room.find(FIND_MY_CREEPS).length == 0){

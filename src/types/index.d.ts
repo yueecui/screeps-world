@@ -35,4 +35,14 @@ declare namespace NodeJS {
 interface Memory{
   /** 临时用旗标，什么都可以写 */
   tempFlags: Record<string, any>;
+  /** 老的roomCode */
+  roomCodeReplace: Record<string, string>;
 }
+
+
+type ANY_BOOLEAN =
+    | BOOLEAN_FALSE
+    | BOOLEAN_TRUE
+
+type BOOLEAN_FALSE = 0
+type BOOLEAN_TRUE = 1

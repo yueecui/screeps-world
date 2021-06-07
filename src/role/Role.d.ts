@@ -37,16 +37,24 @@ interface RoleConfig{
 }
 
 interface SpawnConfig{
+  type: ANY_SPAWN_TYPE;
   baseName: string
-  memory: Record<string, any>
   advance: boolean
-  amount: (room: Room) => number
-  body: (room: Room) => BodyPartConstant[]
+  memory: (spawn_room: Room, work_room_name?: string) => Record<string, any>
+  amount: (spawn_room: Room, work_room_name?: string) => number
+  body: (spawn_room: Room) => BodyPartConstant[]
   /** 判断是否将当前creep视为存活状态 */
-  isLive: (room: Room, creep: Creep) => boolean
+  isLive: (spawn_room: Room, creep: Creep) => boolean
   /** 判断当前room的状态是否满足重新孵化的条件 */
-  needSpawn: (room: Room) => boolean
+  needSpawn: (spawn_room: Room, work_room_name?: string) => boolean
 }
+
+type ANY_SPAWN_TYPE =
+    | SPAWN_TYPE_IN_ROOM
+    | SPAWN_TYPE_OUTSIDE
+
+type SPAWN_TYPE_IN_ROOM = 1
+type SPAWN_TYPE_OUTSIDE = 2
 
 /**
  * 视为存活的条件

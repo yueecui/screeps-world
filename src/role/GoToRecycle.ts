@@ -14,7 +14,7 @@ export const roleGoToRecycle: CreepRole = {
     execute: function(creep){
         let target;
         if (creep.room.name == 'W35N57' || creep.room.name == 'W34N57'){
-            target = Game.spawns['Spawn1'];
+            target = Game.spawns['Ironforge'];
         }else if (creep.room.name == 'W41N54'){
             target = Game.spawns['Beijing'];
         }else{

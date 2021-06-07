@@ -102,7 +102,8 @@ type MODE_HARVEST_MINERAL = 1;
 // 搬运者的模式
 type MODE_SPAWN = 0;
 type MODE_CONTROLLER = 1;
-type MODE_HELP = 2;
+type MODE_OUTSIDE = 2;
+type MODE_HELP = 9;
 // 建造者的模式
 type MODE_BUILDER = 0;
 type MODE_REPAIRER = 1;

@@ -13,7 +13,7 @@ export const generateBodyTransporterHelp = function(room: Room){
     // 后续需要调整成可以带WORK的
 
     // 最少可能只有300
-    const group_amount = Math.max(Math.floor(room.energyAvailable / 150), 16) ;
+    const group_amount = Math.min(Math.floor(room.energyAvailable / 150), 16) ;
     const body: BodyPartConstant[] = []
     for (let i=0;i<group_amount;i++){
         body.push(CARRY, CARRY);
@@ -26,7 +26,7 @@ export const generateBodyTransporterHelp = function(room: Room){
 
 export const generateBodyTransporter = function(room: Room){
     // 50/3=16.6666666667
-    const group_amount = Math.max(Math.floor(room.energyCapacityAvailable / 150), 16) ;
+    const group_amount = Math.min(Math.floor(room.energyCapacityAvailable / 150), 16) ;
     const body: BodyPartConstant[] = []
     for (let i=0;i<group_amount;i++){
         body.push(CARRY, CARRY);
@@ -37,7 +37,7 @@ export const generateBodyTransporter = function(room: Room){
     return body
 }
 
-export const generateBodyEnergyHarvester = function(room: Room, node: number){
+export const generateBodyEnergyHarvester = function(room: Room, isOutside: boolean){
     const cap = room.energyCapacityAvailable;
     let work_amount = 1;
     let carry_amount = 1;
@@ -74,7 +74,7 @@ export const generateBodyEnergyHarvester = function(room: Room, node: number){
 export const generateBodyMineralHarvester = function(room: Room){
     // 50/5=10
     // 4 WORK + 1 MOVE
-    const group_amount = Math.max(Math.floor(room.energyCapacityAvailable / 450), 10) ;
+    const group_amount = Math.min(Math.floor(room.energyCapacityAvailable / 450), 10) ;
     // 生成
     const body: BodyPartConstant[] = []
     for (let i=0;i<group_amount;i++){
@@ -89,7 +89,7 @@ export const generateBodyMineralHarvester = function(room: Room){
 
 export const generateBodyMastermind = function(room: Room){
     // 1 MOVE，其他是CARRY
-    const carry_amount = Math.max(Math.floor((room.energyCapacityAvailable -50) / 50), 49) ;
+    const carry_amount = Math.min(Math.floor((room.energyCapacityAvailable -50) / 50), 49) ;
     // 生成
     const body: BodyPartConstant[] = []
     for (let i=0;i<carry_amount;i++){
@@ -102,7 +102,7 @@ export const generateBodyMastermind = function(room: Room){
 
 export const generateBodyBuilder = function(room: Room){
     // 50/3=16.6666666667
-    const group_amount = Math.max(Math.floor(room.energyCapacityAvailable / 200), 16);
+    const group_amount = Math.min(Math.floor(room.energyCapacityAvailable / 200), 16);
     const body: BodyPartConstant[] = []
     for (let i=0;i<group_amount;i++){
         body.push(WORK);
@@ -159,6 +159,54 @@ export const generateBodyUpgrader = function(room: Room){
         body.push(CARRY);
     }
     for (let i=0;i<move_amount;i++){
+        body.push(MOVE);
+    }
+    return body
+}
+
+// 上限
+// 1: 300
+// 2: 550
+// 3: 800
+// 4: 1300
+// 5: 1800
+// 6: 2300
+// 7: 5600
+// 8: 12900
+
+// 4级以上才能有外矿
+// 外矿敌人就是一个普通的10parts小兵
+export const generateBodyOutsideDefender = function(room: Room){
+    // 目前采取简单策略
+    // 10 ATTACK + 5 MOVE
+    const group_amount = 5;
+    const body: BodyPartConstant[] = []
+    for (let i=0;i<group_amount;i++){
+        body.push(ATTACK, ATTACK);
+    }
+    for (let i=0;i<group_amount;i++){
+        body.push(MOVE);
+    }
+    return body
+}
+
+
+// 预订者
+export const generateBodyOutsideReserver = function(room: Room){
+    return [CLAIM, CLAIM, MOVE, MOVE]
+}
+
+
+// 外矿运输者
+// 目前先一样，后面会加WORK
+export const generateBodyOutsideTransporter = function(room: Room){
+    // 50/3=16.6666666667
+    const group_amount = Math.min(Math.floor(room.energyCapacityAvailable / 150), 16) ;
+    const body: BodyPartConstant[] = []
+    for (let i=0;i<group_amount;i++){
+        body.push(CARRY, CARRY);
+    }
+    for (let i=0;i<group_amount;i++){
         body.push(MOVE);
     }
     return body

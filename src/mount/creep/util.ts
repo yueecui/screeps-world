@@ -47,7 +47,7 @@ export const creepExtensionUtil = function () {
             this._baseName = this.name;
             this._index = 0;
         }else{
-            const find = /^(.+?)-(.+?)(\d*)$/.exec(this.name);
+            const find = /^(.+)-(.+?)(\d*)$/.exec(this.name);
             if (find){
                 this._roomCode = find[1];
                 this._baseName = find[2];

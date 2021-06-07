@@ -1,3 +1,7 @@
+export const BOOLEAN_FALSE: BOOLEAN_FALSE = 0;
+export const BOOLEAN_TRUE: BOOLEAN_TRUE = 1;
+
+
 // Creep的角色名
 
 export const ROLE_GOTO_RECYCLE: ROLE_GOTO_RECYCLE = '回收';
@@ -10,6 +14,10 @@ export const ROLE_ATTACKER: ROLE_ATTACKER = '攻击';
 export const ROLE_ENGINEER: ROLE_ENGINEER = '工兵';
 export const ROLE_MASTERMIND: ROLE_MASTERMIND = '主脑';
 
+/** 房间内工蚁 */
+export const SPAWN_TYPE_IN_ROOM: SPAWN_TYPE_IN_ROOM = 1;
+/** 房间外工蚁 */
+export const SPAWN_TYPE_OUTSIDE: SPAWN_TYPE_OUTSIDE = 2;
 
 // Creep工作进程的状态码
 
@@ -127,14 +135,18 @@ export const MODE_HARVEST_MINERAL: MODE_HARVEST_MINERAL = 1;
  * 优先提供孵化器能量的运输者
  */
 export const MODE_SPAWN: MODE_SPAWN = 0;
- /**
-  * 优先提供控制器能量的运输者
-  */
+/**
+ * 优先提供控制器能量的运输者
+ */
 export const MODE_CONTROLLER: MODE_CONTROLLER = 1;
- /**
-  * 优先提供控制器能量的运输者
-  */
-export const MODE_HELP: MODE_HELP = 2;
+/**
+ * 外矿的运输者
+ */
+export const MODE_OUTSIDE: MODE_OUTSIDE = 2;
+/**
+ * 救灾运输者
+ */
+export const MODE_HELP: MODE_HELP = 9;
 
 /**
  * 优先建筑的builder

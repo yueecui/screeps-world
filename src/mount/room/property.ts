@@ -1,3 +1,5 @@
+import { BOOLEAN_TRUE } from "@/constant";
+
 export const roomExtensionProperty = function () {
     // 定义各个属性
     Object.defineProperty(Room.prototype, 'sources', {
@@ -121,10 +123,37 @@ export const roomExtensionProperty = function () {
 
     Object.defineProperty(Room.prototype, 'my', {
         get: function () {
+            return this.controller && this.controller.my;
+        },
+        enumerable: false,
+        configurable: true
+    });
+
+    Object.defineProperty(Room.prototype, 'myReserve', {
+        get: function () {
             return this.controller
-                   && (this.controller.my
-                       || (this.controller.reservation && this.controller.reservation.username == 'Yuee')
-                   );
+                   && this.controller.reservation
+                   && this.controller.reservation.username == 'Yuee';
+        },
+        enumerable: false,
+        configurable: true
+    });
+
+    Object.defineProperty(Room.prototype, 'isUnderAttack', {
+        get: function () {
+            return this.memory.status.underAttack == BOOLEAN_TRUE;
+        },
+        enumerable: false,
+        configurable: true
+    });
+
+    Object.defineProperty(Room.prototype, 'hasInvaderCore', {
+        get: function () {
+            if (this.myReserve){
+                return this.memory.status.hasInvaderCore == BOOLEAN_TRUE;
+            }else{
+                return false;
+            }
         },
         enumerable: false,
         configurable: true

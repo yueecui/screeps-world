@@ -75,7 +75,7 @@ export const ROOM_1_CONFIG: Map<string, RoleConfig> = new Map([
     // ['BD-B', { body: getMaxBuilderBody(), amount: 1, memory: {role:'建造', mode:0, stay: [29, 27]} }],    // 建造优先
     // ['BD-R', { body: getMaxBuilderBody(), amount: 1, memory: {role:'建造', mode:1, stay: [27, 30]} }],    // 修理优先
     // ROOM升级者
-    ['R1-UP', { body: BODY_CONFIG['升级者R4'], amount: 2, memory: {role:'升级'} }],
+    ['R1-UP', { body: BODY_CONFIG['升级者R4'], amount: 1, memory: {role:'升级'} }],
 
     // 开分矿用c
     // ['N-ENG', { body: getNewEngBody(), amount: 1, memory: {role:'手动', mode:1}}],

@@ -30,8 +30,8 @@ export const ROOM_2_CONFIG: Map<string, RoleConfig> = new Map([
     // ['R1-MM', { body: [CARRY, CARRY, CARRY, CARRY, CARRY, CARRY, CARRY, CARRY, MOVE], amount: 1, aheadTime: 80, memory: {role:'主脑'} }],
 
     // ROOM的建造者
-    // ['R2-BB', { body: getMaxBuilder2Body(), amount: 1, memory: {role:'建造', mode:0, stay: [29, 27]} }],    // 建造优先
-    ['R2-BR', { body: getMaxBuilder2Body(), amount: 1, memory: {role:'建造', mode:1, stay: [20, 26]} }],    // 修理优先
+    ['R2-BB', { body: getMaxBuilder2Body(), amount: 1, memory: {role:'建造', mode:0, stay: [29, 27]} }],    // 建造优先
+    // ['R2-BR', { body: getMaxBuilder2Body(), amount: 1, memory: {role:'建造', mode:1, stay: [20, 26]} }],    // 修理优先
     // ROOM升级者
     ['R2-UP', { body: BODY_CONFIG['升级者R4'], amount: 1, memory: {role:'升级'} }],
 

@@ -14,6 +14,9 @@ export const Automatic = {
         if (Memory.tempFlags == undefined){
             Memory.tempFlags = {};
         }
+        if (Memory.roomCodeReplace == undefined){
+            Memory.roomCodeReplace = {};
+        }
         if (Game.time % 1000 == 0){
             cleanCreepsMemory();
         }

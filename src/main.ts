@@ -26,7 +26,7 @@ module.exports.loop = () => {
     // 检查所有自己的房间
     for(const name in Game.rooms) {
         const room = Game.rooms[name];
-        if (room.my){
+        if (room.my || room.myReserve){
             room.tickCheck();
 
             // 检查塔

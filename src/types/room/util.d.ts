@@ -17,8 +17,14 @@ interface Room {
     spawnConfig: Record<string, any>
 
     // 计算属性
-    /** 显示房间是否为我的，或是是否由我预定了 */
+    /** 显示房间是否为我的 */
     my: boolean
+    /** 显示房间是否为我预定的 */
+    myReserve: boolean
+
+    /** 是否处于有敌人的状态 */
+    isUnderAttack: boolean;
+    hasInvaderCore: boolean;
 
     /**
      * 房间定期检查
@@ -35,11 +41,14 @@ interface Room {
 
 
     /** 更新room中各个建筑的数据（定期任务） */
-    updateRoomStatus(): void;
+    updateRoomStructureStatus(): void;
     /** 更新container的数据 */
     updateRoomStatus_Container(all_containers: StructureContainer[]): void;
     /** 更新link的数据 */
     updateRoomStatus_Link(all_links: StructureLink[]): void;
+
+    /** 检查房间里是否出现了敌人 */
+    checkEnemy(): void;
 
     /** 获取本房间对应role的提前生成时间 */
     getSpawnAdvanceTime(base_name: string): number;

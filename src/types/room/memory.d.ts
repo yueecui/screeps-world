@@ -2,7 +2,7 @@ interface RoomMemory {
     /**
      * 强制清除缓存的标记
      */
-    flagPurge: boolean;
+    flagPurge: ANY_BOOLEAN;
     /**
      * 本房间最后一次孵化的时间
      *
@@ -27,7 +27,7 @@ interface RoomMemory {
     energyPlan: EnergyPlan[];
 
 
-    /** 房间数据 */
+    /** 房间数据，这部分数据删掉后会完全自动重置 */
     data: {
         sources: sourceInfo[],
         mineral: mineralInfo | null,
@@ -36,11 +36,22 @@ interface RoomMemory {
         towers: Id<StructureTower>[];
         controller: controllerInfo,
         storage: storageInfo,
-    };
+    }
+    /** 房间配置，这部分数据均为手工配置的数据，删了的话需要重新配置 */
     config: {
+        /** 生成creep的前缀 */
         code: string;
-    };
-    /** 孵化配置 */
+        /** 每个元素是一个外矿房间名 */
+        outside: string[];
+    }
+    /** 当前房间的状态，用于判断 */
+    status: {
+        /** 房间里有敌人 */
+        underAttack: ANY_BOOLEAN;
+        /** 仅限预定房间，有敌方的core在抢预定 */
+        hasInvaderCore?: ANY_BOOLEAN;
+    }
+    /** 孵化配置，这部分数据为手工数据，删除的话会重置回默认 */
     spawnConfig: {
         /**各roll数量，不指定或是为0的时候采取自动配置 */
         amount: Record<string, number>,

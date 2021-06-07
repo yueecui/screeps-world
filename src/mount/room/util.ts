@@ -1,6 +1,6 @@
 import { TASK_WAITING,
     CONTAINER_TYPE_NONE, CONTAINER_TYPE_CONTROLLER, CONTAINER_TYPE_SOURCE, CONTAINER_TYPE_MINERAL,
-    LINK_TYPE_NONE, LINK_TYPE_STORAGE, LINK_TYPE_CONTROLLER, LINK_TYPE_SOURCE } from "@/constant";
+    LINK_TYPE_NONE, LINK_TYPE_STORAGE, LINK_TYPE_CONTROLLER, LINK_TYPE_SOURCE, BOOLEAN_FALSE, BOOLEAN_TRUE } from "@/constant";
 
 
 interface findPosParam{
@@ -62,22 +62,24 @@ export const roomExtensionUtil = function () {
 
         // 定期检查
         if (Game.time % 5 == 0){
+            if (!this.isUnderAttack) this.checkEnemy();
             this.checkTowerEnergy();
             // this.memory.lastSpawnTime = (this.energyAvailable < this.energyCapacityAvailable || this.energyAvailable == 300) ? 1 : 0;
         }
         if (this.memory.flagPurge || Game.time % 20 == 0){
             // 强制刷新孵化能量任务队列
             this.memory.lastSpawnTime = 1
-            this.updateRoomStatus();   // 重新缓存特定建筑信息（例如塔）
-            this.errorCheck();        // 检查各个任务队列是否存在错误
+            this.updateRoomStructureStatus();   // 重新缓存特定建筑信息（例如塔）
+            this.errorCheck();                  // 检查各个任务队列是否存在错误
         }
 
         if (this.memory.flagPurge){
             console.log(`[${Game.time}] Room ${this.name} 强制刷新缓存完成`)
         }
-        this.memory.flagPurge = false;
+        this.memory.flagPurge = BOOLEAN_FALSE;
 
         // 每tick任务
+        if (this.isUnderAttack) this.checkEnemy();
         this.checkSpawnEnergy();  // 只有刷新时间不为0时才执行
         this.updateVisual();  // 刷新界面显示
     };
@@ -134,6 +136,12 @@ export const roomExtensionUtil = function () {
         if (this.memory.config == undefined){
             this.memory.config = {
                 code: this.name,
+                outside: [],
+            }
+        }
+        if (this.memory.status == undefined){
+            this.memory.status = {
+                underAttack: BOOLEAN_FALSE,
             }
         }
         if (this.memory.spawnConfig == undefined){
@@ -144,7 +152,7 @@ export const roomExtensionUtil = function () {
         }
 
         if (this.memory.flagPurge == undefined){
-            this.memory.flagPurge = true;
+            this.memory.flagPurge = BOOLEAN_TRUE;
         }
 
         if (this.memory.lastSpawnTime == undefined){
@@ -164,7 +172,7 @@ export const roomExtensionUtil = function () {
 
 
      // 缓存特定建筑的Id
-     Room.prototype.updateRoomStatus = function(){
+     Room.prototype.updateRoomStructureStatus = function(){
         const all_structures = this.find(FIND_STRUCTURES);
 
         // 所有的塔
@@ -335,6 +343,21 @@ export const roomExtensionUtil = function () {
         });
     }
 
+    Room.prototype.checkEnemy = function(){
+        if (this.find(FIND_HOSTILE_CREEPS).length > 0){
+            this.memory.status.underAttack = BOOLEAN_TRUE;
+        }else{
+            this.memory.status.underAttack = BOOLEAN_FALSE;
+        }
+        if (!this.isUnderAttack && this.myReserve){
+            if (this.find(FIND_HOSTILE_STRUCTURES).length > 0){
+                this.memory.status.hasInvaderCore = BOOLEAN_TRUE;
+            }else{
+                this.memory.status.hasInvaderCore = BOOLEAN_FALSE;
+            }
+        }
+    }
+
     Room.prototype.getSpawnAdvanceTime = function (base_name: string){
         if (!('advance' in this.spawnConfig)) this.spawnConfig.advance = {};
         return this.spawnConfig.advance[base_name] ? this.spawnConfig.advance[base_name] : 0;
@@ -358,9 +381,9 @@ export const roomExtensionUtil = function () {
         }
         // 孵化器进度
         for (const spawn of this.spawns){
-            if (spawn.spawning){
+            if (spawn.spawning && spawn.spawning.remainingTime > 1){
                 this.visual.text(
-                    spawn.spawning.remainingTime + 't',
+                    (spawn.spawning.remainingTime-1) + 't',
                     spawn.pos,
                     {
                         font: 0.5,
