@@ -345,7 +345,8 @@ export const roomExtensionUtil = function () {
     }
 
     Room.prototype.updateVisual = function (){
-        if (this.controller && this.controller.my){
+        // 控制器进度
+        if (this.controller && this.controller.my && this.controller.level < 8){
             this.visual.text(
                 ((this.controller.progress /this.controller.progressTotal) * 100).toFixed(2) + '%',
                 this.controller.pos.x, this.controller.pos.y-1,
@@ -354,6 +355,28 @@ export const roomExtensionUtil = function () {
                     stroke: '#000000'
                 }
             )
+        }
+        // 孵化器进度
+        for (const spawn of this.spawns){
+            if (spawn.spawning){
+                this.visual.text(
+                    spawn.spawning.remainingTime + 't',
+                    spawn.pos,
+                    {
+                        font: 0.5,
+                        stroke: '#000000'
+                    }
+                )
+                this.visual.text(
+                    spawn.spawning.name,
+                    spawn.pos.x, spawn.pos.y+1,
+                    {
+                        color: '#9bb8ef',
+                        font: 0.4,
+                        stroke: '#000000'
+                    }
+                )
+            }
         }
     }
 
