@@ -87,21 +87,10 @@ export const roomExtensionProperty = function () {
 
     Object.defineProperty(Room.prototype, 'code', {
         get: function () {
-            return this.memory.config.code;
+            return this.memory.roomConfig.code;
         },
         set: function (new_value: string) {
-            this.memory.config.code = new_value;
-        },
-        enumerable: false,
-        configurable: true
-    });
-
-    Object.defineProperty(Room.prototype, 'alias', {
-        get: function () {
-            return [this.room.name, ...this.memory.config.alias];
-        },
-        set: function (new_value: string[]) {
-            this.memory.config.alias = new_value;
+            this.memory.roomConfig.code = new_value;
         },
         enumerable: false,
         configurable: true

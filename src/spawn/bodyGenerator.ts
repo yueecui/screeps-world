@@ -88,8 +88,13 @@ export const generateBodyMineralHarvester = function(room: Room){
 
 
 export const generateBodyMastermind = function(room: Room){
-    // 1 MOVE，其他是CARRY
-    const carry_amount = Math.min(Math.floor((room.energyCapacityAvailable -50) / 50), 49) ;
+    let carry_amount;
+    if (room.controller!.level < 7){
+        carry_amount = 8;
+    }else{
+        // 1 MOVE，其他是CARRY
+        carry_amount = Math.min(Math.floor((room.energyCapacityAvailable -50) / 50), 49);
+    }
     // 生成
     const body: BodyPartConstant[] = []
     for (let i=0;i<carry_amount;i++){

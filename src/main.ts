@@ -2,9 +2,9 @@ import { Mount } from 'mount/mount';
 // 对原型进行扩展
 Mount.init();
 
-import { ErrorMapper } from "utils/ErrorMapper";
 import { Automatic } from 'utils/Automatic';
 import { ManagerCreeps } from '@/spawn/manager.Creeps';
+import { SpawnManager } from '@/spawn/manager';
 
 // When compiling TS to JS and bundling with rollup, the line numbers and file names in error messages change
 // This utility uses source maps to get the line numbers and file names of the original, TS source code
@@ -21,7 +21,8 @@ module.exports.loop = () => {
     }
 
     // 小虫管理器检查当前单位数量是否正常
-    ManagerCreeps.check();
+    // ManagerCreeps.check();
+    SpawnManager.run();
 
     // 检查所有自己的房间
     for(const name in Game.rooms) {

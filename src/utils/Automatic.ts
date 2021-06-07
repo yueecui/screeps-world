@@ -11,11 +11,21 @@ const cleanCreepsMemory = function() : void{
 // 全局定期自动事务
 export const Automatic = {
     run: function(): void{
+        Game.spawningInTick = [];
         if (Memory.tempFlags == undefined){
             Memory.tempFlags = {};
         }
         if (Memory.roomCodeReplace == undefined){
             Memory.roomCodeReplace = {};
+        }
+        if (Memory.spawningRecent == undefined){
+            Memory.spawningRecent = {};
+        }else{
+            for (const name in Memory.spawningRecent){
+                if (Memory.spawningRecent[name] - Game.time > 3){
+                    delete Memory.spawningRecent[name];
+                }
+            }
         }
         if (Game.time % 1000 == 0){
             cleanCreepsMemory();

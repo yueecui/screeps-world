@@ -66,7 +66,7 @@ export const ROOM_1_CONFIG: Map<string, RoleConfig> = new Map([
     ['R1-A-ENG', { body: [CLAIM, CLAIM, MOVE, MOVE], amount: 1, aheadTime: 80, memory: {role:'工兵', mode:1, flag: 'eng1'}}],
     ['R1-A-GA', { body: BODY_CONFIG['采集者R4+'], amount: 1, aheadTime: 100,  memory: {role:'采集', mode:0, node:0, room:'W34N57' }}],
     ['R1-A-GB', { body: BODY_CONFIG['采集者R4+'], amount: 1, aheadTime: 100,  memory: {role:'采集', mode:0, node:1, room:'W34N57' }}],
-    ['R1-A-TS', { body: getOutCarrierBody(), amount: 1, aheadTime: 80, memory: {role:'运输', room:'W34N57', mode:2 }}],
+    ['R1-A-TO', { body: getOutCarrierBody(), amount: 1, aheadTime: 80, memory: {role:'运输', room:'W34N57', mode:2 }}],
     // ['BDO-R', { body: getMaxBuilderBody(), amount: 1, memory: {role:'建造', mode:1, flag: 'colony', stay: [22, 30]} }],    // 修理优先
 
     // ['R1-BB', { body: getMaxBuilderBody(), amount: 1, memory: {role:'建造', mode:0, stay: [29, 27]} }],    // 建造优先

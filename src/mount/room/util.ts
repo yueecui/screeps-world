@@ -133,16 +133,16 @@ export const roomExtensionUtil = function () {
                 }
             }
         }
-        if (this.memory.config == undefined){
-            this.memory.config = {
-                code: this.name,
-                energyShowPos: [0, 0],
-                outside: [],
-            }
-        }
         if (this.memory.status == undefined){
             this.memory.status = {
                 underAttack: BOOLEAN_FALSE,
+            }
+        }
+        if (this.memory.roomConfig == undefined){
+            this.memory.roomConfig = {
+                code: this.name,
+                resShowPos: [0, 0],
+                outside: [],
             }
         }
         if (this.memory.spawnConfig == undefined){
@@ -151,7 +151,11 @@ export const roomExtensionUtil = function () {
                 amount: {},
             }
         }
-
+        if (this.memory.creepConfig == undefined){
+            this.memory.creepConfig = {
+                stay: {},
+            }
+        }
         if (this.memory.flagPurge == undefined){
             this.memory.flagPurge = BOOLEAN_TRUE;
         }
@@ -365,7 +369,7 @@ export const roomExtensionUtil = function () {
     }
     Room.prototype.getSpawnAmount = function (base_name: string){
         if (!('amount' in this.spawnConfig)) this.spawnConfig.amount = {};
-        return this.spawnConfig.amount[base_name] ? this.spawnConfig.amount[base_name] : 0;
+        return this.spawnConfig.amount[base_name] != null ? this.spawnConfig.amount[base_name] : -1;
     }
 
     Room.prototype.updateVisual = function (){

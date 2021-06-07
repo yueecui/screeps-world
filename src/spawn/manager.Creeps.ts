@@ -24,6 +24,7 @@ const OTHER_ROLE_CONFIG = new Map([
 export const ManagerCreeps: Record<string, any> = {
     check: function() {
         for (const room_name in ROOM_SPAWN_CONFIG){
+            if (room_name == 'W35N57') continue;
             // 暂时先就找一个
             const spawns = _.filter(Game.spawns, (spawn) => { return spawn.room.name == room_name; });
             if (spawns.length == 0){

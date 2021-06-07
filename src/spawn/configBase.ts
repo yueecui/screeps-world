@@ -52,7 +52,7 @@ const role_TS: SpawnConfig = {
     },
     amount: function(room) {
         let amount = room.getSpawnAmount(this.baseName);
-        if (amount > 0) return amount;
+        if (amount > -1) return amount;
         return 1;
     },
     isLive: (room, creep) => {
@@ -78,7 +78,7 @@ const role_TU: SpawnConfig = {
     },
     amount: function(room) {
         let amount = room.getSpawnAmount(this.baseName);
-        if (amount > 0) return amount;
+        if (amount > -1) return amount;
         return 1;
     },
     isLive: (room, creep) => {
@@ -104,6 +104,8 @@ const role_GA: SpawnConfig = {
         }
     },
     amount: function(room) {
+        let amount = room.getSpawnAmount(this.baseName);
+        if (amount > -1) return amount;
         return 1;
     },
     isLive: (room, creep) => {
@@ -130,6 +132,8 @@ const role_GB: SpawnConfig = {
         }
     },
     amount: function(room) {
+        let amount = room.getSpawnAmount(this.baseName);
+        if (amount > -1) return amount;
         return 1;
     },
     isLive: (room, creep) => {
@@ -156,6 +160,8 @@ const role_GM: SpawnConfig = {
         }
     },
     amount: function(room) {
+        let amount = room.getSpawnAmount(this.baseName);
+        if (amount > -1) return amount;
         return 1;
     },
     isLive: (room, creep) => {
@@ -181,6 +187,8 @@ const role_MM: SpawnConfig = {
         }
     },
     amount: function(room) {
+        let amount = room.getSpawnAmount(this.baseName);
+        if (amount > -1) return amount;
         return 1;
     },
     isLive: (room, creep) => {
@@ -206,7 +214,7 @@ const role_BB: SpawnConfig = {
     },
     amount: function(room) {
         let amount = room.getSpawnAmount(this.baseName);
-        if (amount > 0) return amount;
+        if (amount > -1) return amount;
         return 1;
     },
     isLive: (room, creep) => {
@@ -239,7 +247,7 @@ const role_BR: SpawnConfig = {
     },
     amount: function(room) {
         let amount = room.getSpawnAmount(this.baseName);
-        if (amount > 0) return amount;
+        if (amount > -1) return amount;
         return 1;
     },
     isLive: (room, creep) => {
@@ -266,7 +274,7 @@ const role_UP: SpawnConfig = {
     },
     amount: function(room) {
         let amount = room.getSpawnAmount(this.baseName);
-        if (amount > 0) return amount;
+        if (amount > -1) return amount;
 
         const level = room.controller!.level;
         if (level == 2){
@@ -279,6 +287,8 @@ const role_UP: SpawnConfig = {
                 return 3;
             }else if(energy > 150000){
                 return 2;
+            }else if (energy < 10000){
+                return 0;
             }
         }
         return 1;

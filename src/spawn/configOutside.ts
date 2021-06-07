@@ -10,8 +10,6 @@ import { generateBodyOutsideDefender,
     generateBodyOutsideTransporter,
     } from './bodyGenerator'
 
-import { CONSTRUCTION_SITES_PROGRESS_TO_NEED_BUILDER } from '@/config'
-
 /** 外矿防御者 */
 const role_DE: SpawnConfig = {
     type: SPAWN_TYPE_OUTSIDE,
@@ -19,10 +17,15 @@ const role_DE: SpawnConfig = {
     advance: false,
     memory: (spawn_room, work_room_name) => {
         return {
+            room: work_room_name,
             role: '攻击'
         }
     },
     amount: function(spawn_room, work_room_name) {
+        if (work_room_name && Memory.rooms[work_room_name]){
+            let amount = Memory.rooms[work_room_name].spawnConfig.amount[this.baseName];
+            if (amount != null) return amount;
+        }
         return 1;
     },
     isLive: (spawn_room, creep) => {
@@ -53,6 +56,10 @@ const role_ENG: SpawnConfig = {
         }
     },
     amount: function(spawn_room, work_room_name) {
+        if (work_room_name && Memory.rooms[work_room_name]){
+            let amount = Memory.rooms[work_room_name].spawnConfig.amount[this.baseName];
+            if (amount != null) return amount;
+        }
         return 1;
     },
     isLive: (spawn_room, creep) => {
@@ -83,6 +90,10 @@ const role_GA: SpawnConfig = {
         }
     },
     amount: function(spawn_room, work_room_name) {
+        if (work_room_name && Memory.rooms[work_room_name]){
+            let amount = Memory.rooms[work_room_name].spawnConfig.amount[this.baseName];
+            if (amount != null) return amount;
+        }
         return 1;
     },
     isLive: (spawn_room, creep) => {
@@ -115,6 +126,10 @@ const role_GB: SpawnConfig = {
         }
     },
     amount: function(spawn_room, work_room_name) {
+        if (work_room_name && Memory.rooms[work_room_name]){
+            let amount = Memory.rooms[work_room_name].spawnConfig.amount[this.baseName];
+            if (amount != null) return amount;
+        }
         if (work_room_name
             && Memory.rooms[work_room_name]
             && Memory.rooms[work_room_name].data.sources.length > 1){
@@ -150,15 +165,17 @@ const role_TO: SpawnConfig = {
             mode: MODE_OUTSIDE
         }
     },
-    amount: function(room) {
-        let amount = room.getSpawnAmount(this.baseName);
-        if (amount > 0) return amount;
+    amount: function(spawn_room, work_room_name) {
+        if (work_room_name && Memory.rooms[work_room_name]){
+            let amount = Memory.rooms[work_room_name].spawnConfig.amount[this.baseName];
+            if (amount != null) return amount;
+        }
         return 1;
     },
-    isLive: (room, creep) => {
+    isLive: (spawn_room, creep) => {
         return true;
     },
-    needSpawn: (room) => {
+    needSpawn: (spawn_room) => {
         // 随时需要
         return true;
     },

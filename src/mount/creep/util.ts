@@ -153,9 +153,16 @@ export const creepExtensionUtil = function () {
 
     // 去等待位置
     Creep.prototype.goToStay = function(){
-        if (this.memory.stay){
-            if (this.pos.x != this.memory.stay[0] || this.pos.y != this.memory.stay[1]){
-                this.moveTo(this.memory.stay[0], this.memory.stay[1]);
+        let stay;
+        if (this.room.memory.creepConfig.stay[this.baseName]){
+            stay =  this.room.memory.creepConfig.stay[this.baseName];
+        }else if (this.memory.stay){
+            stay = this.memory.stay;
+        }
+        if (stay){
+            const pos = new RoomPosition(stay[0], stay[1]-1+this.index, this.room.name);
+            if (this.pos.getRangeTo(pos) > 0){
+                this.moveTo(pos);
             }
         }
     }
