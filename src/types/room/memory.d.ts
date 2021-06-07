@@ -41,6 +41,8 @@ interface RoomMemory {
     config: {
         /** 生成creep的前缀 */
         code: string;
+        /** 生成剩余能量的位置 */
+        energyShowPos: [number, number];
         /** 每个元素是一个外矿房间名 */
         outside: string[];
     }

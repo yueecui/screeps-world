@@ -136,6 +136,7 @@ export const roomExtensionUtil = function () {
         if (this.memory.config == undefined){
             this.memory.config = {
                 code: this.name,
+                energyShowPos: [0, 0],
                 outside: [],
             }
         }
