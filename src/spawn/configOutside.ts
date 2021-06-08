@@ -6,7 +6,8 @@ import { SPAWN_TYPE_OUTSIDE, MODE_BUILDER, MODE_CONTROLLER, MODE_HARVEST_ENERGY,
 
 import { generateBodyOutsideDefender,
     generateBodyOutsideReserver,
-    generateBodyEnergyHarvester,
+    generateBodyBuilder,
+    generateBodyOutsideEnergyHarvester,
     generateBodyOutsideTransporter,
     } from './bodyGenerator'
 
@@ -43,6 +44,32 @@ const role_DE: SpawnConfig = {
     body: generateBodyOutsideDefender
 }
 
+/** 斥候 */
+const role_SC: SpawnConfig = {
+    type: SPAWN_TYPE_OUTSIDE,
+    baseName: 'SC',
+    advance: false,
+    memory: (spawn_room, work_room_name) => {
+        return {
+            room: work_room_name,
+            role: '斥候'
+        }
+    },
+    amount: function(spawn_room, work_room_name) {
+        return 1;
+    },
+    isLive: (spawn_room, creep) => {
+        return true;
+    },
+    needSpawn: (spawn_room, work_room_name) => {
+        // 目标房间无视野时就会刷新
+        return work_room_name && Game.rooms[work_room_name] == undefined ? true : false;
+    },
+    body: (spawn_room) =>{
+        return [MOVE];
+    }
+}
+
 /** 外矿预定者 */
 const role_ENG: SpawnConfig = {
     type: SPAWN_TYPE_OUTSIDE,
@@ -51,8 +78,7 @@ const role_ENG: SpawnConfig = {
     memory: (spawn_room, work_room_name) => {
         return {
             room: work_room_name,
-            role: '工兵',
-            flag: 'eng1'
+            role: '工兵'
         }
     },
     amount: function(spawn_room, work_room_name) {
@@ -66,14 +92,61 @@ const role_ENG: SpawnConfig = {
         return true;
     },
     needSpawn: (spawn_room, work_room_name) => {
-        // 目标房间没有敌人就可以
-        // 由于不一定有视野，所以通过Memory判断
-        if (work_room_name && Memory.rooms[work_room_name]){
-            return Memory.rooms[work_room_name].status.underAttack == BOOLEAN_FALSE;
-        }
-        return false;
+        // 目标房间没有视野时不生成，先生成斥候
+        if (!work_room_name) return false;
+        const room = Game.rooms[work_room_name];
+        // 以下情况不刷新
+        // 1.目标房间没有控制器
+        // 2.已被其他人占领
+        // 3.处于攻击状态
+        if (!room.controller
+            || room.controller.owner != undefined
+            || room.isUnderAttack) return false;
+        return true;
     },
     body: generateBodyOutsideReserver
+}
+
+/** 外矿的建造的建设者 */
+const role_BB: SpawnConfig = {
+    type: SPAWN_TYPE_OUTSIDE,
+    baseName: 'BB',
+    advance: false,
+    memory: (spawn_room, work_room_name) => {
+        return {
+            room: work_room_name,
+            role: '建造',
+            mode: MODE_BUILDER
+        }
+    },
+    amount: function(spawn_room, work_room_name) {
+        if (work_room_name && Memory.rooms[work_room_name]){
+            let amount = Memory.rooms[work_room_name].spawnConfig.amount[this.baseName];
+            if (amount != null) return amount;
+        }
+        return 1;
+    },
+    isLive: (spawn_room, creep) => {
+        return true;
+    },
+    needSpawn: (spawn_room, work_room_name) => {
+        // 目标房间没有视野时不生成，先生成斥候
+        if (!work_room_name) return false;
+        const room = Game.rooms[work_room_name];
+        // 以下情况不刷新
+        // 1.目标房间没有控制器
+        // 2.已被其他人占领
+        // 3.房间不是我预定的
+        // 4.处于攻击状态
+        if (!room.controller
+            || room.controller.owner != undefined
+            || !room.myReserve
+            || room.isUnderAttack) return false;
+
+        const found = room.find(FIND_MY_CONSTRUCTION_SITES);
+        return found.length > 0 ? true : false;
+    },
+    body: generateBodyBuilder
 }
 
 /** 外矿能量采集者A */
@@ -94,25 +167,32 @@ const role_GA: SpawnConfig = {
             let amount = Memory.rooms[work_room_name].spawnConfig.amount[this.baseName];
             if (amount != null) return amount;
         }
-        return 0;
+        return 1;
     },
     isLive: (spawn_room, creep) => {
         return true;
     },
     needSpawn: (spawn_room, work_room_name) => {
-        // 目标房间没有敌人就可以
-        // 有视野的情况下，如果目标房间属于我，就孵化
-        if (work_room_name && Game.rooms[work_room_name] && Game.rooms[work_room_name].myReserve){
-            return true;
-        }
-        // 由于不一定有视野，所以通过Memory判断是否还有敌人
-        if (work_room_name && Memory.rooms[work_room_name]){
-            return Memory.rooms[work_room_name].status.underAttack == BOOLEAN_FALSE;
-        }
-        return false;
+        // 目标房间没有视野时不生成，先生成斥候
+        if (!work_room_name) return false;
+        const room = Game.rooms[work_room_name];
+        // 以下情况不刷新
+        // 1.目标房间没有控制器
+        // 2.已被其他人占领
+        // 3.房间不是我预定的
+        // 4.处于攻击状态
+        // 5.采集点0没有container
+        // 6.房间还有修建者
+        if (!room.controller
+            || room.controller.owner != undefined
+            || !room.myReserve
+            || room.isUnderAttack
+            || room.sources[0].container == null
+            || room.countBaseNameCreeps('BB') > 0) return false;
+        return true;
     },
     body: (room) =>{
-        return generateBodyEnergyHarvester(room, true);
+        return generateBodyOutsideEnergyHarvester(room);
     }
 }
 
@@ -134,6 +214,7 @@ const role_GB: SpawnConfig = {
             let amount = Memory.rooms[work_room_name].spawnConfig.amount[this.baseName];
             if (amount != null) return amount;
         }
+        // 房间有第二个矿时，才需要
         if (work_room_name
             && Memory.rooms[work_room_name]
             && Memory.rooms[work_room_name].data.sources.length > 1){
@@ -145,23 +226,30 @@ const role_GB: SpawnConfig = {
         return true;
     },
     needSpawn: (spawn_room, work_room_name) => {
-        // 目标房间没有敌人就可以
-        // 有视野的情况下，如果目标房间属于我，就孵化
-        if (work_room_name && Game.rooms[work_room_name] && Game.rooms[work_room_name].myReserve){
-            return true;
-        }
-        // 由于不一定有视野，所以通过Memory判断是否还有敌人
-        if (work_room_name && Memory.rooms[work_room_name]){
-            return Memory.rooms[work_room_name].status.underAttack == BOOLEAN_FALSE;
-        }
-        return false;
+        // 目标房间没有视野时不生成，先生成斥候
+        if (!work_room_name) return false;
+        const room = Game.rooms[work_room_name];
+        // 以下情况不刷新
+        // 1.目标房间没有控制器
+        // 2.已被其他人占领
+        // 3.房间不是我预定的
+        // 4.处于攻击状态
+        // 5.采集点1没有container
+        // 6.房间还有修建者
+        if (!room.controller
+            || room.controller.owner != undefined
+            || !room.myReserve
+            || room.isUnderAttack
+            || room.sources[1].container == null
+            || room.countBaseNameCreeps('BB') > 0) return false;
+        return true;
     },
     body: (room) =>{
-        return generateBodyEnergyHarvester(room, true);
+        return generateBodyOutsideEnergyHarvester(room);
     }
 }
 
-/** 优先搬运孵化能量的搬运者 */
+/** 外矿搬运者 */
 const role_TO: SpawnConfig = {
     type: SPAWN_TYPE_OUTSIDE,
     baseName: 'TO',
@@ -183,8 +271,24 @@ const role_TO: SpawnConfig = {
     isLive: (spawn_room, creep) => {
         return true;
     },
-    needSpawn: (spawn_room) => {
-        // 随时需要
+    needSpawn: (spawn_room, work_room_name) => {
+        // 目标房间没有视野时不生成，先生成斥候
+        if (!work_room_name) return false;
+        const room = Game.rooms[work_room_name];
+        // 以下情况不刷新
+        // 1.目标房间没有控制器
+        // 2.已被其他人占领
+        // 3.房间不是我预定的
+        // 4.处于攻击状态
+        // 5.房间里没有采集者
+        // 6.房间里还有修建者
+        if (!room.controller
+            || room.controller.owner != undefined
+            || !room.myReserve
+            || room.isUnderAttack
+            || room.countBaseNameCreeps('GA', 'GB', 'GC') == 0
+            || room.countBaseNameCreeps('BB') > 0) return false;
+
         return true;
     },
     body: generateBodyOutsideTransporter
@@ -198,8 +302,12 @@ export const SPAWN_OUTSIDE_PRIORITY_HIGH: Map<string, SpawnConfig> = new Map([
 
 // 低优先级
 export const SPAWN_OUTSIDE_PRIORITY_LOW: Map<string, SpawnConfig> = new Map([
+    // 侦察兵
+    ['SC', role_SC],
     // 预定控制器
     ['ENG', role_ENG],
+    // 建设者
+    ['BB', role_BB],
     // ROOM内能量采集者，A和B对应2个采集点
     ['GA', role_GA],
     ['GB', role_GB],

@@ -1,18 +1,20 @@
 export const BOOLEAN_FALSE: BOOLEAN_FALSE = 0;
 export const BOOLEAN_TRUE: BOOLEAN_TRUE = 1;
 
-
 // Creep的角色名
 
 export const ROLE_GOTO_RECYCLE: ROLE_GOTO_RECYCLE = '回收';
 export const ROLE_MANUAL: ROLE_MANUAL = '手动';
+
 export const ROLE_HARVESTER: ROLE_HARVESTER = '采集';
 export const ROLE_TRANSPORTER: ROLE_TRANSPORTER = '运输';
 export const ROLE_BUILDER: ROLE_BUILDER = '建造';
 export const ROLE_UPGRADER: ROLE_UPGRADER = '升级';
-export const ROLE_ATTACKER: ROLE_ATTACKER = '攻击';
-export const ROLE_ENGINEER: ROLE_ENGINEER = '工兵';
 export const ROLE_MASTERMIND: ROLE_MASTERMIND = '主脑';
+
+export const ROLE_SCOUT: ROLE_SCOUT = '斥候';
+export const ROLE_ENGINEER: ROLE_ENGINEER = '工兵';
+export const ROLE_ATTACKER: ROLE_ATTACKER = '攻击';
 
 /** 房间内工蚁 */
 export const SPAWN_TYPE_IN_ROOM: SPAWN_TYPE_IN_ROOM = 1;

@@ -49,9 +49,11 @@ type ANY_BOOLEAN =
 type BOOLEAN_FALSE = 0
 type BOOLEAN_TRUE = 1
 
-
+type LivedCreeps = Record<string, number[]>;
 
 interface Game{
+    /** 当前所有活着的工蚁统计，每轮刷新 */
+    allLivedCreeps: Record<string, LivedCreeps>
     /** 本回合开始孵化的虫子，避免重复孵化 */
-    spawningInTick: string[];
+    spawningInTick: string[]
 }

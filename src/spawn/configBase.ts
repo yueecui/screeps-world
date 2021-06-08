@@ -117,7 +117,7 @@ const role_GA: SpawnConfig = {
         return true;
     },
     body: (room) =>{
-        return generateBodyEnergyHarvester(room, false);
+        return generateBodyEnergyHarvester(room);
     }
 }
 
@@ -145,7 +145,7 @@ const role_GB: SpawnConfig = {
         return true;
     },
     body: (room) =>{
-        return generateBodyEnergyHarvester(room, false);
+        return generateBodyEnergyHarvester(room);
     }
 }
 
@@ -278,10 +278,12 @@ const role_UP: SpawnConfig = {
         let amount = room.getSpawnAmount(this.baseName);
         if (amount > -1) return amount;
 
-        const level = room.controller!.level;
-        if (level == 2){
+        const controller = room.controller!;
+        if (controller.ticksToDowngrade < 1500){
+            return 1;
+        }else if (controller.level == 2){
             return 2;
-        }else if (level == 3){
+        }else if (controller.level == 3){
             return 5;
         }else if (room.storage){
             const energy = room.storage.store[RESOURCE_ENERGY];
@@ -289,7 +291,7 @@ const role_UP: SpawnConfig = {
                 return 3;
             }else if(energy > 150000){
                 return 2;
-            }else if (energy < 10000){
+            }else if (energy < 50000){
                 return 0;
             }
         }

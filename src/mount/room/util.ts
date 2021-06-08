@@ -180,6 +180,19 @@ export const roomExtensionUtil = function () {
      Room.prototype.updateRoomStructureStatus = function(){
         const all_structures = this.find(FIND_STRUCTURES);
 
+        // 检查可能过期的建筑
+        for (const source_info of this.sources){
+            if (Game.getObjectById(source_info.link!) == null){
+                source_info.link = null;
+            }
+            if (Game.getObjectById(source_info.container!) == null){
+                source_info.container = null;
+            }
+        }
+        if (Game.getObjectById(this.mineral.container!) == null){
+            this.mineral.container = null;
+        }
+
         // 所有的塔
         this.memory.data.towers = _.map(_.filter(all_structures, {structureType: STRUCTURE_TOWER}) as StructureTower[], 'id');
         // 所有的container
@@ -200,9 +213,6 @@ export const roomExtensionUtil = function () {
             if (container.id in new_containers_info_map){
                 new_containers_info_map[container.id].type = container.type
             }
-        }
-        if (this.name == 'W34N57'){
-            console.log(JSON.stringify(new_containers_info_map))
         }
         // 重新生成数据
         this.containers = [];
@@ -380,7 +390,7 @@ export const roomExtensionUtil = function () {
         if (this.controller && this.controller.my && this.controller.level < 8){
             this.visual.text(
                 ((this.controller.progress /this.controller.progressTotal) * 100).toFixed(2) + '%',
-                this.controller.pos.x, this.controller.pos.y-1,
+                this.controller.pos,
                 {
                     font: 0.5,
                     stroke: '#000000'
@@ -409,7 +419,43 @@ export const roomExtensionUtil = function () {
                 )
             }
         }
+        // 矿物残量或重生时间
+        {
+            const mineral = Game.getObjectById(this.mineral.id)!;
+            if (mineral.ticksToRegeneration > 0){
+                this.visual.text(
+                    (mineral.ticksToRegeneration) + 't',
+                    mineral.pos,
+                    {
+                        color: '#989898',
+                        font: 0.4,
+                        stroke: '#000000'
+                    }
+                )
+            }else{
+                this.visual.text(
+                    ''+mineral.mineralAmount,
+                    mineral.pos,
+                    {
+                        color: '#86ff78',
+                        font: 0.4,
+                        stroke: '#000000'
+                    }
+                )
+            }
+        }
     }
+
+    Room.prototype.countBaseNameCreeps = function (...base_name_list){
+        let count = 0;
+        const code_lived_creeps = Game.allLivedCreeps[this.code] || {};
+        for (const base_name of base_name_list){
+            if (base_name in code_lived_creeps){
+                count += code_lived_creeps[base_name].length;
+            }
+        }
+        return count;
+    };
 
     Room.prototype.calcPrice = function (order_id: string, amount: number){
         const order = Game.market.getOrderById(order_id);

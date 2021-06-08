@@ -57,8 +57,9 @@ interface Room {
 
     /** 更新视觉效果 */
     updateVisual(): void;
-    /**
-     * 计算订单收益
-     */
+
+    /** 计算房间内角色的数量 */
+    countBaseNameCreeps(...base_name_list: string[]): number;
+    /** 计算订单收益 */
     calcPrice(order_id: string, amount?: number): void;
 }

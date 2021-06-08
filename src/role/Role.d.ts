@@ -80,23 +80,29 @@ interface RespawnCondition{
 type ANY_ROLE_NAME =
     | ROLE_GOTO_RECYCLE
     | ROLE_MANUAL
+
     | ROLE_HARVESTER
     | ROLE_TRANSPORTER
     | ROLE_BUILDER
     | ROLE_UPGRADER
-    | ROLE_ATTACKER
+    | ROLE_MASTERMIND
+
+    | ROLE_SCOUT
     | ROLE_ENGINEER
-    | ROLE_MASTERMIND;
+    | ROLE_ATTACKER
 
 type ROLE_GOTO_RECYCLE = '回收';
 type ROLE_MANUAL = '手动';
+
 type ROLE_HARVESTER = '采集';
 type ROLE_TRANSPORTER = '运输';
 type ROLE_BUILDER = '建造';
 type ROLE_UPGRADER = '升级';
+type ROLE_MASTERMIND = '主脑';
+
+type ROLE_SCOUT = '斥候';
 type ROLE_ATTACKER = '攻击';
 type ROLE_ENGINEER = '工兵';
-type ROLE_MASTERMIND = '主脑';
 
 type AnyRole =
     | CreepRole

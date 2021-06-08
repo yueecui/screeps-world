@@ -37,7 +37,7 @@ export const generateBodyTransporter = function(room: Room){
     return body
 }
 
-export const generateBodyEnergyHarvester = function(room: Room, isOutside: boolean){
+export const generateBodyEnergyHarvester = function(room: Room){
     const cap = room.energyCapacityAvailable;
     let work_amount = 1;
     let carry_amount = 1;
@@ -201,6 +201,36 @@ export const generateBodyOutsideReserver = function(room: Room){
     return [CLAIM, CLAIM, MOVE, MOVE]
 }
 
+// 外矿采集者，需要保证到岗时间
+// 4级以上才有外矿
+// 4: 1300
+// 5: 1800
+export const generateBodyOutsideEnergyHarvester = function(room: Room){
+    const cap = room.energyCapacityAvailable;
+    let work_amount = 1;
+    let carry_amount = 1;
+    let move_amount = 1;
+    // 还要判断有LINK的模式
+    if (cap >= 1350){ // 需要4级
+        work_amount = 10;
+        move_amount = 6;
+    }else if (cap >= 1200){ // 需要4级
+        work_amount = 9;
+        move_amount = 5;
+    }
+    // 生成
+    const body: BodyPartConstant[] = []
+    for (let i=0;i<work_amount;i++){
+        body.push(WORK);
+    }
+    for (let i=0;i<carry_amount;i++){
+        body.push(CARRY);
+    }
+    for (let i=0;i<move_amount;i++){
+        body.push(MOVE);
+    }
+    return body
+}
 
 // 外矿运输者
 // 目前先一样，后面会加WORK

@@ -12,6 +12,8 @@ export const roleGoToRecycle: CreepRole = {
 
     // 根据工作模式执行
     execute: function(creep){
+        creep.recycleNearby(); // 回收周围的能量
+
         let target;
         if (creep.room.name == 'W35N57' || creep.room.name == 'W34N57'){
             target = Game.spawns['Ironforge'];

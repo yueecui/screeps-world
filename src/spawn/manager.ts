@@ -6,17 +6,14 @@ import {
 import { SPAWN_BASE_PRIORITY_HIGH, SPAWN_BASE_PRIORITY_MID, SPAWN_BASE_PRIORITY_LOW } from './configBase'
 import { SPAWN_OUTSIDE_PRIORITY_HIGH, SPAWN_OUTSIDE_PRIORITY_LOW } from './configOutside'
 
-type LivedCreeps = Record<string, number[]>;
-
 /**
  * 孵化情况检查管理模块
  */
 export const SpawnManager = {
     run: function(): void{
-        const all_lived_creeps = this.countLivedCreeps();
+        Game.allLivedCreeps = this.countLivedCreeps();
 
         for (const room_name in Game.rooms){
-            // if (room_name != 'W35N57') continue;
             const room = Game.rooms[room_name];
             if (room.controller && room.controller.my){
                 if (room.spawns.length == 0){
@@ -26,7 +23,7 @@ export const SpawnManager = {
                 if (room.spawns.filter((spawn) => { return spawn.spawning == null; }).length == 0){
                     continue;
                 }
-                this.checkSpawn(room, all_lived_creeps);
+                this.checkSpawn(room);
             }
         }
     },
@@ -60,22 +57,21 @@ export const SpawnManager = {
     /**
      * 按房间检测是否需要重生
      * @param room 房间名称
-     * @param all_lived_creeps 当前存活的creeps情况
      * @returns 是否成功生成
      */
-    checkSpawn: function (room: Room, all_lived_creeps: Record<string, LivedCreeps>){
-        const code_lived_creeps = all_lived_creeps[room.code] || {};
+    checkSpawn: function (room: Room){
+        const code_lived_creeps = Game.allLivedCreeps[room.code] || {};
         // 检查本房间高优先级蚂蚁
         if (this.checkSpawnBase(room, code_lived_creeps, SPAWN_BASE_PRIORITY_HIGH)) return;
         // 检查本房间相关外矿的高优先级
         for (const outside_room_name of room.memory.roomConfig.outside){
-            if (this.checkSpawnOutside(room, all_lived_creeps, outside_room_name, SPAWN_OUTSIDE_PRIORITY_HIGH)) return;
+            if (this.checkSpawnOutside(room, outside_room_name, SPAWN_OUTSIDE_PRIORITY_HIGH)) return;
         }
         // 检查本房间中优先级蚂蚁
         if (this.checkSpawnBase(room, code_lived_creeps, SPAWN_BASE_PRIORITY_MID)) return;
         // 检查本房间相关外矿的低优先级
         for (const outside_room_name of room.memory.roomConfig.outside){
-            if (this.checkSpawnOutside(room, all_lived_creeps, outside_room_name, SPAWN_OUTSIDE_PRIORITY_LOW)) return;
+            if (this.checkSpawnOutside(room, outside_room_name, SPAWN_OUTSIDE_PRIORITY_LOW)) return;
         }
         // 检查本房间低优先级蚂蚁
         if (this.checkSpawnBase(room, code_lived_creeps, SPAWN_BASE_PRIORITY_LOW)) return;
@@ -106,13 +102,13 @@ export const SpawnManager = {
     },
 
     /** 外矿用的 */
-    checkSpawnOutside: function(spawn_room: Room, all_lived_creeps: Record<string, LivedCreeps>, room_name: string, spawn_config : Map<string, SpawnConfig>) {
+    checkSpawnOutside: function(spawn_room: Room, room_name: string, spawn_config : Map<string, SpawnConfig>) {
         const work_room_code = this.getRoomCode(room_name);
         if (work_room_code == null){
             console.log(`[${spawn_room.name}]配置的外矿[${room_name}]在Memory没有找到数据`);
             return false;
         }
-        const code_lived_creeps = all_lived_creeps[work_room_code] || {};
+        const code_lived_creeps = Game.allLivedCreeps[work_room_code] || {};
 
         for (const [base_name, config] of spawn_config){
             // 该basename的creeps存活数量

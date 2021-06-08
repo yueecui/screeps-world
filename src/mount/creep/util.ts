@@ -7,6 +7,7 @@ import { roleEngineer } from '@/role/Engineer';
 import { roleGoToRecycle } from '@/role/GoToRecycle';
 import { roleManual } from '@/role/Manual';
 import { roleMastermind } from '@/role/Mastermind';
+import { roleScout } from '@/role/Scout';
 
 import {
     ENERGY_NEED,
@@ -20,13 +21,16 @@ const TASK_QUEUE_MAX = 5;
 const roleMap: Record<ANY_ROLE_NAME, AnyRole> = {
     '回收': roleGoToRecycle,
     '手动': roleManual,
-    '主脑': roleMastermind,
+
     '采集': roleHarvester,
     '运输': roleTransporter,
     '建造': roleBuilder,
     '升级': roleUpgrader,
-    '攻击': roleAttacker,
+    '主脑': roleMastermind,
+
+    '斥候': roleScout,
     '工兵': roleEngineer,
+    '攻击': roleAttacker,
 }
 
 export const creepExtensionUtil = function () {
@@ -160,7 +164,13 @@ export const creepExtensionUtil = function () {
             stay = this.memory.stay;
         }
         if (stay){
-            const pos = new RoomPosition(stay[0], stay[1]-1+this.index, this.room.name);
+            let y;
+            if (this.room.countBaseNameCreeps(this.baseName) == 1){
+                y = stay[1];
+            }else{
+                y = stay[1]-1+this.index;
+            }
+            const pos = new RoomPosition(stay[0], y, this.room.name);
             if (this.pos.getRangeTo(pos) > 0){
                 this.moveTo(pos);
             }
