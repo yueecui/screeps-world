@@ -24,13 +24,15 @@ const OTHER_ROLE_CONFIG = new Map([
 export const ManagerCreeps: Record<string, any> = {
     check: function() {
         for (const room_name in ROOM_SPAWN_CONFIG){
+            if (room_name == 'W35N57') continue;
             // 暂时先就找一个
-            const spawn = _.find(Game.spawns, (spawn) => { return spawn.room.name == room_name; });
-            if (spawn == undefined){
+            const spawns = _.filter(Game.spawns, (spawn) => { return spawn.room.name == room_name; });
+            if (spawns.length == 0){
                 console.log(`房间${room_name}没有找到Spawn`);
                 continue;
             }
-            if (spawn.spawning){
+            const spawn = _.find(spawns, (spawn) => { return !spawn.spawning });
+            if (!spawn){
                 continue;
             }
             if (spawn.room.find(FIND_MY_CREEPS).length == 0){
@@ -100,9 +102,12 @@ export const ManagerCreeps: Record<string, any> = {
     spawnCreep: function(spawn: StructureSpawn, config: Record<string, any>, index: number){
         const memory = JSON.parse(JSON.stringify(config.memory));
         if (config.body.indexOf(CARRY) > -1){
-            memory.e = ENERGY_NEED;
+            memory.energy = ENERGY_NEED;
         }
-        memory.w = WORK_IDLE;
+        if (config.body.indexOf(WORK) > -1){
+            memory.work = WORK_IDLE;
+        }
+        memory.born = spawn.room.name;
         const result = spawn.spawnCreep(config.body, config.basename+index, {memory: memory}); //, directions: [RIGHT], TOP_RIGHT, BOTTOM_RIGHT, TOP, TOP_LEFT
         console.log(spawn.name,'-', config.basename, ':',result);
         if (result == OK){

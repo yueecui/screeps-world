@@ -1,15 +1,25 @@
+export const BOOLEAN_FALSE: BOOLEAN_FALSE = 0;
+export const BOOLEAN_TRUE: BOOLEAN_TRUE = 1;
+
 // Creep的角色名
 
 export const ROLE_GOTO_RECYCLE: ROLE_GOTO_RECYCLE = '回收';
 export const ROLE_MANUAL: ROLE_MANUAL = '手动';
+
 export const ROLE_HARVESTER: ROLE_HARVESTER = '采集';
 export const ROLE_TRANSPORTER: ROLE_TRANSPORTER = '运输';
 export const ROLE_BUILDER: ROLE_BUILDER = '建造';
 export const ROLE_UPGRADER: ROLE_UPGRADER = '升级';
-export const ROLE_ATTACKER: ROLE_ATTACKER = '攻击';
-export const ROLE_ENGINEER: ROLE_ENGINEER = '工兵';
 export const ROLE_MASTERMIND: ROLE_MASTERMIND = '主脑';
 
+export const ROLE_SCOUT: ROLE_SCOUT = '斥候';
+export const ROLE_ENGINEER: ROLE_ENGINEER = '工兵';
+export const ROLE_ATTACKER: ROLE_ATTACKER = '攻击';
+
+/** 房间内工蚁 */
+export const SPAWN_TYPE_IN_ROOM: SPAWN_TYPE_IN_ROOM = 1;
+/** 房间外工蚁 */
+export const SPAWN_TYPE_OUTSIDE: SPAWN_TYPE_OUTSIDE = 2;
 
 // Creep工作进程的状态码
 
@@ -30,50 +40,50 @@ export const WORK_IDLE: WORK_IDLE = 0;
 /**
  * 当前Creep正在前往工作场所
  */
-export const WORK_GOTO: WORK_GOTO = -1;
-// 运输类工作
+export const WORK_MOVE: WORK_MOVE = 1;
 
-/**
- * 当前Creep正在担任运输者职责，补充母巢或是扩展的能量
- */
-export const WORK_TRANSPORTER_SPAWN: WORK_TRANSPORTER_SPAWN = 1;
-/**
- * 当前Creep正在担任运输者职责，补充塔的能量
- */
-export const WORK_TRANSPORTER_TOWER: WORK_TRANSPORTER_TOWER = 2;
-/**
- * 当前Creep正在担任运输者职责，为控制器container补充能量
- */
-export const WORK_TRANSPORTER_CONTROLLER: WORK_TRANSPORTER_CONTROLLER = 3;
-/**
- * 捡拾墓碑
- */
-export const WORK_TRANSPORTER_TOMBSTONE: WORK_TRANSPORTER_TOMBSTONE = 4;
-/**
- * 当前Creep正在担任运输者职责，将当前房间的container里多余的矿物带到storage
- */
-export const WORK_TRANSPORTER_STORAGE_MINERAL: WORK_TRANSPORTER_STORAGE_MINERAL = 9;
-/**
- * 当前Creep正在担任运输者职责，将当前房间的container里多余的能量带到storage
- */
-export const WORK_TRANSPORTER_STORAGE_ENERGY: WORK_TRANSPORTER_STORAGE_ENERGY = 10;
 /**
  * 当前Creep正在进行采集
  */
-export const WORK_HARVEST: WORK_HARVEST = 21;
+ export const WORK_HARVEST: WORK_HARVEST = 11;
 
+ /**
+  * 当前Creep正在升级控制器
+  */
+ export const WORK_UPGRADE: WORK_UPGRADE = 12;
+ /**
+  * 当前Creep正在进行建造
+  */
+ export const WORK_BUILD: WORK_BUILD = 13;
+ /**
+  * 当前Creep正在进行修理
+  */
+ export const WORK_REPAIR: WORK_REPAIR = 14;
+// 运输类工作
 /**
- * 当前Creep正在升级控制器
+ * 当前Creep正在担任运输者职责，补充母巢或是扩展的能量
  */
-export const WORK_UPGRADE: WORK_UPGRADE = 12;
+export const WORK_TRANSPORTER_SPAWN: WORK_TRANSPORTER_SPAWN = 21;
 /**
- * 当前Creep正在进行建造
+ * 当前Creep正在担任运输者职责，补充塔的能量
  */
-export const WORK_BUILD: WORK_BUILD = 13;
+export const WORK_TRANSPORTER_TOWER: WORK_TRANSPORTER_TOWER = 22;
 /**
- * 当前Creep正在进行修理
+ * 当前Creep正在担任运输者职责，为控制器container补充能量
  */
-export const WORK_REPAIR: WORK_REPAIR = 14;
+export const WORK_TRANSPORTER_CONTROLLER: WORK_TRANSPORTER_CONTROLLER = 23;
+/**
+ * 捡拾墓碑
+ */
+export const WORK_TRANSPORTER_TOMBSTONE: WORK_TRANSPORTER_TOMBSTONE = 24;
+/**
+ * 当前Creep正在担任运输者职责，将当前房间的container里多余的矿物带到storage
+ */
+export const WORK_TRANSPORTER_STORAGE_MINERAL: WORK_TRANSPORTER_STORAGE_MINERAL = 25;
+/**
+ * 当前Creep正在担任运输者职责，将当前房间的container里多余的能量带到storage
+ */
+export const WORK_TRANSPORTER_STORAGE_ENERGY: WORK_TRANSPORTER_STORAGE_ENERGY = 26;
 
 
 // Room状态码
@@ -115,28 +125,30 @@ export const LINK_TYPE_SOURCE: LINK_TYPE_SOURCE = 3;
 
 // Creep工作模式代码
 
-/**
- * 无指定模式
- */
- export const MODE_NONE: MODE_NONE = -1;
+/** 无指定模式 */
+export const MODE_NONE: MODE_NONE = -1;
 
-/**
- * 优先提供孵化器能量的运输者
- */
+/** 采集能量的采集者 */
 export const MODE_HARVEST_ENERGY: MODE_HARVEST_ENERGY = 0;
-/**
- * 优先提供控制器能量的运输者
- */
+/** 采集矿物的采集者 */
 export const MODE_HARVEST_MINERAL: MODE_HARVEST_MINERAL = 1;
 
 /**
  * 优先提供孵化器能量的运输者
  */
 export const MODE_SPAWN: MODE_SPAWN = 0;
- /**
-  * 优先提供控制器能量的运输者
-  */
+/**
+ * 优先提供控制器能量的运输者
+ */
 export const MODE_CONTROLLER: MODE_CONTROLLER = 1;
+/**
+ * 外矿的运输者
+ */
+export const MODE_OUTSIDE: MODE_OUTSIDE = 2;
+/**
+ * 救灾运输者
+ */
+export const MODE_HELP: MODE_HELP = 9;
 
 /**
  * 优先建筑的builder

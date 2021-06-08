@@ -1,4 +1,4 @@
-import { WORK_IDLE, WORK_GOTO, WORK_HARVEST, WORK_REPAIR } from "@/constant";
+import { WORK_IDLE, WORK_MOVE, WORK_HARVEST, WORK_REPAIR } from "@/constant";
 
 export const roleHarvester: CreepRole = {
     run: function(creep) {
@@ -13,7 +13,7 @@ export const roleHarvester: CreepRole = {
             return;
         }
         switch(creep.work){
-            case WORK_GOTO:
+            case WORK_MOVE:
                 // 状态切换在执行时
                 break;
             case WORK_HARVEST:
@@ -29,9 +29,8 @@ export const roleHarvester: CreepRole = {
     // 根据工作模式执行
     execute: function(creep){
         creep.recycleNearby(); // 回收周围的能量
-
         switch(creep.work){
-            case WORK_GOTO:
+            case WORK_MOVE:
                 creep.harvesterGoTo();
                 break;
             case WORK_HARVEST:

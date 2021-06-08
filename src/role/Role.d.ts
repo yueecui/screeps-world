@@ -36,6 +36,26 @@ interface RoleConfig{
   respawnCondition?: RespawnCondition;
 }
 
+interface SpawnConfig{
+  type: ANY_SPAWN_TYPE;
+  baseName: string
+  advance: boolean
+  memory: (spawn_room: Room, work_room_name?: string) => Record<string, any>
+  amount: (spawn_room: Room, work_room_name?: string) => number
+  body: (spawn_room: Room) => BodyPartConstant[]
+  /** 判断是否将当前creep视为存活状态 */
+  isLive: (spawn_room: Room, creep: Creep) => boolean
+  /** 判断当前room的状态是否满足重新孵化的条件 */
+  needSpawn: (spawn_room: Room, work_room_name?: string) => boolean
+}
+
+type ANY_SPAWN_TYPE =
+    | SPAWN_TYPE_IN_ROOM
+    | SPAWN_TYPE_OUTSIDE
+
+type SPAWN_TYPE_IN_ROOM = 1
+type SPAWN_TYPE_OUTSIDE = 2
+
 /**
  * 视为存活的条件
  */
@@ -60,23 +80,29 @@ interface RespawnCondition{
 type ANY_ROLE_NAME =
     | ROLE_GOTO_RECYCLE
     | ROLE_MANUAL
+
     | ROLE_HARVESTER
     | ROLE_TRANSPORTER
     | ROLE_BUILDER
     | ROLE_UPGRADER
-    | ROLE_ATTACKER
+    | ROLE_MASTERMIND
+
+    | ROLE_SCOUT
     | ROLE_ENGINEER
-    | ROLE_MASTERMIND;
+    | ROLE_ATTACKER
 
 type ROLE_GOTO_RECYCLE = '回收';
 type ROLE_MANUAL = '手动';
+
 type ROLE_HARVESTER = '采集';
 type ROLE_TRANSPORTER = '运输';
 type ROLE_BUILDER = '建造';
 type ROLE_UPGRADER = '升级';
+type ROLE_MASTERMIND = '主脑';
+
+type ROLE_SCOUT = '斥候';
 type ROLE_ATTACKER = '攻击';
 type ROLE_ENGINEER = '工兵';
-type ROLE_MASTERMIND = '主脑';
 
 type AnyRole =
     | CreepRole

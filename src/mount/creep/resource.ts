@@ -25,18 +25,16 @@ export const creepExtensionResource = function () {
             return false;
         }
         let target = Game.getObjectById(this.energyTarget!) as StructureContainer | StructureStorage | null;
-
         if (target && target.store[RESOURCE_ENERGY] == 0){
             this.room.unbookingContainer(this.name);
             this.energyTarget = null;
             target = null;
         }
-
         if (!target || (target.structureType != STRUCTURE_CONTAINER && target.structureType != STRUCTURE_STORAGE)){
             opt = opt == undefined ? {} : opt;
             target = this.findEnergyStore(opt);
-        }
 
+        }
         if (target){
             if (this.pos.isNearTo(target)){
                 // 如果本回合拾取过能量则跳过获取阶段
@@ -67,7 +65,7 @@ export const creepExtensionResource = function () {
         let structures: Array<StructureContainer | StructureStorage> = [];
         if (opt.container){
             _.each(
-                _.filter(this.room.memory.data.containers, (info) => {
+                _.filter(this.room.containers, (info) => {
                     return opt!.container!.indexOf(info.type) > -1;
                 }),
                 (info) => {

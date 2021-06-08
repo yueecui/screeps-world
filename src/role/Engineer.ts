@@ -15,27 +15,33 @@ export const roleEngineer: Engineer = {
 
     // 根据工作模式执行
     execute: function(creep){
-        if (!creep.memory.flag){
+        if (creep.memory.room == null){
+            creep.say('⁉️');
             return;
         }
-        const flag = Game.flags[creep.memory.flag];
+        if (creep.room.name != creep.memory.room){
+            const pos = new RoomPosition(25, 25, creep.memory.room);
+            creep.moveTo(pos);
+            return;
+        }
 
-        if (creep.room != flag.room){
-            creep.moveTo(flag, {visualizePathStyle:{}});
-        }else{
-            if (creep.pos.isNearTo(creep.room.controller!)){
-                if (!creep.room.controller!.my){
-                    creep.reserveController(creep.room.controller!);
+        const controller = creep.room.controller!;
+        if (creep.pos.isNearTo(controller)){
+            // 已经有人占领的情况下回收
+            if (controller.owner){
+                creep.role ='回收';
+            }
+            if (controller.reservation){
+                if (controller.reservation.username == 'Yuee'){
+                    creep.reserveController(controller);
                 }else{
-                    if (creep.attackController(creep.room.controller!) == ERR_TIRED){
-                        if (creep.room.controller!.upgradeBlocked > 100){
-                            creep.memory.r = '回收';
-                        }
-                    };
+                    creep.attackController(controller);
                 }
             }else{
-                creep.moveTo(creep.room.controller!);
+                creep.reserveController(controller);
             }
+        }else{
+            creep.moveTo(controller);
         }
 
     },
