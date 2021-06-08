@@ -1,6 +1,3 @@
-import { WORK_IDLE, WORK_UPGRADE } from "@/constant";
-import { getMaxListeners } from "process";
-
 
 export const roleAttacker: Attacker = {
     run: function(creep) {
@@ -15,38 +12,41 @@ export const roleAttacker: Attacker = {
 
     // 根据工作模式执行
     execute: function(creep){
-        const flag = Game.flags['Attack'];
-        if (!flag){
+        if (creep.room.name != creep.memory.room){
+            const pos = new RoomPosition(6, 21, creep.memory.room);
+            creep.moveTo(pos);
             return;
         }
 
-        if (creep.pos.isNearTo(flag)){
-            const target_creep = _.filter(flag.pos.lookFor(LOOK_CREEPS), (look) => {
-                return (look.owner != undefined && !look.my);
-            });
-            if (target_creep[0]){
-                creep.attack(target_creep[0]);
-                return;
-            }
-            const target_structre = _.filter(flag.pos.lookFor(LOOK_STRUCTURES), (look) => {
-                if ('owner' in look){
-                    return !(look as OwnedStructure).my
+        {
+            const found = creep.room.find(FIND_HOSTILE_CREEPS);
+            if (found.length){
+                const target = found[0]
+                if (creep.pos.isNearTo(target)){
+                    creep.attack(target);
                 }else{
-                    return false;
+                    creep.moveTo(target);
                 }
-            });
-            if (target_structre[0]){
-                creep.attack(target_structre[0]);
                 return;
             }
-            const found_creeps = creep.pos.findInRange(FIND_HOSTILE_CREEPS, 1)
-            if (found_creeps.length > 0){
-                creep.attack(found_creeps[0]);
-                return;
-            }
-        }else{
-            creep.moveTo(flag, {visualizePathStyle:{}});
         }
 
+        {
+            const found = creep.room.find(FIND_HOSTILE_STRUCTURES);
+            if (found.length){
+                const target = found[0]
+                if (creep.pos.isNearTo(target)){
+                    creep.attack(target);
+                }else{
+                    creep.moveTo(target);
+                }
+                return;
+            }
+        }
+
+        creep.role = '回收';
+        // if (!creep.room.isUnderAttack && !creep.room.hasInvaderCore){
+
+        // }
     },
 };

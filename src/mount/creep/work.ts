@@ -3,7 +3,7 @@ import {
     WORK_IDLE,
     CONTAINER_TYPE_CONTROLLER,
     WORK_HARVEST,
-    WORK_GOTO,
+    WORK_MOVE,
     WORK_REPAIR,
     MODE_HARVEST_ENERGY,
     MODE_HARVEST_MINERAL,
@@ -19,7 +19,7 @@ export const creepExtensionHarvester = function () {
         const room = this.memory.room ? Game.rooms[this.memory.room] : this.room;
         // 没有视野的情况下先移动过去开视野
         if (!room){
-            this.work = WORK_GOTO;
+            this.work = WORK_MOVE;
             return;
         }
         if (this.mode == MODE_HARVEST_ENERGY){
@@ -30,7 +30,7 @@ export const creepExtensionHarvester = function () {
                     this.work = WORK_HARVEST;
                 }
             }else{
-                this.work = WORK_GOTO;
+                this.work = WORK_MOVE;
             }
         }else if (this.mode == MODE_HARVEST_MINERAL){
             const mineral_node = Game.getObjectById(this.room.mineral.id)!;
@@ -38,7 +38,7 @@ export const creepExtensionHarvester = function () {
             if (mineral_node.mineralAmount == 0 && mineral_node.ticksToRegeneration > 0){
                 this.role = ROLE_GOTO_RECYCLE;
             }
-            this.work = WORK_GOTO;
+            this.work = WORK_MOVE;
         }
     }
 
@@ -120,7 +120,7 @@ export const creepExtensionHarvester = function () {
         const room = this.memory.room ? Game.rooms[this.memory.room] : this.room;
         if (!room){
             this.say('目标ROOM无视野');
-            this.work = WORK_GOTO;
+            this.work = WORK_MOVE;
             this.harvesterGoTo();
         }
 

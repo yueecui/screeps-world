@@ -7,23 +7,26 @@ interface CreepMemory {
     work: WORK_STATUS
     /** Creep的能量状态 */
     energy: ENERGY_STATUS
+    /** Creep出生的房间 */
+    born: string
     /** Creep所属的房间 */
-    belong: string
+    belong?: string
+
 
     /** Creep工作的目标room */
-    room: string;
+    room: string
     /** Creep当前的工作目标 */
-    t: Id<any> | null;
+    t: Id<any> | null
     /** Creep当前的获取能量的目标 */
-    et: Id<AnyStoreStructure> | null;
+    et: Id<AnyStoreStructure> | null
     /** Creep当前的工作目标队列*/
-    queue: Id<any>[] | null;
+    queue: Id<any>[] | null
 
     /** 采集者记录采集点编号*/
-    node: number;
+    node: number
 
     /** 指定站着的位置 */
-    stay?: [number, number];
+    stay?: [number, number]
 
 
     /**
@@ -54,7 +57,7 @@ type ENERGY_NEED = 0;
 type ENERGY_ENOUGH = 1;
 
 type WORK_STATUS =
-         | WORK_GOTO
+         | WORK_MOVE
          | WORK_IDLE
          | WORK_TRANSPORTER_SPAWN
          | WORK_TRANSPORTER_TOWER
@@ -67,23 +70,27 @@ type WORK_STATUS =
          | WORK_BUILD
          | WORK_REPAIR;
 
-type WORK_GOTO = -1
 type WORK_IDLE = 0;
-type WORK_TRANSPORTER_SPAWN = 1;
-type WORK_TRANSPORTER_TOWER = 2;
-type WORK_TRANSPORTER_CONTROLLER = 3;
-type WORK_TRANSPORTER_TOMBSTONE = 4;
-type WORK_TRANSPORTER_STORAGE_MINERAL = 9;
-type WORK_TRANSPORTER_STORAGE_ENERGY = 10;
+type WORK_MOVE = 1
+type WORK_HARVEST = 11;
 type WORK_UPGRADE = 12;
 type WORK_BUILD = 13;
 type WORK_REPAIR = 14;
-type WORK_HARVEST = 21;
+type WORK_TRANSPORTER_SPAWN = 21;
+type WORK_TRANSPORTER_TOWER = 22;
+type WORK_TRANSPORTER_CONTROLLER = 23;
+type WORK_TRANSPORTER_TOMBSTONE = 24;
+type WORK_TRANSPORTER_STORAGE_MINERAL = 25;
+type WORK_TRANSPORTER_STORAGE_ENERGY = 26;
+
 
 type ANY_CREEP_MODE =
         | MODE_NONE
+        | MODE_HARVEST_ENERGY
+        | MODE_HARVEST_MINERAL
         | MODE_SPAWN
         | MODE_CONTROLLER
+        | MODE_HELP
         | MODE_BUILDER
         | MODE_REPAIRER;
 
@@ -95,6 +102,8 @@ type MODE_HARVEST_MINERAL = 1;
 // 搬运者的模式
 type MODE_SPAWN = 0;
 type MODE_CONTROLLER = 1;
+type MODE_OUTSIDE = 2;
+type MODE_HELP = 9;
 // 建造者的模式
 type MODE_BUILDER = 0;
 type MODE_REPAIRER = 1;

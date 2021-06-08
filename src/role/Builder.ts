@@ -8,7 +8,8 @@
 import {
     ENERGY_NEED,
     WORK_IDLE, WORK_BUILD, WORK_REPAIR,
-    MODE_BUILDER, MODE_REPAIRER, CONTAINER_TYPE_SOURCE } from "@/constant";
+    MODE_BUILDER, MODE_REPAIRER, CONTAINER_TYPE_SOURCE, ENERGY_ENOUGH } from "@/constant";
+import { filter } from "lodash";
 
 const REPAIR_PERCENT = 0.7;  // 耐久度低到什么程度开始修理
 
@@ -37,119 +38,50 @@ export const roleBuilder: Builder = {
 
     // 根据工作模式执行
     execute: function(creep){
-        if (creep.memory.flag && Game.flags['remove']){
-            const flag = Game.flags['remove'];
-            if (creep.room.name != 'W34N57'){
-                creep.moveTo(flag);
-                return;
-            }
-            // 寻找一个可以修理的目标
-            let r_targets = flag.pos.findInRange(FIND_STRUCTURES, 3, { filter: function(s){
-                return (s.structureType == STRUCTURE_ROAD);
-            }})
-
-            if (r_targets.length > 0){
-                if (creep.dismantle(r_targets[0]) == ERR_NOT_IN_RANGE){
-                    creep.moveTo(r_targets[0]);
-                }
-                return;
-            }
-        }
-        // 临时
-        if (creep.memory.flag && Game.flags[creep.memory.flag]){
-            const flag = Game.flags[creep.memory.flag];
-            // if (!creep.pos.isNearTo(flag)){
-            //     creep.moveTo(flag);
-            // }
-            if (creep.ticksToLive! < 100){
-                creep.memory.r = '回收';
-                return;
-            }
-
-            creep.updateEnergyStatus();
-
-            if (creep.energy == ENERGY_NEED){
-                if (creep.room.name != 'W34N57'){
-                    creep.moveTo(flag);
-                    return;
-                }
-                const source = Game.getObjectById('5bbcab199099fc012e632d04' as Id<Source>);
-                if (creep.harvest(source!) == ERR_NOT_IN_RANGE){
-                    creep.moveTo(source!);
-                }
-
-            }else{
-                if (creep.room.name != 'W34N57'){
-                    creep.moveTo(flag);
-                    return;
-                }
-                // 寻找一个可以建造的目标
-                let b_targets = creep.room.find(FIND_CONSTRUCTION_SITES);
-                let b_target;
-                if (b_targets[0]){
-                    creep.memory.t = b_targets[0].id;
-                    b_target = b_targets[0];
-                }else{
-                    creep.memory.t = null;
-                    b_target = null;
-                }
-                if (b_target){
-                    if (creep.build(b_target) == ERR_NOT_IN_RANGE){
-                        creep.moveTo(b_target);
-                    }
-                }
-
-                // 寻找一个可以修理的目标
-                let r_targets = flag.pos.findInRange(FIND_STRUCTURES, 3, { filter: function(s){
-                    return (s.structureType == STRUCTURE_ROAD) && (s.hits < s.hitsMax);
-                }})
-                let r_target;
-                // const last_target = targets.filter((s) => { return s.id == creep.memory.t; });
-                // if (last_target[0]){
-                //     target = last_target[0];
-                // }else{
-                    r_targets = r_targets.filter((s) => {
-                        return s.hits<s.hitsMax}
-                    )
-                    r_targets.sort((a, b) => {
-                        return (a.hits/a.hitsMax - b.hits/b.hitsMax)
-                        // return creep.pos.getRangeTo(a) - creep.pos.getRangeTo(b);
-                    })
-
-                    if (r_targets[0]){
-                        creep.memory.t = r_targets[0].id;
-                        r_target = r_targets[0];
-                    }else{
-                        creep.memory.t = null;
-                        r_target = null;
-                    }
-                // }
-                if (r_target){
-                    if (creep.repair(r_target) == ERR_NOT_IN_RANGE){
-                        creep.moveTo(r_target);
-                    }
-                }
-
-            }
-
-
-
+        if (creep.memory.room && creep.room.name != creep.memory.room){
+            creep.moveTo(new RoomPosition(25, 25, creep.memory.room));
             return;
         }
-        // 以上是临时代码
-
         creep.recycleNearby(); // 回收周围的能量
 
+        const remove_flag = Game.flags['Remove'];
+        if (remove_flag && creep.room.name == remove_flag.room!.name){
+            // 寻找一个可以修理的目标
+            const target = _.find(remove_flag.pos.lookFor(LOOK_STRUCTURES), { structureType: STRUCTURE_ROAD });
+            if (target){
+                if (creep.dismantle(target) == ERR_NOT_IN_RANGE){
+                    creep.moveTo(target);
+                }
+                return;
+            }
+        }
+
         const obtain_energy = (creep: Creep) => {
-            if (creep.room.name == 'W41N54'){
-                creep.obtainEnergy({
-                    container: [CONTAINER_TYPE_SOURCE],
-                });
-            }else{
+            if (creep.room.storage){
                 creep.obtainEnergy({
                     storage: true,
                 });
+                return;
+            // 外矿
+            }else if(creep.memory.room){
+                if (creep.store.getFreeCapacity() == 0){
+                    creep.energy = ENERGY_ENOUGH;
+                }
+                for (const source_info of creep.room.sources){
+                    const source_node = Game.getObjectById(source_info.id)!;
+                    if (source_node.energy > 0){
+                        if (creep.pos.isNearTo(source_node)){
+                            creep.harvest(source_node);
+                        }else{
+                            creep.moveTo(source_node);
+                        }
+                        return;
+                    }
+                }
             }
+            creep.obtainEnergy({
+                container: [CONTAINER_TYPE_SOURCE],
+            });
         }
 
 
@@ -189,7 +121,11 @@ export const roleBuilder: Builder = {
                 if (target){
                     return this.repairTarget(creep, target);
                 }
-                creep.goToStay();
+                if (creep.memory.room){
+                    creep.role = '回收';
+                }else{
+                    creep.goToStay();
+                }
             }
         }
     },

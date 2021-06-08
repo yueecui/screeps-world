@@ -1,5 +1,5 @@
 export const getMaxCarrierBody = function(){
-    const group_number = Math.floor(Game.spawns['Spawn1'].room.energyCapacityAvailable / 150) ;
+    const group_number = Math.min(Math.floor(Game.spawns['Ironforge'].room.energyCapacityAvailable / 150), 16);
     const body: BodyPartConstant[] = []
     for (let i=0;i<group_number;i++){
         body.push(CARRY, CARRY);
@@ -11,7 +11,7 @@ export const getMaxCarrierBody = function(){
 }
 
 export const getMaxCarrier2Body = function(){
-    const group_number = Math.floor(Game.spawns['Shanghai'].room.energyCapacityAvailable / 150) ;
+    const group_number = Math.min(Math.floor(Game.spawns['Shanghai'].room.energyCapacityAvailable / 150), 16);
     const body: BodyPartConstant[] = []
     for (let i=0;i<group_number;i++){
         body.push(CARRY, CARRY);
@@ -23,7 +23,7 @@ export const getMaxCarrier2Body = function(){
 }
 
 export const getMaxBuilderBody = function(){
-    const group_number = Math.floor(Game.spawns['Spawn1'].room.energyCapacityAvailable / 200) ;
+    const group_number = Math.min(Math.floor(Game.spawns['Ironforge'].room.energyCapacityAvailable / 200), 16);
     const body: BodyPartConstant[] = []
     for (let i=0;i<group_number;i++){
         body.push(WORK);
@@ -54,7 +54,7 @@ export const getMaxBuilder2Body = function(){
 
 export const getMinerBody = function(){
     // 4 WORK + 1 MOVE
-    const group_number = Math.floor(Game.spawns['Spawn1'].room.energyCapacityAvailable / 450) ;
+    const group_number = Math.min(Math.floor(Game.spawns['Ironforge'].room.energyCapacityAvailable / 450), 10);
     const body: BodyPartConstant[] = []
     for (let i=0;i<group_number;i++){
         body.push(WORK, WORK, WORK, WORK);
@@ -92,7 +92,7 @@ export const BODY_CONFIG: Record<string, BodyPartConstant[]> = {
     '采集者R4': [WORK, WORK, WORK, WORK, WORK, WORK, WORK, WORK, WORK, WORK,
                             WORK, CARRY, MOVE, MOVE, MOVE],    // WORK*11 + CARRY*1 + MOVE*3 = 1300
     '采集者R4+': [WORK, WORK, WORK, WORK, WORK, WORK, WORK, WORK, WORK, WORK,
-                CARRY, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE],    // WORK*11 + CARRY*1 + MOVE*6 = 1450
+                CARRY, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE],    // WORK*10 + CARRY*1 + MOVE*6 = 1450
     '升级者R4': [WORK, WORK, WORK, WORK, WORK, WORK, WORK, WORK, WORK, WORK,
                             CARRY, CARRY, MOVE, MOVE, MOVE, MOVE],    // WORK*10 + CARRY*2 + MOVE*4 = 1300
     '侵略者R5': [ATTACK, ATTACK, ATTACK, ATTACK, ATTACK, ATTACK, ATTACK, ATTACK, ATTACK, ATTACK,

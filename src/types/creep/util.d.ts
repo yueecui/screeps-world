@@ -15,7 +15,8 @@ interface Creep {
   index: number;
   roomCode: string;
   /** 该creep属于哪个room */
-  belong: string;
+  belongRoom: string;
+  bornRoom: string;
 
   role: ANY_ROLE_NAME;
   /** 同一个ROLE的不同MODE */

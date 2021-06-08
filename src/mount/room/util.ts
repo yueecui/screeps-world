@@ -1,6 +1,6 @@
 import { TASK_WAITING,
     CONTAINER_TYPE_NONE, CONTAINER_TYPE_CONTROLLER, CONTAINER_TYPE_SOURCE, CONTAINER_TYPE_MINERAL,
-    LINK_TYPE_NONE, LINK_TYPE_STORAGE, LINK_TYPE_CONTROLLER, LINK_TYPE_SOURCE } from "@/constant";
+    LINK_TYPE_NONE, LINK_TYPE_STORAGE, LINK_TYPE_CONTROLLER, LINK_TYPE_SOURCE, BOOLEAN_FALSE, BOOLEAN_TRUE } from "@/constant";
 
 
 interface findPosParam{
@@ -54,27 +54,6 @@ const findOverlapPos = function(a: findPosParam, b: findPosParam): [number, numb
     return result;
 }
 
-/**
- * 计算工作坐标位置
- * @param target 目标工作对象
- * @param container 能量存储容器对象
- * @returns 工作坐标位置
- */
-const calcWorkPos = function(target:Source|Mineral|StructureController, container:StructureContainer|StructureLink): [number, number]{
-    if (target instanceof Source){
-        if(container.structureType == STRUCTURE_CONTAINER){
-            return [container.pos.x, container.pos.y];
-        }else if (container.structureType == STRUCTURE_LINK){
-
-        }
-    }else if (target instanceof Mineral && container.structureType == STRUCTURE_CONTAINER){
-        return [container.pos.x, container.pos.y];
-    }else if (target instanceof StructureController){
-
-    }
-    return [0, 0];
-}
-
 export const roomExtensionUtil = function () {
     // 每tick检查的主方法
     Room.prototype.tickCheck = function() {
@@ -83,23 +62,26 @@ export const roomExtensionUtil = function () {
 
         // 定期检查
         if (Game.time % 5 == 0){
+            if (!this.isUnderAttack) this.checkEnemy();
             this.checkTowerEnergy();
             // this.memory.lastSpawnTime = (this.energyAvailable < this.energyCapacityAvailable || this.energyAvailable == 300) ? 1 : 0;
         }
         if (this.memory.flagPurge || Game.time % 20 == 0){
             // 强制刷新孵化能量任务队列
             this.memory.lastSpawnTime = 1
-            this.updateRoomStatus();   // 重新缓存特定建筑信息（例如塔）
-            this.errorCheck();        // 检查各个任务队列是否存在错误
+            this.updateRoomStructureStatus();   // 重新缓存特定建筑信息（例如塔）
+            this.errorCheck();                  // 检查各个任务队列是否存在错误
         }
 
         if (this.memory.flagPurge){
             console.log(`[${Game.time}] Room ${this.name} 强制刷新缓存完成`)
         }
-        this.memory.flagPurge = false;
+        this.memory.flagPurge = BOOLEAN_FALSE;
 
         // 每tick任务
-        this.checkSpawnEnergy();
+        if (this.isUnderAttack) this.checkEnemy();
+        this.checkSpawnEnergy();  // 只有刷新时间不为0时才执行
+        this.updateVisual();  // 刷新界面显示
     };
 
     Room.prototype.errorCheck = function(){
@@ -151,18 +133,31 @@ export const roomExtensionUtil = function () {
                 }
             }
         }
-        if (this.memory.config == undefined){
-            this.memory.config = {
+        if (this.memory.status == undefined){
+            this.memory.status = {
+                underAttack: BOOLEAN_FALSE,
+            }
+        }
+        if (this.memory.roomConfig == undefined){
+            this.memory.roomConfig = {
                 code: this.name,
-                alias: [],
+                resShowPos: [0, 0],
+                outside: [],
             }
         }
         if (this.memory.spawnConfig == undefined){
-            this.memory.spawnConfig = {}
+            this.memory.spawnConfig = {
+                advance: {},
+                amount: {},
+            }
         }
-
+        if (this.memory.creepConfig == undefined){
+            this.memory.creepConfig = {
+                stay: {},
+            }
+        }
         if (this.memory.flagPurge == undefined){
-            this.memory.flagPurge = true;
+            this.memory.flagPurge = BOOLEAN_TRUE;
         }
 
         if (this.memory.lastSpawnTime == undefined){
@@ -182,8 +177,21 @@ export const roomExtensionUtil = function () {
 
 
      // 缓存特定建筑的Id
-     Room.prototype.updateRoomStatus = function(){
+     Room.prototype.updateRoomStructureStatus = function(){
         const all_structures = this.find(FIND_STRUCTURES);
+
+        // 检查可能过期的建筑
+        for (const source_info of this.sources){
+            if (Game.getObjectById(source_info.link!) == null){
+                source_info.link = null;
+            }
+            if (Game.getObjectById(source_info.container!) == null){
+                source_info.container = null;
+            }
+        }
+        if (Game.getObjectById(this.mineral.container!) == null){
+            this.mineral.container = null;
+        }
 
         // 所有的塔
         this.memory.data.towers = _.map(_.filter(all_structures, {structureType: STRUCTURE_TOWER}) as StructureTower[], 'id');
@@ -216,8 +224,11 @@ export const roomExtensionUtil = function () {
                     // 判断是否为mineral的container
                     if (this.mineral.container == null
                         && container.pos.getRangeTo(Game.getObjectById(this.mineral.id)!) <= 2){
-                            this.mineral.container = container_id;
-                            return CONTAINER_TYPE_MINERAL;
+                            const found = Game.getObjectById(this.mineral.id)!.pos.lookFor(LOOK_STRUCTURES);
+                            if (found[0] && found[0].structureType == STRUCTURE_EXTRACTOR){
+                                this.mineral.container = container_id;
+                                return CONTAINER_TYPE_MINERAL;
+                            }
                     }
                     // 判断是否为source的container
                     for(const source_info of this.sources){
@@ -349,6 +360,102 @@ export const roomExtensionUtil = function () {
             }
         });
     }
+
+    Room.prototype.checkEnemy = function(){
+        if (this.find(FIND_HOSTILE_CREEPS).length > 0){
+            this.memory.status.underAttack = BOOLEAN_TRUE;
+        }else{
+            this.memory.status.underAttack = BOOLEAN_FALSE;
+        }
+        if (!this.isUnderAttack){
+            if (this.find(FIND_HOSTILE_STRUCTURES).length > 0){
+                this.memory.status.hasInvaderCore = BOOLEAN_TRUE;
+            }else{
+                this.memory.status.hasInvaderCore = BOOLEAN_FALSE;
+            }
+        }
+    }
+
+    Room.prototype.getSpawnAdvanceTime = function (base_name: string){
+        if (!('advance' in this.spawnConfig)) this.spawnConfig.advance = {};
+        return this.spawnConfig.advance[base_name] ? this.spawnConfig.advance[base_name] : 0;
+    }
+    Room.prototype.getSpawnAmount = function (base_name: string){
+        if (!('amount' in this.spawnConfig)) this.spawnConfig.amount = {};
+        return this.spawnConfig.amount[base_name] != null ? this.spawnConfig.amount[base_name] : -1;
+    }
+
+    Room.prototype.updateVisual = function (){
+        // 控制器进度
+        if (this.controller && this.controller.my && this.controller.level < 8){
+            this.visual.text(
+                ((this.controller.progress /this.controller.progressTotal) * 100).toFixed(2) + '%',
+                this.controller.pos,
+                {
+                    font: 0.5,
+                    stroke: '#000000'
+                }
+            )
+        }
+        // 孵化器进度
+        for (const spawn of this.spawns){
+            if (spawn.spawning && spawn.spawning.remainingTime > 1){
+                this.visual.text(
+                    (spawn.spawning.remainingTime-1) + 't',
+                    spawn.pos,
+                    {
+                        font: 0.5,
+                        stroke: '#000000'
+                    }
+                )
+                this.visual.text(
+                    spawn.spawning.name,
+                    spawn.pos.x, spawn.pos.y+1,
+                    {
+                        color: '#9bb8ef',
+                        font: 0.4,
+                        stroke: '#000000'
+                    }
+                )
+            }
+        }
+        // 矿物残量或重生时间
+        {
+            const mineral = Game.getObjectById(this.mineral.id)!;
+            if (mineral.ticksToRegeneration > 0){
+                this.visual.text(
+                    (mineral.ticksToRegeneration) + 't',
+                    mineral.pos,
+                    {
+                        color: '#989898',
+                        font: 0.4,
+                        stroke: '#000000'
+                    }
+                )
+            }else{
+                this.visual.text(
+                    ''+mineral.mineralAmount,
+                    mineral.pos,
+                    {
+                        color: '#86ff78',
+                        font: 0.4,
+                        stroke: '#000000'
+                    }
+                )
+            }
+        }
+    }
+
+    Room.prototype.countBaseNameCreeps = function (...base_name_list){
+        let count = 0;
+        const code_lived_creeps = Game.allLivedCreeps[this.code] || {};
+        for (const base_name of base_name_list){
+            if (base_name in code_lived_creeps){
+                count += code_lived_creeps[base_name].length;
+            }
+        }
+        return count;
+    };
 
     Room.prototype.calcPrice = function (order_id: string, amount: number){
         const order = Game.market.getOrderById(order_id);

@@ -284,17 +284,19 @@ export const creepExtensionTransporter = function () {
                 this.work = WORK_IDLE;
                 return;
             }
-            for (const name in target.store){
-                const result = this.withdraw(target, name as ResourceConstant);
-                switch(result){
-                    case OK:
-                        // this.work = WORK_IDLE;
-                        break;
-                    case ERR_NOT_IN_RANGE:
-                        this.moveTo(target);
-                        break;
+            if (this.pos.isNearTo(target)){
+                // 临时处理
+                if (RESOURCE_ENERGY in target.store){
+                    this.withdraw(target, RESOURCE_ENERGY);
+                }else{
+                    for (const name in target.store){
+                        this.withdraw(target, name as ResourceConstant);
+                    }
                 }
+            }else{
+                this.moveTo(target);
             }
+
         }else{
             const target = this.room.storage;
             // 目标如果不存在（被拆除）或是目标已经满了

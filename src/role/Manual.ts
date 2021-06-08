@@ -5,8 +5,9 @@ import { CONTAINER_TYPE_SOURCE, ENERGY_ENOUGH, ENERGY_NEED, MODE_NONE } from "@/
  */
 export const roleManual: CreepRole = {
     run: function(creep) {
-        this.updateStatus(creep);
-        this.execute(creep);
+        creep.say('呆');
+        // this.updateStatus(creep);
+        // this.execute(creep);
 	},
 
     // 判断工作模式
