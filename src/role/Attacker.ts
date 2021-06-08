@@ -18,7 +18,7 @@ export const roleAttacker: Attacker = {
             return;
         }
 
-        if (creep.room.isUnderAttack){
+        {
             const found = creep.room.find(FIND_HOSTILE_CREEPS);
             if (found.length){
                 const target = found[0]
@@ -31,7 +31,7 @@ export const roleAttacker: Attacker = {
             }
         }
 
-        if (creep.room.hasInvaderCore){
+        {
             const found = creep.room.find(FIND_HOSTILE_STRUCTURES);
             if (found.length){
                 const target = found[0]
@@ -44,8 +44,9 @@ export const roleAttacker: Attacker = {
             }
         }
 
-        if (!creep.room.isUnderAttack && !creep.room.hasInvaderCore){
-            creep.role = '回收';
-        }
+        creep.role = '回收';
+        // if (!creep.room.isUnderAttack && !creep.room.hasInvaderCore){
+
+        // }
     },
 };

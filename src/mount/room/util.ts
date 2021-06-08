@@ -201,6 +201,9 @@ export const roomExtensionUtil = function () {
                 new_containers_info_map[container.id].type = container.type
             }
         }
+        if (this.name == 'W34N57'){
+            console.log(JSON.stringify(new_containers_info_map))
+        }
         // 重新生成数据
         this.containers = [];
         for (const container_id in new_containers_info_map){
@@ -354,7 +357,7 @@ export const roomExtensionUtil = function () {
         }else{
             this.memory.status.underAttack = BOOLEAN_FALSE;
         }
-        if (!this.isUnderAttack && this.myReserve){
+        if (!this.isUnderAttack){
             if (this.find(FIND_HOSTILE_STRUCTURES).length > 0){
                 this.memory.status.hasInvaderCore = BOOLEAN_TRUE;
             }else{

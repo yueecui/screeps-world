@@ -11,6 +11,7 @@ import { generateBodyTransporter,
     generateBodyMastermind,
     generateBodyBuilder,
     generateBodyUpgrader,
+    generateBodyOutsideDefender,
     } from './bodyGenerator'
 
 import { CONSTRUCTION_SITES_PROGRESS_TO_NEED_BUILDER } from '@/config'
@@ -221,10 +222,11 @@ const role_BB: SpawnConfig = {
         return true;
     },
     needSpawn: (room) => {
+        if (room.storage && room.storage.store[RESOURCE_ENERGY] < 50000) return false;
         const found = room.find(FIND_MY_CONSTRUCTION_SITES);
         let total_progress = 0;
         for (const site of found){
-            total_progress += site.progress;
+            total_progress += (site.progressTotal - site.progress);
             if (total_progress >= CONSTRUCTION_SITES_PROGRESS_TO_NEED_BUILDER){
                 return true;
             }
@@ -306,10 +308,36 @@ const role_UP: SpawnConfig = {
     body: generateBodyUpgrader
 }
 
+/** 测试用 */
+const role_DE: SpawnConfig = {
+    type: SPAWN_TYPE_IN_ROOM,
+    baseName: 'DE',
+    advance: false,
+    memory: (spawn_room, work_room_name) => {
+        return {
+            room: work_room_name,
+            role: '攻击'
+        }
+    },
+    amount: function(spawn_room, work_room_name) {
+        return 1;
+    },
+    isLive: (spawn_room, creep) => {
+        return true;
+    },
+    needSpawn: (spawn_room, work_room_name) => {
+        return spawn_room.name == 'W35N57';
+    },
+    body: generateBodyOutsideDefender
+}
+
 // 高优先级
 export const SPAWN_BASE_PRIORITY_HIGH: Map<string, SpawnConfig> = new Map([
     // 全灭后的救灾蚂蚁
     ['HELP', role_HELP],
+
+    // 外矿防御者
+    // ['DE', role_DE],
 
     // ROOM内能量采集者，A和B对应2个采集点
     ['GA', role_GA],

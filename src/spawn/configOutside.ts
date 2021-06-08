@@ -94,14 +94,18 @@ const role_GA: SpawnConfig = {
             let amount = Memory.rooms[work_room_name].spawnConfig.amount[this.baseName];
             if (amount != null) return amount;
         }
-        return 1;
+        return 0;
     },
     isLive: (spawn_room, creep) => {
         return true;
     },
     needSpawn: (spawn_room, work_room_name) => {
         // 目标房间没有敌人就可以
-        // 由于不一定有视野，所以通过Memory判断
+        // 有视野的情况下，如果目标房间属于我，就孵化
+        if (work_room_name && Game.rooms[work_room_name] && Game.rooms[work_room_name].myReserve){
+            return true;
+        }
+        // 由于不一定有视野，所以通过Memory判断是否还有敌人
         if (work_room_name && Memory.rooms[work_room_name]){
             return Memory.rooms[work_room_name].status.underAttack == BOOLEAN_FALSE;
         }
@@ -142,7 +146,11 @@ const role_GB: SpawnConfig = {
     },
     needSpawn: (spawn_room, work_room_name) => {
         // 目标房间没有敌人就可以
-        // 由于不一定有视野，所以通过Memory判断
+        // 有视野的情况下，如果目标房间属于我，就孵化
+        if (work_room_name && Game.rooms[work_room_name] && Game.rooms[work_room_name].myReserve){
+            return true;
+        }
+        // 由于不一定有视野，所以通过Memory判断是否还有敌人
         if (work_room_name && Memory.rooms[work_room_name]){
             return Memory.rooms[work_room_name].status.underAttack == BOOLEAN_FALSE;
         }
