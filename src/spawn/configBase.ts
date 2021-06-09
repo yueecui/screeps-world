@@ -2,7 +2,7 @@
  * 一个房间内运作必备的虫子的配置
  */
 
-import { SPAWN_TYPE_IN_ROOM, MODE_BUILDER, MODE_CONTROLLER, MODE_HARVEST_ENERGY, MODE_HARVEST_MINERAL, MODE_HELP, MODE_REPAIRER, MODE_SPAWN } from "@/constant";
+import { SPAWN_TYPE_IN_ROOM, MODE_BUILDER, MODE_CONTROLLER, MODE_HARVEST_ENERGY, MODE_HARVEST_MINERAL, MODE_HELP, MODE_REPAIRER, MODE_SPAWN } from "@/module/constant";
 
 import { generateBodyTransporter,
     generateBodyTransporterHelp,
@@ -14,7 +14,7 @@ import { generateBodyTransporter,
     generateBodyOutsideDefender,
     } from './bodyGenerator'
 
-import { CONSTRUCTION_SITES_PROGRESS_TO_NEED_BUILDER } from '@/config'
+import { CONSTRUCTION_SITES_PROGRESS_TO_NEED_BUILDER } from '@/module/config'
 
 /** 全灭后救灾的蚂蚁 */
 const role_HELP: SpawnConfig = {
@@ -34,7 +34,7 @@ const role_HELP: SpawnConfig = {
         return true;
     },
     needSpawn: (room) => {
-        return room.find(FIND_MY_CREEPS).length == 0 && room.energyAvailable >= 300;
+        return room.countBaseNameCreeps('HELP', 'TS', 'TU') == 0 && room.energyAvailable >= 300;
     },
     body: generateBodyTransporterHelp
 }
@@ -117,7 +117,7 @@ const role_GA: SpawnConfig = {
         return true;
     },
     body: (room) =>{
-        return generateBodyEnergyHarvester(room);
+        return generateBodyEnergyHarvester(room, 0);
     }
 }
 
@@ -145,7 +145,7 @@ const role_GB: SpawnConfig = {
         return true;
     },
     body: (room) =>{
-        return generateBodyEnergyHarvester(room);
+        return generateBodyEnergyHarvester(room, 1);
     }
 }
 
@@ -197,7 +197,7 @@ const role_MM: SpawnConfig = {
     },
     needSpawn: (room) => {
         // 临时
-        return room.name == 'W35N57';
+        return room.links.length >= 2;
     },
     body: generateBodyMastermind
 }
@@ -212,6 +212,7 @@ const role_BB: SpawnConfig = {
             role: '建造',
             mode: MODE_BUILDER
         }
+
     },
     amount: function(room) {
         let amount = room.getSpawnAmount(this.baseName);
@@ -222,12 +223,14 @@ const role_BB: SpawnConfig = {
         return true;
     },
     needSpawn: (room) => {
-        if (room.storage && room.storage.store[RESOURCE_ENERGY] < 50000) return false;
+        if (room.controller!.level >= 4 && room.storage && room.storage.store[RESOURCE_ENERGY] < 50000) return false;
         const found = room.find(FIND_MY_CONSTRUCTION_SITES);
         let total_progress = 0;
         for (const site of found){
             total_progress += (site.progressTotal - site.progress);
-            if (total_progress >= CONSTRUCTION_SITES_PROGRESS_TO_NEED_BUILDER){
+            if (room.controller!.level >= 4 && total_progress >= CONSTRUCTION_SITES_PROGRESS_TO_NEED_BUILDER){
+                return true;
+            }else if (room.controller!.level < 4 && total_progress >= CONSTRUCTION_SITES_PROGRESS_TO_NEED_BUILDER/3){
                 return true;
             }
         }
@@ -279,19 +282,17 @@ const role_UP: SpawnConfig = {
         if (amount > -1) return amount;
 
         const controller = room.controller!;
-        if (controller.ticksToDowngrade < 1500){
+        if (controller.ticksToDowngrade < 10000){
             return 1;
-        }else if (controller.level == 2){
-            return 2;
-        }else if (controller.level == 3){
+        }else if (controller.level == 2 || controller.level == 3){
             return 5;
         }else if (room.storage){
             const energy = room.storage.store[RESOURCE_ENERGY];
-            if (energy > 300000){
+            if (energy > 400000){
                 return 3;
-            }else if(energy > 150000){
+            }else if(energy > 250000){
                 return 2;
-            }else if (energy < 50000){
+            }else if (energy < 100000){
                 return 0;
             }
         }
@@ -311,35 +312,154 @@ const role_UP: SpawnConfig = {
 }
 
 /** 测试用 */
-const role_DE: SpawnConfig = {
+const role_MA: SpawnConfig = {
     type: SPAWN_TYPE_IN_ROOM,
-    baseName: 'DE',
+    baseName: 'MA',
     advance: false,
     memory: (spawn_room, work_room_name) => {
         return {
-            room: work_room_name,
-            role: '攻击'
+            room: 'W46N49',
+            mode: 1,
+            node: 0,
+            role: '手动'
         }
     },
     amount: function(spawn_room, work_room_name) {
-        return 1;
+        let amount = spawn_room.getSpawnAmount(this.baseName);
+        if (amount > -1) return amount;
+        return 0;
     },
     isLive: (spawn_room, creep) => {
         return true;
     },
     needSpawn: (spawn_room, work_room_name) => {
-        return spawn_room.name == 'W35N57';
+        if (spawn_room.code != 'R3') return false;
+        return true;
     },
-    body: generateBodyOutsideDefender
+    body: (spawn_room) => {
+        return [CLAIM, MOVE]
+    }
 }
+
+/** 帮忙建筑工 */
+const role_MB: SpawnConfig = {
+    type: SPAWN_TYPE_IN_ROOM,
+    baseName: 'MB',
+    advance: false,
+    memory: (spawn_room, work_room_name) => {
+        return {
+            room: 'W46N49',
+            mode: 0,
+            node: 0,
+            work: 0,
+            role: '手动'
+        }
+    },
+    amount: function(spawn_room, work_room_name) {
+        let amount = spawn_room.getSpawnAmount(this.baseName);
+        if (amount > -1) return amount;
+        return 0;
+    },
+    isLive: (spawn_room, creep) => {
+        return true;
+    },
+    needSpawn: (spawn_room, work_room_name) => {
+        return true;
+    },
+    body: generateBodyBuilder
+}
+
+/** 帮忙建筑工 */
+const role_MC: SpawnConfig = {
+    type: SPAWN_TYPE_IN_ROOM,
+    baseName: 'MC',
+    advance: false,
+    memory: (spawn_room, work_room_name) => {
+        return {
+            room: 'W46N49',
+            mode: 0,
+            node: 1,
+            work: 0,
+            role: '手动'
+        }
+    },
+    amount: function(spawn_room, work_room_name) {
+        let amount = spawn_room.getSpawnAmount(this.baseName);
+        if (amount > -1) return amount;
+        return 0;
+    },
+    isLive: (spawn_room, creep) => {
+        return true;
+    },
+    needSpawn: (spawn_room, work_room_name) => {
+        return true;
+    },
+    body: generateBodyBuilder
+}
+
+/** 斥候 */
+const role_SC: SpawnConfig = {
+    type: SPAWN_TYPE_IN_ROOM,
+    baseName: 'SC',
+    advance: false,
+    memory: (spawn_room, work_room_name) => {
+        return {
+            mode: 1,
+            node: 0,
+            role: '斥候'
+        }
+    },
+    amount: function(spawn_room, work_room_name) {
+        let amount = spawn_room.getSpawnAmount(this.baseName);
+        if (amount > -1) return amount;
+        return 0;
+    },
+    isLive: (spawn_room, creep) => {
+        return true;
+    },
+    needSpawn: (spawn_room, work_room_name) => {
+        return true;
+    },
+    body: (spawn_room) =>{
+        return [MOVE];
+    }
+}
+
+
+/** 临时搬运者 */
+const role_TT: SpawnConfig = {
+    type: SPAWN_TYPE_IN_ROOM,
+    baseName: 'TT',
+    advance: true,
+    memory: (spawn_room, work_room_name) => {
+        return {
+            role: '手动',
+        }
+    },
+    amount: function(room) {
+        if (room.code =='R2' && room.terminal && room.terminal?.store.getUsedCapacity() > 0){
+            return 1;
+        }
+        return 0;
+    },
+    isLive: (room, creep) => {
+        return true;
+    },
+    needSpawn: (room) => {
+        // 随时需要
+        return true;
+    },
+    body: generateBodyTransporter
+}
+
 
 // 高优先级
 export const SPAWN_BASE_PRIORITY_HIGH: Map<string, SpawnConfig> = new Map([
     // 全灭后的救灾蚂蚁
     ['HELP', role_HELP],
 
-    // 外矿防御者
-    // ['DE', role_DE],
+    // 斥候
+    ['SC', role_SC],
 
     // ROOM内能量采集者，A和B对应2个采集点
     ['GA', role_GA],
@@ -361,10 +481,21 @@ export const SPAWN_BASE_PRIORITY_MID: Map<string, SpawnConfig> = new Map([
 
 // 低优先级
 export const SPAWN_BASE_PRIORITY_LOW: Map<string, SpawnConfig> = new Map([
+    // 手动脚本角色
+    // ['MA', role_MA],
+    // 手动脚本角色
+    ['MB', role_MB],
+    // 手动脚本角色
+    ['MC', role_MC],
+
     // 优先建造的建筑者
     ['BB', role_BB],
     // 优先修理的建筑者
     ['BR', role_BR],
+
+    // 临时搬运者
+    // ['TT', role_TT],
+
     // 升级者
     ['UP', role_UP],
 ]);

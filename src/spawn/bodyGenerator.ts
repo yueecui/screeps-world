@@ -37,16 +37,30 @@ export const generateBodyTransporter = function(room: Room){
     return body
 }
 
-export const generateBodyEnergyHarvester = function(room: Room){
+
+// 上限
+// 1: 300
+// 2: 550
+// 3: 800
+// 4: 1300
+// 5: 1800
+export const generateBodyEnergyHarvester = function(room: Room, node_index: number){
     const cap = room.energyCapacityAvailable;
     let work_amount = 1;
     let carry_amount = 1;
     let move_amount = 1;
-    // 还要判断有LINK的模式
-    if (cap >= 1250){
+
+    // link模式
+    if (room.sources[node_index]?.link != null && cap >= 1400){
+        work_amount = 10; // 一次挖20，5次挖到100, 100存一次
+        carry_amount = 3; // 150容量，超100就存，留50富裕免得掉地上
+        move_amount = 5;
+    }
+    // container模式
+    else if (cap >= 1300){
         // 需要4级
         work_amount = 10;
-        move_amount = 4;
+        move_amount = 5;
     }else if (cap >= 800){
         // 需要3级
         work_amount = 6;
@@ -89,11 +103,11 @@ export const generateBodyMineralHarvester = function(room: Room){
 
 export const generateBodyMastermind = function(room: Room){
     let carry_amount;
-    if (room.controller!.level < 7){
-        carry_amount = 8;
+    if (room.controller!.level < 8){
+        carry_amount = 16;
     }else{
         // 1 MOVE，其他是CARRY
-        carry_amount = Math.min(Math.floor((room.energyCapacityAvailable -50) / 50), 49);
+        carry_amount = Math.min(Math.floor((room.energyCapacityAvailable -50) / 50), 16);
     }
     // 生成
     const body: BodyPartConstant[] = []
@@ -131,14 +145,14 @@ export const generateBodyUpgrader = function(room: Room){
     let carry_amount = 2;
     let move_amount;
     if (cap >= 4300){ // 7级
-        work_amount = 36;
+        work_amount = 40;
         carry_amount = 4;
-        move_amount = 10;
-    }else if (cap >= 2150){ // 6级
-        work_amount = 18;
-        move_amount = 5;
-    }else if (cap >= 1700){ // 5级
-        work_amount = 14;
+        move_amount = 6;
+    }else if (cap >= 2300){ // 6级
+        work_amount = 20;
+        move_amount = 4;
+    }else if (cap >= 1800){ // 5级
+        work_amount = 15;
         move_amount = 4;
     }else if (cap >= 1250){ // 4级
         work_amount = 10;
@@ -146,7 +160,7 @@ export const generateBodyUpgrader = function(room: Room){
     }else if (cap >= 800){ // 3级
         work_amount = 6;
         move_amount = 2;
-    }else if (cap >= 800){ // 2级
+    }else if (cap >= 550){ // 2级
         work_amount = 4;
         carry_amount = 1;
         move_amount = 2;
