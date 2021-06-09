@@ -12,7 +12,7 @@ const MAP_POS: Record<string, [number,number]> = {
 }
 
 
-export const roleTransporter: Transporter = {
+export const roleTransporter = {
     run: function(creep: Creep) {
         if (creep.memory.room != undefined){
             this.otherRoom(creep);
@@ -23,7 +23,7 @@ export const roleTransporter: Transporter = {
     },
 
     // 判断工作模式
-    updateStatus: function(creep){
+    updateStatus: function(creep: Creep){
         // 优先级最高任务
         // 判断是否需要补充孵化能量
         // 会中断其他工作优先进行本工作
@@ -56,7 +56,7 @@ export const roleTransporter: Transporter = {
     },
 
     // 根据工作模式执行
-    execute: function(creep){
+    execute: function(creep: Creep){
         if (creep.work != WORK_TRANSPORTER_STORAGE_MINERAL){
             creep.recycleNearby(); // 回收周围的能量
         }
@@ -94,7 +94,7 @@ export const roleTransporter: Transporter = {
     },
 
     // ROOM外采集测试
-    otherRoom: function(creep){
+    otherRoom: function(creep: Creep){
         creep.updateEnergyStatus();
         if (creep.energy == ENERGY_ENOUGH){
             const link = Game.getObjectById('60b383415912304d8a2f1a7e' as Id<StructureLink>)!;

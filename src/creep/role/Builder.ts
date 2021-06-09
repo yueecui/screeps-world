@@ -13,14 +13,14 @@ import { filter } from "lodash";
 
 const REPAIR_PERCENT = 0.7;  // 耐久度低到什么程度开始修理
 
-export const roleBuilder: Builder = {
-    run: function(creep) {
+export const roleBuilder = {
+    run: function(creep: Creep) {
         this.updateStatus(creep);
         this.execute(creep);
 	},
 
     // 判断工作模式
-    updateStatus: function(creep){
+    updateStatus: function(creep: Creep){
         switch(creep.work){
             case WORK_BUILD:
                 break;
@@ -37,7 +37,7 @@ export const roleBuilder: Builder = {
     },
 
     // 根据工作模式执行
-    execute: function(creep){
+    execute: function(creep: Creep){
         if (creep.memory.room && creep.room.name != creep.memory.room){
             creep.moveTo(new RoomPosition(25, 25, creep.memory.room));
             return;
@@ -131,7 +131,7 @@ export const roleBuilder: Builder = {
     },
 
     // 寻找一个可以建造的目标
-	findBuildTarget: function(creep){
+	findBuildTarget: function(creep: Creep){
 	   const targets = creep.room.find(FIND_CONSTRUCTION_SITES);
        const last_target = targets.filter((s) => {return s.id == creep.memory.t});
        if (last_target[0]){
@@ -147,13 +147,13 @@ export const roleBuilder: Builder = {
        }
 	},
     // 建造目标
-    buildTarget: function(creep, target){
+    buildTarget: function(creep: Creep, target: ConstructionSite){
         if(creep.build(target) == ERR_NOT_IN_RANGE) {
             creep.moveTo(target);
         }
     },
     // 寻找一个可以修理的目标
-    findRepairTarget: function(creep){
+    findRepairTarget: function(creep: Creep){
         let targets = creep.room.find(FIND_STRUCTURES, { filter: function(s){
             return (s.structureType != STRUCTURE_WALL && s.structureType != STRUCTURE_RAMPART) && (s.hits < s.hitsMax);
         }})
@@ -178,13 +178,13 @@ export const roleBuilder: Builder = {
         }
     },
     // 修理目标
-    repairTarget: function(creep, target){
+    repairTarget: function(creep: Creep, target: AnyStructure){
         if (creep.repair(target) == ERR_NOT_IN_RANGE){
             creep.moveTo(target);
         }
     },
     // 寻找一个可以修理的目标
-    findRepairWall: function(creep){
+    findRepairWall: function(creep: Creep){
         let targets = creep.room.find(FIND_STRUCTURES, { filter: function(s){
             return s.structureType == STRUCTURE_WALL && s.hits < 100000;
         }}) as StructureWall[];
@@ -206,7 +206,7 @@ export const roleBuilder: Builder = {
         }
     },
     // 修理目标
-    repairTargetWall: function(creep, target){
+    repairTargetWall: function(creep: Creep, target: StructureWall){
         if (target.hits >= 100000){
             creep.target = null;
             return;
@@ -216,7 +216,7 @@ export const roleBuilder: Builder = {
         }
     },
     // 寻找一个可以修理的目标
-    findRepairRampart: function(creep){
+    findRepairRampart: function(creep: Creep){
         const target = Game.getObjectById(creep.target!) as StructureRampart | null;
         if (target && target.hits < 100000){
             return target;
@@ -238,7 +238,7 @@ export const roleBuilder: Builder = {
         }
     },
     // 修理目标
-    repairTargetRampart: function(creep, target){
+    repairTargetRampart: function(creep: Creep, target: StructureRampart){
         if (target.hits >= 100000){
             creep.target = null;
             return;

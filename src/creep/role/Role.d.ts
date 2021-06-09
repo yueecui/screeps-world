@@ -104,42 +104,7 @@ type ROLE_SCOUT = '斥候';
 type ROLE_ATTACKER = '攻击';
 type ROLE_ENGINEER = '工兵';
 
-type AnyRole =
-    | CreepRole
-    | Transporter
-    | Builder
-    | Upgrader
-    | Attacker
-    | Engineer;
 
 interface CreepRole {
   run(creep: Creep): void;
-  updateStatus(creep: Creep): void;
-  execute(creep: Creep): void;
-}
-
-
-interface Transporter extends CreepRole{
-  otherRoom(creep: Creep): void;
-}
-
-interface Builder extends CreepRole{
-  findRepairTarget(creep: Creep): Structure|null;
-  repairTarget(creep: Creep, target: Structure): void;
-  findBuildTarget(creep: Creep): ConstructionSite|null;
-  buildTarget(creep: Creep, target:ConstructionSite): void;
-  findRepairWall(creep: Creep): StructureWall|null;
-  repairTargetWall(creep: Creep, target: StructureWall): void;
-  findRepairRampart(creep: Creep): StructureRampart|null;
-  repairTargetRampart(creep: Creep, target: StructureRampart): void;
-}
-
-interface Upgrader extends CreepRole{
-}
-
-interface Attacker extends CreepRole{
-}
-
-interface Engineer extends CreepRole{
-
 }

@@ -1,16 +1,14 @@
-import { createPrivateKey } from "crypto";
-
 /**
  * 主脑
  */
-export const roleMastermind: CreepRole = {
-    run: function(creep) {
+export const roleMastermind = {
+    run: function(creep: Creep) {
         // this.updateStatus(creep);
         this.execute(creep);
 	},
 
     // 判断工作模式
-    updateStatus: function(creep){
+    updateStatus: function(creep: Creep){
         if (creep.pos.x != 21 || creep.pos.y != 29){
             creep.moveTo(21, 29);
         }else{
@@ -25,7 +23,7 @@ export const roleMastermind: CreepRole = {
     },
 
     // 根据工作模式执行
-    execute: function(creep){
+    execute: function(creep: Creep){
         if (creep.pos.x != 23 || creep.pos.y != 27){
             creep.moveTo(23, 27);
         }

@@ -18,7 +18,7 @@ import {
 // 任务队列最大长度
 const TASK_QUEUE_MAX = 5;
 
-const roleMap: Record<ANY_ROLE_NAME, AnyRole> = {
+const roleMap: Record<ANY_ROLE_NAME, CreepRole> = {
     '回收': roleGoToRecycle,
     '手动': roleManual,
 

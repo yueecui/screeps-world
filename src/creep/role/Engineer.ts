@@ -2,19 +2,19 @@ import { WORK_IDLE, WORK_UPGRADE } from "@/global/constant";
 import { getMaxListeners } from "process";
 
 
-export const roleEngineer: Engineer = {
-    run: function(creep) {
+export const roleEngineer = {
+    run: function(creep: Creep) {
         // this.updateStatus(creep);
         this.execute(creep);
 	},
 
     // 判断工作模式
-    updateStatus: function(creep){
+    updateStatus: function(creep: Creep){
 
     },
 
     // 根据工作模式执行
-    execute: function(creep){
+    execute: function(creep: Creep){
         if (creep.memory.room == null){
             creep.say('⁉️');
             return;

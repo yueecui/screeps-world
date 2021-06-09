@@ -1,17 +1,17 @@
 
-export const roleAttacker: Attacker = {
-    run: function(creep) {
+export const roleAttacker = {
+    run: function(creep: Creep) {
         // this.updateStatus(creep);
         this.execute(creep);
 	},
 
     // 判断工作模式
-    updateStatus: function(creep){
+    updateStatus: function(creep: Creep): void{
 
     },
 
     // 根据工作模式执行
-    execute: function(creep){
+    execute: function(creep: Creep){
         if (creep.room.name != creep.memory.room){
             const pos = new RoomPosition(6, 21, creep.memory.room);
             creep.moveTo(pos);

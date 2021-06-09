@@ -1,13 +1,13 @@
 import { WORK_IDLE, WORK_MOVE, WORK_HARVEST, WORK_REPAIR } from "@/global/constant";
 
-export const roleHarvester: CreepRole = {
-    run: function(creep) {
+export const roleHarvester = {
+    run: function(creep: Creep) {
         this.updateStatus(creep);
         this.execute(creep);
     },
 
     // 判断工作模式
-    updateStatus: function(creep){
+    updateStatus: function(creep: Creep){
         if (creep.harvesterErrorCheck()){
             creep.work = WORK_IDLE;
             return;
@@ -27,7 +27,7 @@ export const roleHarvester: CreepRole = {
     },
 
     // 根据工作模式执行
-    execute: function(creep){
+    execute: function(creep: Creep){
         creep.recycleNearby(); // 回收周围的能量
         switch(creep.work){
             case WORK_MOVE:

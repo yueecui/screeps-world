@@ -1,17 +1,17 @@
 /**
  * 将蚂蚁设为“回收”，其会自动回到Spawn被回收掉
  */
-export const roleGoToRecycle: CreepRole = {
-    run: function(creep) {
+export const roleGoToRecycle = {
+    run: function(creep: Creep) {
         this.execute(creep);
 	},
 
     // 判断工作模式
-    updateStatus: function(creep){
+    updateStatus: function(creep: Creep){
     },
 
     // 根据工作模式执行
-    execute: function(creep){
+    execute: function(creep: Creep){
         creep.recycleNearby(); // 回收周围的能量
 
         let target;

@@ -3,15 +3,15 @@ import { CONTAINER_TYPE_SOURCE, ENERGY_ENOUGH, ENERGY_NEED, MODE_NONE } from "@/
 /**
  * 本模式主要是用来处理一些临时操作
  */
-export const roleManual: CreepRole = {
-    run: function(creep) {
+export const roleManual = {
+    run: function(creep: Creep) {
         creep.say('呆');
         // this.updateStatus(creep);
         // this.execute(creep);
 	},
 
     // 判断工作模式
-    updateStatus: function(creep){
+    updateStatus: function(creep: Creep){
         if (creep.room.name != 'W41N54'){
             const pos = new RoomPosition(25, 25, 'W41N54');
             creep.moveTo(pos, {reusePath: 50,  visualizePathStyle: {}, ignoreCreeps:true})
@@ -19,7 +19,7 @@ export const roleManual: CreepRole = {
     },
 
     // 根据工作模式执行
-    execute: function(creep){
+    execute: function(creep: Creep){
         if (creep.room.name != 'W41N54'){
             return;
         }

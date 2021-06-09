@@ -28,9 +28,15 @@
 declare namespace NodeJS {
     interface Global {
         log: any;
+
+        init(): void;
+        sadaharu: sadaharu;
     }
 }
 
+declare class sadaharu{
+    hi(): void;
+}
 
 interface Memory{
     /** 临时用旗标，什么都可以写 */
