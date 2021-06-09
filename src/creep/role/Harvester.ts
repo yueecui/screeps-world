@@ -1,4 +1,4 @@
-import { WORK_IDLE, WORK_MOVE, WORK_HARVEST, WORK_REPAIR } from "@/utils/constant";
+import { WORK_IDLE, WORK_MOVE, WORK_HARVEST, WORK_REPAIR } from "@/global/constant";
 
 export const roleHarvester: CreepRole = {
     run: function(creep) {

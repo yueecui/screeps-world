@@ -8,7 +8,7 @@ import {
     MODE_HARVEST_ENERGY,
     MODE_HARVEST_MINERAL,
     ROLE_GOTO_RECYCLE,
-} from '@/utils/constant';
+} from '@/global/constant';
 
 export const creepExtensionHarvester = function () {
     // ------------------------------------------------------

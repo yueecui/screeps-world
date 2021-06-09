@@ -1,4 +1,4 @@
-import { CONTAINER_TYPE_SOURCE, ENERGY_ENOUGH, ENERGY_NEED, MODE_NONE } from "@/utils/constant";
+import { CONTAINER_TYPE_SOURCE, ENERGY_ENOUGH, ENERGY_NEED, MODE_NONE } from "@/global/constant";
 
 /**
  * 本模式主要是用来处理一些临时操作

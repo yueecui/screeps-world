@@ -1,4 +1,4 @@
-import { BOOLEAN_TRUE, TASK_WAITING } from "@/utils/constant";
+import { BOOLEAN_TRUE, TASK_WAITING } from "@/global/constant";
 
 export const roomExtensionTower = function () {
 

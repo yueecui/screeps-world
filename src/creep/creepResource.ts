@@ -5,7 +5,7 @@ import {
     PRIORITY_NONE,
     PRIORITY_CONTAINER,
     PRIORITY_STORAGE
-} from '@/utils/constant';
+} from '@/global/constant';
 
 export const creepExtensionResource = function () {
     // 更新虫子当前的能量状态

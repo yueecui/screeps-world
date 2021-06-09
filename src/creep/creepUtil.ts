@@ -1,19 +1,19 @@
-import { roleHarvester } from '@/role/Harvester';
-import { roleTransporter } from '@/role/Transporter';
-import { roleBuilder } from '@/role/Builder';
-import { roleUpgrader } from '@/role/Upgrader';
-import { roleAttacker } from '@/role/Attacker';
-import { roleEngineer } from '@/role/Engineer';
-import { roleGoToRecycle } from '@/role/GoToRecycle';
-import { roleManual } from '@/role/Manual';
-import { roleMastermind } from '@/role/Mastermind';
-import { roleScout } from '@/role/Scout';
+import { roleHarvester } from '@/creep/role/Harvester';
+import { roleTransporter } from '@/creep/role/Transporter';
+import { roleBuilder } from '@/creep/role/Builder';
+import { roleUpgrader } from '@/creep/role/Upgrader';
+import { roleAttacker } from '@/creep/role/Attacker';
+import { roleEngineer } from '@/creep/role/Engineer';
+import { roleGoToRecycle } from '@/creep/role/GoToRecycle';
+import { roleManual } from '@/creep/role/Manual';
+import { roleMastermind } from '@/creep/role/Mastermind';
+import { roleScout } from '@/creep/role/Scout';
 
 import {
     ENERGY_NEED,
     WORK_TRANSPORTER_SPAWN, WORK_TRANSPORTER_TOWER, WORK_TRANSPORTER_STORAGE_ENERGY,
     TASK_WAITING, TASK_ACCEPTED, MODE_NONE, WORK_IDLE,
-} from '@/utils/constant';
+} from '@/global/constant';
 
 // 任务队列最大长度
 const TASK_QUEUE_MAX = 5;

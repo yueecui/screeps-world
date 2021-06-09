@@ -1,8 +1,8 @@
-import { Mount } from '@/utils/mount';
+import { Mount } from '@/global/mount';
 // 对原型进行扩展
 Mount.init();
 
-import { Automatic } from 'utils/Automatic';
+import { Automatic } from '@/global/Automatic';
 import { SpawnManager } from '@/spawn/manager';
 
 // When compiling TS to JS and bundling with rollup, the line numbers and file names in error messages change

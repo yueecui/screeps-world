@@ -1,5 +1,5 @@
-import { creepExtension } from '../creep/main';
-import { roomExtension } from '../room/main';
+import { creepExtension } from '../creep/creepMain';
+import { roomExtension } from '../room/roomMain';
 
 export const Mount = {
     init: function(){

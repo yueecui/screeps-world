@@ -1,4 +1,4 @@
-import { WORK_IDLE, WORK_UPGRADE } from "@/utils/constant";
+import { WORK_IDLE, WORK_UPGRADE } from "@/global/constant";
 
 
 export const roleUpgrader: Upgrader = {
