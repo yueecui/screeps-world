@@ -1,5 +1,5 @@
-import { CONTAINER_TYPE_CONTROLLER, CONTAINER_TYPE_SOURCE, CONTAINER_TYPE_MINERAL, PLAN_PAY } from "@/constant";
-import { CONTROLLER_CONTAINER_EMPTY, SOURCE_CONTAINER_FULL, MINERAL_CONTAINER_FULL } from "@/config"
+import { CONTAINER_TYPE_CONTROLLER, CONTAINER_TYPE_SOURCE, CONTAINER_TYPE_MINERAL, PLAN_PAY } from "@/utils/constant";
+import { CONTROLLER_CONTAINER_EMPTY, SOURCE_CONTAINER_FULL, MINERAL_CONTAINER_FULL } from "@/utils/config"
 
 export const roomExtensionContainer = function () {
     // 预定一个container的能量变化

@@ -1,4 +1,4 @@
-import { BOOLEAN_TRUE } from "@/constant";
+import { BOOLEAN_TRUE } from "@/utils/constant";
 
 export const roomExtensionProperty = function () {
     // 定义各个属性

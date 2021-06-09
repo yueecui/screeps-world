@@ -6,7 +6,7 @@ import {
     WORK_TRANSPORTER_CONTROLLER,
     PRIORITY_CONTAINER,
     WORK_TRANSPORTER_STORAGE_MINERAL,
-} from '@/constant';
+} from '@/utils/constant';
 
 export const creepExtensionTransporter = function () {
     // ------------------------------------------------------

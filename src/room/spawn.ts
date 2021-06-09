@@ -1,4 +1,4 @@
-import { TASK_WAITING } from "@/constant";
+import { TASK_WAITING } from "@/utils/constant";
 
 export const roomExtensionSpawn = function () {
 

@@ -3,7 +3,7 @@ import {
     WORK_IDLE,
     CONTAINER_TYPE_CONTROLLER,
     WORK_MOVE,
-} from '@/constant';
+} from '@/utils/constant';
 
 export const creepExtensionAttacker = function () {
 

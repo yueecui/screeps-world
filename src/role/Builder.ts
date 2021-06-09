@@ -8,7 +8,7 @@
 import {
     ENERGY_NEED,
     WORK_IDLE, WORK_BUILD, WORK_REPAIR,
-    MODE_BUILDER, MODE_REPAIRER, CONTAINER_TYPE_SOURCE, ENERGY_ENOUGH } from "@/constant";
+    MODE_BUILDER, MODE_REPAIRER, CONTAINER_TYPE_SOURCE, ENERGY_ENOUGH } from "@/utils/constant";
 import { filter } from "lodash";
 
 const REPAIR_PERCENT = 0.7;  // 耐久度低到什么程度开始修理

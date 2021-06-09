@@ -2,7 +2,7 @@
  * 一个房间内运作必备的虫子的配置
  */
 
-import { SPAWN_TYPE_IN_ROOM, MODE_BUILDER, MODE_CONTROLLER, MODE_HARVEST_ENERGY, MODE_HARVEST_MINERAL, MODE_HELP, MODE_REPAIRER, MODE_SPAWN } from "@/constant";
+import { SPAWN_TYPE_IN_ROOM, MODE_BUILDER, MODE_CONTROLLER, MODE_HARVEST_ENERGY, MODE_HARVEST_MINERAL, MODE_HELP, MODE_REPAIRER, MODE_SPAWN } from "@/utils/constant";
 
 import { generateBodyTransporter,
     generateBodyTransporterHelp,
@@ -14,7 +14,7 @@ import { generateBodyTransporter,
     generateBodyOutsideDefender,
     } from './bodyGenerator'
 
-import { CONSTRUCTION_SITES_PROGRESS_TO_NEED_BUILDER } from '@/config'
+import { CONSTRUCTION_SITES_PROGRESS_TO_NEED_BUILDER } from '@/utils/config'
 
 /** 全灭后救灾的蚂蚁 */
 const role_HELP: SpawnConfig = {
