@@ -231,18 +231,26 @@ export default function () {
             const controller_info = this.room.memory.data.controller;
             if (controller_info.type == STRUCTURE_LINK){
                 if (this.room.controllerLink && this.room.controllerLink.store[RESOURCE_ENERGY] > 0){
-                    if (this.withdraw(this.room.controllerLink, RESOURCE_ENERGY) == OK){
-                        this.energy = ENERGY_ENOUGH;
-                        return;
-                    };
+                    if (this.pos.isNearTo(this.room.controllerLink)){
+                        if (this.withdraw(this.room.controllerLink, RESOURCE_ENERGY) == OK){
+                            this.energy = ENERGY_ENOUGH;
+                        }
+                    }else{
+                        this.moveTo(this.room.controllerLink);
+                    }
+                    return;
                 }
             }else if (controller_info.type == STRUCTURE_CONTAINER){
                 const container = Game.getObjectById(controller_info.id as Id<StructureContainer>);
                 if (container && container.store[RESOURCE_ENERGY] > 0){
-                    if (this.withdraw(container, RESOURCE_ENERGY) == OK){
-                        this.energy = ENERGY_ENOUGH;
-                        return;
-                    };
+                    if (this.pos.isNearTo(container)){
+                        if (this.withdraw(container, RESOURCE_ENERGY) == OK){
+                            this.energy = ENERGY_ENOUGH;
+                        };
+                    }else{
+                        this.moveTo(container);
+                    }
+                    return;
                 }else{
                     this.room.memory.flagPurge = BOOLEAN_TRUE;
                 }
@@ -257,6 +265,7 @@ export default function () {
                 this.energy = ENERGY_NEED;
                 obtain_energy();
             }
+
             const controller_info = this.room.memory.data.controller;
             const work_pos = controller_info.workPos[this.index-1];
 
