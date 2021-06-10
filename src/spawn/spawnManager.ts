@@ -202,9 +202,7 @@ const spawnCreep =  function(spawn_room: Room, work_room_name: string, config: S
     if (body.indexOf(CARRY) > -1){
         memory.energy = ENERGY_NEED;
     }
-    if (body.indexOf(WORK) > -1){
-        memory.work = WORK_IDLE;
-    }
+    memory.work = WORK_IDLE;
     memory.born = spawn_room.name;
 
     const spawn = spawn_room.spawns.filter((spawn) => {

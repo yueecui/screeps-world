@@ -26,6 +26,10 @@ interface Creep {
   energy: ENERGY_STATUS;
   energyTarget: Id<AnyStoreStructure> | null;
 
+  /** 计算属性 */
+  stayPos: RoomPosition | null;
+  inStayPos: boolean;
+
   /** 根据Creep的Role执行不同的运行脚本 */
   run(): void;
   /** 根据虫子的name解析出自定属性基础名称(baseName)和编号(index) */

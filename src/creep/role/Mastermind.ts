@@ -1,45 +1,79 @@
+import { WORK_IDLE, WORK_NORMAL } from "@/global/constant";
+
 /**
  * 主脑
  */
 export default function(creep: Creep) {
-    execute(creep);
+    if (creep.work == WORK_IDLE){
+        if (creep.inStayPos){
+            creep.work = WORK_NORMAL;
+        }else{
+            creep.recycleNearby(); // 回收周围的能量
+            creep.goToStay();
+        }
+    }else{
+        masterMindWork(creep);
+    }
 }
 
-// 根据工作模式执行
-const execute = function(creep: Creep){
-    if (creep.pos.x != 23 || creep.pos.y != 27){
-        creep.moveTo(23, 27);
-    }
+// 主脑工作
+const masterMindWork = function(creep: Creep){
+    const storage = creep.room.storage;
+    if (!storage) return;
+    const storage_link = creep.room.storageLink;
+    if (!storage_link) return;
 
+    // link简易版
+    // controller link需要能量就往storage link放能量，否则往外拿存到storage里
 
-    const link = Game.getObjectById(creep.room.links[0].id)!;
-    const terminal = Game.getObjectById('60b34555e97e270ece412ee5' as Id<StructureTerminal>)!;
-    const storage = creep.room.storage!;
-    if (link.store[RESOURCE_ENERGY] > 0){
-        creep.withdraw(link, RESOURCE_ENERGY);
-    }else if (terminal.store[RESOURCE_KEANIUM] < 50000 && storage.store[RESOURCE_KEANIUM] > 0){
-        creep.withdraw(storage, RESOURCE_KEANIUM);
-    }else if (terminal.store[RESOURCE_ENERGY] < 50000 && storage.store[RESOURCE_ENERGY] > 100000){
-        creep.withdraw(storage, RESOURCE_ENERGY);
-    }
-
-    if (creep.store.getUsedCapacity() > 0){
-        for (const name in creep.store){
-            if (name == RESOURCE_ENERGY){
-                if (terminal.store[RESOURCE_ENERGY] < 50000){
-                    creep.transfer(terminal, RESOURCE_ENERGY);
-                }else{
-                    creep.transfer(storage, RESOURCE_ENERGY);
-                }
-            }else if(name == RESOURCE_KEANIUM){
-                if (terminal.store[RESOURCE_KEANIUM] < 50000){
-                    creep.transfer(terminal, RESOURCE_KEANIUM);
-                }else{
-                    creep.transfer(storage, RESOURCE_KEANIUM);
-                }
-            }else{
+    if (creep.room.controllerLinkNeedEnergy){
+        const need_amount = storage_link.store.getFreeCapacity(RESOURCE_ENERGY);
+        if (need_amount > 0){
+            if (creep.store[RESOURCE_ENERGY] >= need_amount){
+                creep.transfer(storage_link, RESOURCE_ENERGY);
+            }else if(storage.store[RESOURCE_ENERGY] >= need_amount ){
+                creep.withdraw(storage, RESOURCE_ENERGY, need_amount);
+            }
+        }
+    }else{
+        if (storage_link.store[RESOURCE_ENERGY] > 0){
+            creep.withdraw(storage_link, RESOURCE_ENERGY);
+        }else if (creep.store.getUsedCapacity() > 0){
+            for (const name in creep.store){
                 creep.transfer(storage, name as ResourceConstant);
+                break;
             }
         }
     }
+
+    // const link = Game.getObjectById(creep.room.links[0].id)!;
+    // const terminal = Game.getObjectById('60b34555e97e270ece412ee5' as Id<StructureTerminal>)!;
+    // const storage = creep.room.storage!;
+    // if (link.store[RESOURCE_ENERGY] > 0){
+    //     creep.withdraw(link, RESOURCE_ENERGY);
+    // }else if (terminal.store[RESOURCE_KEANIUM] < 50000 && storage.store[RESOURCE_KEANIUM] > 0){
+    //     creep.withdraw(storage, RESOURCE_KEANIUM);
+    // }else if (terminal.store[RESOURCE_ENERGY] < 50000 && storage.store[RESOURCE_ENERGY] > 100000){
+    //     creep.withdraw(storage, RESOURCE_ENERGY);
+    // }
+
+    // if (creep.store.getUsedCapacity() > 0){
+    //     for (const name in creep.store){
+    //         if (name == RESOURCE_ENERGY){
+    //             if (terminal.store[RESOURCE_ENERGY] < 50000){
+    //                 creep.transfer(terminal, RESOURCE_ENERGY);
+    //             }else{
+    //                 creep.transfer(storage, RESOURCE_ENERGY);
+    //             }
+    //         }else if(name == RESOURCE_KEANIUM){
+    //             if (terminal.store[RESOURCE_KEANIUM] < 50000){
+    //                 creep.transfer(terminal, RESOURCE_KEANIUM);
+    //             }else{
+    //                 creep.transfer(storage, RESOURCE_KEANIUM);
+    //             }
+    //         }else{
+    //             creep.transfer(storage, name as ResourceConstant);
+    //         }
+    //     }
+    // }
 }

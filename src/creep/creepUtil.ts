@@ -157,23 +157,12 @@ export default function () {
 
     // 去等待位置
     Creep.prototype.goToStay = function(){
-        let stay;
-        if (this.room.memory.creepConfig.stay[this.baseName]){
-            stay =  this.room.memory.creepConfig.stay[this.baseName];
-        }else if (this.memory.stay){
-            stay = this.memory.stay;
-        }
-        if (stay){
-            let y;
-            if (this.room.countBaseNameCreeps(this.baseName) == 1){
-                y = stay[1];
-            }else{
-                y = stay[1]-1+this.index;
+        if (this.stayPos){
+            if (this.pos.getRangeTo(this.stayPos) > 0){
+                this.moveTo(this.stayPos);
             }
-            const pos = new RoomPosition(stay[0], y, this.room.name);
-            if (this.pos.getRangeTo(pos) > 0){
-                this.moveTo(pos);
-            }
+        }else{
+            this.say('❓');
         }
     }
 }

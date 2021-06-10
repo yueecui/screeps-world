@@ -59,6 +59,7 @@ type ENERGY_ENOUGH = 1;
 type WORK_STATUS =
          | WORK_MOVE
          | WORK_IDLE
+         | WORK_NORMAL
          | WORK_TRANSPORTER_SPAWN
          | WORK_TRANSPORTER_TOWER
          | WORK_TRANSPORTER_CONTROLLER
@@ -71,7 +72,8 @@ type WORK_STATUS =
          | WORK_REPAIR;
 
 type WORK_IDLE = 0;
-type WORK_MOVE = 1
+type WORK_MOVE = 1;
+type WORK_NORMAL = 2;
 type WORK_HARVEST = 11;
 type WORK_UPGRADE = 12;
 type WORK_BUILD = 13;

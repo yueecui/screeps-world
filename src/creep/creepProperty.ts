@@ -145,4 +145,39 @@ export default function () {
         enumerable: false,
         configurable: true
     });
+
+    Object.defineProperty(Creep.prototype, 'stayPos', {
+        get: function () {
+            if (this._stayPos === undefined){
+                let stay;
+                if (this.room.memory.creepConfig.stay[this.baseName]){
+                    stay = this.room.memory.creepConfig.stay[this.baseName];
+                }else if (this.memory.stay){
+                    stay = this.memory.stay;
+                }
+                if (stay){
+                    let y;
+                    if (this.room.countBaseNameCreeps(this.baseName) == 1){
+                        y = stay[1];
+                    }else{
+                        y = stay[1]-1+this.index;
+                    }
+                    this._stayPos = new RoomPosition(stay[0], y, this.room.name)
+                }else{
+                    this._stayPos = null;
+                }
+            }
+            return this._stayPos;
+        },
+        enumerable: false,
+        configurable: true
+    });
+
+    Object.defineProperty(Creep.prototype, 'inStayPos', {
+        get: function () {
+            return this.stayPos != null ? this.pos.getRangeTo(this.stayPos) == 0 : false;
+        },
+        enumerable: false,
+        configurable: true
+    });
 }

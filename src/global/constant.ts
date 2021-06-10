@@ -41,6 +41,11 @@ export const WORK_IDLE: WORK_IDLE = 0;
  * 当前Creep正在前往工作场所
  */
 export const WORK_MOVE: WORK_MOVE = 1;
+/**
+ * 单一模式正常工作的蚂蚁
+ */
+export const WORK_NORMAL: WORK_NORMAL = 2;
+
 
 /**
  * 当前Creep正在进行采集
