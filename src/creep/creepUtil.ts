@@ -33,7 +33,7 @@ const roleMap: Record<ANY_ROLE_NAME, CreepRole> = {
     '攻击': roleAttacker,
 }
 
-export const creepExtensionUtil = function () {
+export default function () {
     Creep.prototype.run = function(){
         if (this.spawning){
             return;

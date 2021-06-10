@@ -7,7 +7,7 @@ import {
     PRIORITY_STORAGE
 } from '@/global/constant';
 
-export const creepExtensionResource = function () {
+export default function () {
     // 更新虫子当前的能量状态
     Creep.prototype.updateEnergyStatus = function(){
         if (this.energy == ENERGY_NEED && this.store.getFreeCapacity() == 0){

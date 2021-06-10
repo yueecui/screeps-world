@@ -10,7 +10,7 @@ import {
     ROLE_GOTO_RECYCLE,
 } from '@/global/constant';
 
-export const creepExtensionHarvester = function () {
+export default function () {
     // ------------------------------------------------------
     // 采集能量
     // ------------------------------------------------------

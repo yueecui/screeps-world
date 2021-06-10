@@ -1,27 +1,15 @@
-import { Mount } from '@/global/mount';
+import Mount from '@/global/mount';
 // 对原型进行扩展
-Mount.init();
+Mount();
 
-import { Automatic } from '@/global/Automatic';
-import { SpawnManager } from '@/spawn/manager';
+import PeriodicTask from '@/global/periodicTask';
+import SpawnManager from '@/spawn/spawnManager';
 
-// When compiling TS to JS and bundling with rollup, the line numbers and file names in error messages change
-// This utility uses source maps to get the line numbers and file names of the original, TS source code
 module.exports.loop = () => {
-    // 自动事务
-    Automatic.run();
-
-    // 修改原型
-    // prototypeMain.init();
-
-    // 保存bucket
-    if (Game.cpu.bucket == 10000){
-        Game.cpu.generatePixel();
-    }
-
-    // 小虫管理器检查当前单位数量是否正常
-    // ManagerCreeps.check();
-    SpawnManager.run();
+    // 定期事务
+    PeriodicTask();
+    // 蚂蚁孵化管理器
+    SpawnManager();
 
     // 检查所有自己的房间
     for(const name in Game.rooms) {

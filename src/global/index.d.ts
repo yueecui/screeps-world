@@ -29,22 +29,17 @@ declare namespace NodeJS {
     interface Global {
         log: any;
 
-        init(): void;
-        sadaharu: sadaharu;
+        // 定春布局范围
+        sadaharu: any;
     }
 }
 
-declare class sadaharu{
-    hi(): void;
-}
 
 interface Memory{
     /** 临时用旗标，什么都可以写 */
     tempFlags: Record<string, any>;
     /** 老的roomCode */
     roomCodeReplace: Record<string, string>;
-    /** 刚开始孵化的虫子，记录time，3tick后移除，避免重复孵化 */
-    spawningRecent: Record<string, number>;
 }
 
 

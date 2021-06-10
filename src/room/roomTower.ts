@@ -1,6 +1,6 @@
 import { BOOLEAN_TRUE, TASK_WAITING } from "@/global/constant";
 
-export const roomExtensionTower = function () {
+export default function () {
 
     // 根据房间等级获取扩展的最大容量
     Room.prototype.getTowerMaxCapacity = function(){

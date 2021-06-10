@@ -1,4 +1,4 @@
-export const creepExtensionProperty = function () {
+export default function () {
     // 工蚁
     Creep.prototype._roomCode = '';
     Creep.prototype._baseName = '';

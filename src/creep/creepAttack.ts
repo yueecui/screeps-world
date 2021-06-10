@@ -5,6 +5,6 @@ import {
     WORK_MOVE,
 } from '@/global/constant';
 
-export const creepExtensionAttacker = function () {
+export default function () {
 
 }

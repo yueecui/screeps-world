@@ -1,6 +1,6 @@
 import { BOOLEAN_TRUE } from "@/global/constant";
 
-export const roomExtensionProperty = function () {
+export default function () {
     // 定义各个属性
     Object.defineProperty(Room.prototype, 'sources', {
         get: function () {

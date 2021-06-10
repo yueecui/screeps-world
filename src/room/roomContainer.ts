@@ -1,7 +1,7 @@
 import { CONTAINER_TYPE_CONTROLLER, CONTAINER_TYPE_SOURCE, CONTAINER_TYPE_MINERAL, PLAN_PAY } from "@/global/constant";
 import { CONTROLLER_CONTAINER_EMPTY, SOURCE_CONTAINER_FULL, MINERAL_CONTAINER_FULL } from "@/global/config"
 
-export const roomExtensionContainer = function () {
+export default function () {
     // 预定一个container的能量变化
     Room.prototype.bookingContainer = function(creep_name, container_id, type, amount){
         if (amount == 0){

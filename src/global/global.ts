@@ -1,8 +1,6 @@
 import { sadaharu } from "./sadaharu";
 
-export const globalExtension = function () {
-    global.init = function(){
-        this.sadaharu = new sadaharu();
-        this.sadaharu.hi()
-    }
+export default function () {
+    global.sadaharu = new sadaharu();
+    global.sadaharu.hi()
 }

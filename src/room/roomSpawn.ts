@@ -1,6 +1,6 @@
 import { TASK_WAITING } from "@/global/constant";
 
-export const roomExtensionSpawn = function () {
+export default function () {
 
     // 根据房间等级获取扩展的最大容量
     Room.prototype.getExtensionMaxCapacity = function(){

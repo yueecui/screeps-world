@@ -54,7 +54,7 @@ const findOverlapPos = function(a: findPosParam, b: findPosParam): [number, numb
     return result;
 }
 
-export const roomExtensionUtil = function () {
+export default function () {
     // 每tick检查的主方法
     Room.prototype.tickCheck = function() {
         // 初始化memory

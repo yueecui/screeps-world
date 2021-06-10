@@ -8,7 +8,7 @@ import {
     WORK_TRANSPORTER_STORAGE_MINERAL,
 } from '@/global/constant';
 
-export const creepExtensionTransporter = function () {
+export default function () {
     // ------------------------------------------------------
     // 孵化能量搬运
     // ------------------------------------------------------
