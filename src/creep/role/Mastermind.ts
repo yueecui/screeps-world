@@ -37,7 +37,7 @@ const masterMindWork = function(creep: Creep){
             }
         }
     }else{
-        if (storage_link.store[RESOURCE_ENERGY] > 0){
+        if (storage_link.store[RESOURCE_ENERGY] > 0 && creep.store.getFreeCapacity() > 0){
             creep.withdraw(storage_link, RESOURCE_ENERGY);
         }else if (creep.store.getUsedCapacity() > 0){
             for (const name in creep.store){

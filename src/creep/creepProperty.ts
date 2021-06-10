@@ -157,7 +157,7 @@ export default function () {
                 }
                 if (stay){
                     let y;
-                    if (this.room.countBaseNameCreeps(this.baseName) == 1){
+                    if (this.room.countBaseNameCreeps(this.baseName) == 1 || this.baseName == 'MM'){
                         y = stay[1];
                     }else{
                         y = stay[1]-1+this.index;
