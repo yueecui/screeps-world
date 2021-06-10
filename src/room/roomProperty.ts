@@ -87,7 +87,11 @@ export default function () {
 
     Object.defineProperty(Room.prototype, 'code', {
         get: function () {
-            return this.memory.roomConfig.code;
+            if (this.memory && this.memory.roomConfig){
+                return this.memory.roomConfig.code;
+            }else{
+                return this.name;
+            }
         },
         set: function (new_value: string) {
             this.memory.roomConfig.code = new_value;

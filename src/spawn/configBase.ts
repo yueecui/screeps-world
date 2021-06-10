@@ -117,7 +117,7 @@ const role_GA: SpawnConfig = {
         return true;
     },
     body: (room) =>{
-        return generateBodyEnergyHarvester(room);
+        return generateBodyEnergyHarvester(room, 0);
     }
 }
 
@@ -145,7 +145,7 @@ const role_GB: SpawnConfig = {
         return true;
     },
     body: (room) =>{
-        return generateBodyEnergyHarvester(room);
+        return generateBodyEnergyHarvester(room, 1);
     }
 }
 
@@ -197,7 +197,7 @@ const role_MM: SpawnConfig = {
     },
     needSpawn: (room) => {
         // 临时
-        return room.name == 'W35N57';
+        return room.links.length >= 2;
     },
     body: generateBodyMastermind
 }

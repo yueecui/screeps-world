@@ -9,7 +9,6 @@ import {
     ENERGY_NEED,
     WORK_IDLE, WORK_BUILD, WORK_REPAIR,
     MODE_BUILDER, MODE_REPAIRER, CONTAINER_TYPE_SOURCE, ENERGY_ENOUGH } from "@/global/constant";
-import { filter } from "lodash";
 
 const REPAIR_PERCENT = 0.7;  // 耐久度低到什么程度开始修理
 
@@ -41,9 +40,15 @@ const execute = function(creep: Creep){
     if (creep.memory.room && creep.room.name != creep.memory.room){
         creep.moveTo(new RoomPosition(25, 25, creep.memory.room));
         return;
+    }else if (creep.room.name != creep.belongRoom){
+        creep.moveTo(new RoomPosition(25, 25, creep.belongRoom))
+        return;
+    }
+    if (creep.pos.y == 49){
+        creep.move(TOP);
+        return;
     }
     creep.recycleNearby(); // 回收周围的能量
-
     const remove_flag = Game.flags['Remove'];
     if (remove_flag && creep.room.name == remove_flag.room!.name){
         // 寻找一个可以修理的目标
@@ -55,7 +60,6 @@ const execute = function(creep: Creep){
             return;
         }
     }
-
     const obtain_energy = (creep: Creep) => {
         if (creep.room.storage){
             creep.obtainEnergy({
@@ -111,6 +115,7 @@ const execute = function(creep: Creep){
             if (target){
                 return repairTargetRampart(creep, target);
             }
+            creep.target = null;
             creep.goToStay();
         }else{
             target = findBuildTarget(creep);
@@ -124,6 +129,7 @@ const execute = function(creep: Creep){
             if (creep.memory.room){
                 creep.role = '回收';
             }else{
+                creep.target = null;
                 creep.goToStay();
             }
         }
@@ -141,7 +147,6 @@ const findBuildTarget = function(creep: Creep){
             creep.memory.t = targets[0].id;
             return targets[0];
         }else{
-            creep.memory.t = null;
             return null;
         }
     }
@@ -174,7 +179,6 @@ const findRepairTarget = function(creep: Creep){
             creep.memory.t = targets[0].id;
             return targets[0];
         }else{
-            creep.memory.t = null;
             return null;
         }
     }
@@ -204,7 +208,6 @@ const findRepairWall = function(creep: Creep){
             creep.memory.t = targets[0].id;
             return targets[0];
         }else{
-            creep.memory.t = null;
             return null;
         }
     }
@@ -239,7 +242,6 @@ const findRepairRampart = function(creep: Creep){
         creep.memory.t = targets[0].id;
         return targets[0];
     }else{
-        creep.memory.t = null;
         return null;
     }
 }

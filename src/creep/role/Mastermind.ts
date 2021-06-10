@@ -28,11 +28,12 @@ const masterMindWork = function(creep: Creep){
 
     if (creep.room.controllerLinkNeedEnergy){
         const need_amount = storage_link.store.getFreeCapacity(RESOURCE_ENERGY);
+        const pickup_amount = Math.min(creep.store.getFreeCapacity(RESOURCE_ENERGY), need_amount)
         if (need_amount > 0){
-            if (creep.store[RESOURCE_ENERGY] >= need_amount){
+            if (pickup_amount == 0 || creep.store[RESOURCE_ENERGY] >= need_amount){
                 creep.transfer(storage_link, RESOURCE_ENERGY);
-            }else if(storage.store[RESOURCE_ENERGY] >= need_amount ){
-                creep.withdraw(storage, RESOURCE_ENERGY, need_amount);
+            }else if(storage.store[RESOURCE_ENERGY] >= pickup_amount ){
+                creep.withdraw(storage, RESOURCE_ENERGY, pickup_amount);
             }
         }
     }else{

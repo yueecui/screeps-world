@@ -5,13 +5,18 @@
 export default function (creep: Creep) {
     creep.recycleNearby(); // 回收周围的能量
 
-    let target;
-    if (creep.room.name == 'W35N57' || creep.room.name == 'W34N57'){
-        target = Game.spawns['Ironforge'];
-    }else if (creep.room.name == 'W41N54'){
-        target = Game.spawns['Beijing'];
-    }else{
-        target = Game.spawns['Shanghai'];
+    let target = Game.getObjectById(creep.target!);
+    if (!(target instanceof StructureSpawn)){
+        target = null;
+        const room = Game.rooms[creep.belongRoom];
+        if (room != null){
+            target = creep.pos.findClosestByRange(room.spawns);
+        }
+    }
+
+    if (target == null){
+        creep.say('❓');
+        return;
     }
 
     creep.say('♻️');

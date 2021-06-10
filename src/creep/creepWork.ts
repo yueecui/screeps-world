@@ -8,6 +8,7 @@ import {
     MODE_HARVEST_ENERGY,
     MODE_HARVEST_MINERAL,
     ROLE_GOTO_RECYCLE,
+    BOOLEAN_TRUE,
 } from '@/global/constant';
 
 export default function () {
@@ -140,6 +141,13 @@ export default function () {
                     this.harvesterDoWorkRepair();
                     return;
                 }
+                // 如果转换成修理模式就不存能量了
+                else if (this.room.sources[this.memory.node].link != null && this.store[RESOURCE_ENERGY] >= 100){
+                    const link = Game.getObjectById(this.room.sources[this.memory.node].link!);
+                    if (link){
+                        this.transfer(link, RESOURCE_ENERGY, 100);
+                    }else this.room.memory.flagPurge = BOOLEAN_TRUE;
+                }
             }else if (target instanceof Mineral){
                 const container = Game.getObjectById(this.room.mineral.container!)!;
                 if (container.store.getFreeCapacity() < this.getActiveBodyparts(WORK)){
@@ -178,7 +186,7 @@ export default function () {
         this.repair(target);
         if (this.store[RESOURCE_ENERGY] < this.getActiveBodyparts(WORK)){
             const container = Game.getObjectById(this.room.sources[this.memory.node].container!)!;
-            if (this.withdraw(container, RESOURCE_ENERGY) == ERR_NOT_ENOUGH_RESOURCES){
+            if (container == null || this.withdraw(container, RESOURCE_ENERGY) == ERR_NOT_ENOUGH_RESOURCES){
                 this.target = null;
                 this.work = WORK_IDLE;
             }
@@ -216,10 +224,30 @@ export default function () {
     // 执行 WORK_UPGRADE
     Creep.prototype.upgraderDoWork = function(){
         const obtain_energy = () => {
-            this.obtainEnergy({
-                container: [CONTAINER_TYPE_CONTROLLER],
-                storage: false,
-            });
+            if (this.store.getFreeCapacity() == 0){
+                this.energy = ENERGY_ENOUGH;
+                return;
+            }
+            const controller_info = this.room.memory.data.controller;
+            if (controller_info.type == STRUCTURE_LINK){
+                if (this.room.controllerLink && this.room.controllerLink.store[RESOURCE_ENERGY] > 0){
+                    if (this.withdraw(this.room.controllerLink, RESOURCE_ENERGY) == OK){
+                        this.energy = ENERGY_ENOUGH;
+                        return;
+                    };
+                }
+            }else if (controller_info.type == STRUCTURE_CONTAINER){
+                const container = Game.getObjectById(controller_info.id as Id<StructureContainer>);
+                if (container && container.store[RESOURCE_ENERGY] > 0){
+                    if (this.withdraw(container, RESOURCE_ENERGY) == OK){
+                        this.energy = ENERGY_ENOUGH;
+                        return;
+                    };
+                }else{
+                    this.room.memory.flagPurge = BOOLEAN_TRUE;
+                }
+            }
+            this.say('饿');
         }
 
         if (this.energy == ENERGY_NEED){
