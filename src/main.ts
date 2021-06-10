@@ -1,4 +1,4 @@
-import Mount from '@/global/mount';
+import Mount from '@/mount';
 // 对原型进行扩展
 Mount();
 
@@ -57,11 +57,13 @@ module.exports.loop = () => {
 
     // 临时运转LINK
     const room = Game.rooms['W35N57'];
-    const mm_link = Game.getObjectById(room.links[0].id)!;
-    for (let i=1;i<room.links.length;i++){
-        const link = Game.getObjectById(room.links[i].id)!;
-        if (link.store[RESOURCE_ENERGY] > 0){
-            link.transferEnergy(mm_link);
+    if (room){
+        const mm_link = Game.getObjectById(room.links[0].id)!;
+        for (let i=1;i<room.links.length;i++){
+            const link = Game.getObjectById(room.links[i].id)!;
+            if (link.store[RESOURCE_ENERGY] > 0){
+                link.transferEnergy(mm_link);
+            }
         }
     }
 };

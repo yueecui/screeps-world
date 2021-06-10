@@ -1,4 +1,4 @@
-export class sadaharu {
+export class Sadaharu {
     constructor(){
 
     }

@@ -1,9 +1,3 @@
-// import { LoDashStatic } from 'lodash';
-
-// declare global {
-//         const _: LoDashStatic;
-// }
-
 /*
     Example types, expand on these or remove them and add your own.
     Note: Values, properties defined here do no fully *exist* by this type definiton alone.
@@ -25,15 +19,22 @@
 // }
 
 // Syntax for adding proprties to `global` (ex "global.log")
+
 declare namespace NodeJS {
     interface Global {
         log: any;
 
         // 定春布局范围
-        sadaharu: any;
+        abc: any;
     }
 }
 
+interface Game{
+    /** 当前所有活着的工蚁统计，每轮刷新 */
+    allLivedCreeps: Record<string, LivedCreeps>
+    /** 本回合开始孵化的虫子，避免重复孵化 */
+    spawningInTick: string[]
+}
 
 interface Memory{
     /** 临时用旗标，什么都可以写 */
@@ -41,7 +42,6 @@ interface Memory{
     /** 老的roomCode */
     roomCodeReplace: Record<string, string>;
 }
-
 
 type ANY_BOOLEAN =
     | BOOLEAN_FALSE
@@ -51,10 +51,3 @@ type BOOLEAN_FALSE = 0
 type BOOLEAN_TRUE = 1
 
 type LivedCreeps = Record<string, number[]>;
-
-interface Game{
-    /** 当前所有活着的工蚁统计，每轮刷新 */
-    allLivedCreeps: Record<string, LivedCreeps>
-    /** 本回合开始孵化的虫子，避免重复孵化 */
-    spawningInTick: string[]
-}

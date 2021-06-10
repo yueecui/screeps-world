@@ -189,7 +189,7 @@ export default function () {
                 source_info.container = null;
             }
         }
-        if (Game.getObjectById(this.mineral.container!) == null){
+        if (this.mineral && Game.getObjectById(this.mineral.container!) == null){
             this.mineral.container = null;
         }
 
@@ -420,7 +420,7 @@ export default function () {
             }
         }
         // 矿物残量或重生时间
-        {
+        if (this.mineral){
             const mineral = Game.getObjectById(this.mineral.id)!;
             if (mineral.ticksToRegeneration > 0){
                 this.visual.text(
