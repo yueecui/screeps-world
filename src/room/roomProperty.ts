@@ -1,4 +1,4 @@
-import { BOOLEAN_TRUE } from "@/global/constant";
+import { BOOLEAN_FALSE, BOOLEAN_TRUE, LINK_TYPE_CONTROLLER, LINK_TYPE_NONE, LINK_TYPE_SOURCE, LINK_TYPE_STORAGE } from "@/global/constant";
 
 export default function () {
     // 定义各个属性
@@ -128,6 +128,60 @@ export default function () {
         configurable: true
     });
 
+    Object.defineProperty(Room.prototype, 'storageLink', {
+        get: function () {
+            if (this._storageLink === undefined){
+                const info = _.find(this.links as linkInfo[], { type: LINK_TYPE_STORAGE });
+                if (info == undefined){
+                    this._storageLink = null;
+                }else{
+                    this._storageLink = Game.getObjectById(info.id);
+                    if (this._storageLink == null){
+                        this.memory.flagPurge = BOOLEAN_TRUE;
+                    }
+                }
+            }
+            return this._storageLink;
+        },
+        enumerable: false,
+        configurable: true
+    });
+
+    Object.defineProperty(Room.prototype, 'controllerLink', {
+        get: function () {
+            if (this._controllerLink === undefined){
+                const info = _.find(this.links as linkInfo[], { type: LINK_TYPE_CONTROLLER });
+                if (info == undefined){
+                    this._controllerLink = null;
+                }else{
+                    this._controllerLink = Game.getObjectById(info.id);
+                    if (this._controllerLink == null){
+                        this.memory.flagPurge = BOOLEAN_TRUE;
+                    }
+                }
+            }
+            return this._controllerLink;
+        },
+        enumerable: false,
+        configurable: true
+    });
+
+    Object.defineProperty(Room.prototype, 'sourceLinks', {
+        get: function () {
+            if (this._sourceLinks === undefined){
+                this._sourceLinks = [] ;
+                for (const info of _.filter(this.links as linkInfo[], (info)=>{ return info.type == LINK_TYPE_SOURCE || info.type == LINK_TYPE_NONE })){
+                    const link = Game.getObjectById(info.id);
+                    if (link) this._sourceLinks.push(link);
+                    else this.memory.flagPurge = BOOLEAN_TRUE;
+                }
+            }
+            return this._sourceLinks;
+        },
+        enumerable: false,
+        configurable: true
+    });
+
     Object.defineProperty(Room.prototype, 'isUnderAttack', {
         get: function () {
             return this.memory.status.underAttack == BOOLEAN_TRUE;
@@ -143,6 +197,21 @@ export default function () {
             }else{
                 return false;
             }
+        },
+        enumerable: false,
+        configurable: true
+    });
+
+    Object.defineProperty(Room.prototype, 'controllerLinkNeedEnergy', {
+        get: function () {
+            if (this.my){
+                return this.memory.status.controllerLinkNeedEnergy == BOOLEAN_TRUE;
+            }else{
+                return false;
+            }
+        },
+        set: function (new_value: boolean) {
+            this.memory.status.controllerLinkNeedEnergy = new_value ? BOOLEAN_TRUE : BOOLEAN_FALSE;
         },
         enumerable: false,
         configurable: true

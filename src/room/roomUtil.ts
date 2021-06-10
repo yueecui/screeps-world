@@ -2,61 +2,15 @@ import { TASK_WAITING,
     CONTAINER_TYPE_NONE, CONTAINER_TYPE_CONTROLLER, CONTAINER_TYPE_SOURCE, CONTAINER_TYPE_MINERAL,
     LINK_TYPE_NONE, LINK_TYPE_STORAGE, LINK_TYPE_CONTROLLER, LINK_TYPE_SOURCE, BOOLEAN_FALSE, BOOLEAN_TRUE } from "@/global/constant";
 
-
 interface findPosParam{
     pos: RoomPosition,
     range: number,
     include?: boolean
 }
 
-/** 获取一个范围内的全部坐标 */
-const getPosSet = function(find: findPosParam): [number, number][]{
-    const result: [number, number][] = [];
-    for (let offset_x=(find.range*-1);offset_x<find.range+1;offset_x++){
-        for (let offset_y=(find.range*-1);offset_y<find.range+1;offset_y++){
-            if (!find.include && offset_x == 0 && offset_y == 0){
-                continue;
-            }
-            result.push([find.pos.x+offset_x, find.pos.y+offset_y]);
-        }
-    }
-    return result;
-}
-
-/** 寻找2个目标位置中重叠的可以站的地方 */
-const findOverlapPos = function(a: findPosParam, b: findPosParam): [number, number][]{
-    if (a.pos.roomName != b.pos.roomName){
-        return [];
-    }
-    const result = [];
-    const terrain = new Room.Terrain(a.pos.roomName);
-    const range_a = getPosSet(a);
-    const range_b = getPosSet(b);
-    for (const pos_a of range_a){
-        const find_pos = _.remove(range_b, (pos_b) => {
-            return pos_a[0] == pos_b[0] && pos_a[1] == pos_b[1];
-        })[0]; // 只可能有1个结果，如果是undefined就是没有
-        if (find_pos
-            && terrain.get(find_pos[0], find_pos[1]) != TERRAIN_MASK_WALL){
-            // 位置不是墙，但还需要判断下有没有阻碍移动的建筑物
-            const pos = new RoomPosition(find_pos[0], find_pos[1], a.pos.roomName);
-            const lookfor = pos.lookFor(LOOK_STRUCTURES).filter((struct) => {
-                return struct.structureType != STRUCTURE_ROAD
-                && struct.structureType != STRUCTURE_CONTAINER
-                && struct.structureType != STRUCTURE_RAMPART;
-            })
-            // 没有阻碍的建筑时才视为有效地点
-            if (lookfor.length == 0){
-                result.push(find_pos);
-            }
-        }
-    }
-    return result;
-}
-
 export default function () {
     // 每tick检查的主方法
-    Room.prototype.tickCheck = function() {
+    Room.prototype.tickRun = function() {
         // 初始化memory
         this.initMemory();
 
@@ -81,6 +35,7 @@ export default function () {
         // 每tick任务
         if (this.isUnderAttack) this.checkEnemy();
         this.checkSpawnEnergy();  // 只有刷新时间不为0时才执行
+        this.linkRun();  //运转所有link
         this.updateVisual();  // 刷新界面显示
     };
 
@@ -473,4 +428,50 @@ export default function () {
 
 
     };
+}
+
+
+/** 获取一个范围内的全部坐标 */
+const getPosSet = function(find: findPosParam): [number, number][]{
+    const result: [number, number][] = [];
+    for (let offset_x=(find.range*-1);offset_x<find.range+1;offset_x++){
+        for (let offset_y=(find.range*-1);offset_y<find.range+1;offset_y++){
+            if (!find.include && offset_x == 0 && offset_y == 0){
+                continue;
+            }
+            result.push([find.pos.x+offset_x, find.pos.y+offset_y]);
+        }
+    }
+    return result;
+}
+
+/** 寻找2个目标位置中重叠的可以站的地方 */
+const findOverlapPos = function(a: findPosParam, b: findPosParam): [number, number][]{
+    if (a.pos.roomName != b.pos.roomName){
+        return [];
+    }
+    const result = [];
+    const terrain = new Room.Terrain(a.pos.roomName);
+    const range_a = getPosSet(a);
+    const range_b = getPosSet(b);
+    for (const pos_a of range_a){
+        const find_pos = _.remove(range_b, (pos_b) => {
+            return pos_a[0] == pos_b[0] && pos_a[1] == pos_b[1];
+        })[0]; // 只可能有1个结果，如果是undefined就是没有
+        if (find_pos
+            && terrain.get(find_pos[0], find_pos[1]) != TERRAIN_MASK_WALL){
+            // 位置不是墙，但还需要判断下有没有阻碍移动的建筑物
+            const pos = new RoomPosition(find_pos[0], find_pos[1], a.pos.roomName);
+            const lookfor = pos.lookFor(LOOK_STRUCTURES).filter((struct) => {
+                return struct.structureType != STRUCTURE_ROAD
+                && struct.structureType != STRUCTURE_CONTAINER
+                && struct.structureType != STRUCTURE_RAMPART;
+            })
+            // 没有阻碍的建筑时才视为有效地点
+            if (lookfor.length == 0){
+                result.push(find_pos);
+            }
+        }
+    }
+    return result;
 }

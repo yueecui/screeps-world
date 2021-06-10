@@ -15,10 +15,10 @@ module.exports.loop = () => {
     for(const name in Game.rooms) {
         const room = Game.rooms[name];
         if (room.my){
-            room.tickCheck();
+            room.tickRun();
             // 如果有配置外矿的话，外矿有视野就检查外矿
             for (const name of room.memory.roomConfig.outside){
-                if (Game.rooms[name]) Game.rooms[name].tickCheck();
+                if (Game.rooms[name]) Game.rooms[name].tickRun();
             }
 
             // 临时检查塔
@@ -53,17 +53,5 @@ module.exports.loop = () => {
     // 运转所有小虫
     for(const name in Game.creeps) {
         Game.creeps[name].run();
-    }
-
-    // 临时运转LINK
-    const room = Game.rooms['W35N57'];
-    if (room){
-        const mm_link = Game.getObjectById(room.links[0].id)!;
-        for (let i=1;i<room.links.length;i++){
-            const link = Game.getObjectById(room.links[i].id)!;
-            if (link.store[RESOURCE_ENERGY] > 0){
-                link.transferEnergy(mm_link);
-            }
-        }
     }
 };

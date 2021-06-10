@@ -38,4 +38,8 @@ interface Room {
    * 获取房间内已经要空的controller container
    */
   getEmptyControllerContainers(): StructureContainer[];
+
+
+  /** 运转所有Link */
+  linkRun(): void;
 }

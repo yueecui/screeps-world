@@ -1,6 +1,6 @@
 import roomExtensionProperty from './roomProperty';
 import roomExtensionUtil from './roomUtil';
-import roomExtensionContainer from './roomContainer';
+import roomExtensionContainer from './roomStore';
 import roomExtensionSpawn from './roomSpawn';
 import roomExtensionTower from './roomTower';
 

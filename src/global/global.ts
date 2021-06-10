@@ -2,12 +2,13 @@ import { Sadaharu } from "./sadaharu";
 import { ConsoleCommandRoom } from './cmdRoom';
 
 export default function () {
+    const G = global as any;
     for (const room_name in Game.rooms){
         const room = Game.rooms[room_name];
         if (room.my){
-            (global as any)[room_name] = new ConsoleCommandRoom(room_name);
+            G[room_name] = new ConsoleCommandRoom(room_name);
+            if (!(room.code in G)) G[room.code] = G[room_name];
         }
     }
-    // (global as any).sadaharu = new sadaharu();
-    global.abc = new Sadaharu();
+    G.abc = new Sadaharu();
 }

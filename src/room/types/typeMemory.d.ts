@@ -43,6 +43,8 @@ interface RoomMemory {
         underAttack: ANY_BOOLEAN;
         /** 仅限预定房间，有敌方的core在抢预定 */
         hasInvaderCore?: ANY_BOOLEAN;
+        /** 控制器的LINK是否需要能量 */
+        controllerLinkNeedEnergy?: ANY_BOOLEAN;
     }
     /** 房间配置，这部分数据均为手工配置的数据，删了的话需要重新配置 */
     roomConfig: {

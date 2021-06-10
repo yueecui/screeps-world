@@ -1,13 +1,13 @@
-import { roleHarvester } from '@/creep/role/Harvester';
-import { roleTransporter } from '@/creep/role/Transporter';
-import { roleBuilder } from '@/creep/role/Builder';
-import { roleUpgrader } from '@/creep/role/Upgrader';
-import { roleAttacker } from '@/creep/role/Attacker';
-import { roleEngineer } from '@/creep/role/Engineer';
-import { roleGoToRecycle } from '@/creep/role/GoToRecycle';
-import { roleManual } from '@/creep/role/Manual';
-import { roleMastermind } from '@/creep/role/Mastermind';
-import { roleScout } from '@/creep/role/Scout';
+import roleHarvester from '@/creep/role/Harvester';
+import roleTransporter from '@/creep/role/Transporter';
+import roleBuilder from '@/creep/role/Builder';
+import roleUpgrader from '@/creep/role/Upgrader';
+import roleAttacker from '@/creep/role/Attacker';
+import roleEngineer from '@/creep/role/Engineer';
+import roleGoToRecycle from '@/creep/role/GoToRecycle';
+import roleManual from '@/creep/role/Manual';
+import roleMastermind from '@/creep/role/Mastermind';
+import roleScout from '@/creep/role/Scout';
 
 import {
     ENERGY_NEED,
@@ -18,7 +18,7 @@ import {
 // 任务队列最大长度
 const TASK_QUEUE_MAX = 5;
 
-const roleMap: Record<ANY_ROLE_NAME, CreepRole> = {
+const roleMap: Record<ANY_ROLE_NAME, (creep: Creep) => void> = {
     '回收': roleGoToRecycle,
     '手动': roleManual,
 
@@ -39,7 +39,7 @@ export default function () {
             return;
         }
         if (this.role){
-            roleMap[this.role].run(this);
+            roleMap[this.role](this);
         }else{
             this.say('没有配置角色');
         }
