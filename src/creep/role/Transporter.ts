@@ -1,7 +1,7 @@
 import {
     ENERGY_NEED, ENERGY_ENOUGH,
     WORK_IDLE, WORK_TRANSPORTER_SPAWN, WORK_TRANSPORTER_TOWER, WORK_TRANSPORTER_STORAGE_ENERGY, WORK_TRANSPORTER_CONTROLLER,
-    MODE_SPAWN, MODE_CONTROLLER, WORK_TRANSPORTER_STORAGE_MINERAL, WORK_TRANSPORTER_TOMBSTONE
+    MODE_SPAWN, MODE_CONTROLLER, WORK_TRANSPORTER_STORAGE_MINERAL, WORK_TRANSPORTER_TOMBSTONE, BOOLEAN_TRUE
 } from '@/global/constant';
 
 const IDLE_POS = { x: 28, y: 27 }
@@ -94,9 +94,20 @@ const execute = function(creep: Creep){
 const otherRoom = function(creep: Creep){
     creep.updateEnergyStatus();
     if (creep.energy == ENERGY_ENOUGH){
-        const link = Game.getObjectById('60b383415912304d8a2f1a7e' as Id<StructureLink>)!;
-        if (creep.transfer(link, RESOURCE_ENERGY) == ERR_NOT_IN_RANGE){
-            creep.moveTo(link);
+        if (creep.room.name != creep.bornRoom){
+            const room = Game.rooms[creep.bornRoom];
+            if (!room || !room.storage) { creep.say('⁉️');return; }
+            creep.moveTo(room.storage);
+            return;
+        }
+
+        const stores: Array<StructureStorage|StructureLink> = [creep.room.storage!]
+        if (creep.room.name == 'W35N57'){
+            stores.push(Game.getObjectById('60b383415912304d8a2f1a7e' as Id<StructureLink>)!)
+        }
+        const target = creep.pos.findClosestByRange(stores)!;
+        if (creep.transfer(target, RESOURCE_ENERGY) == ERR_NOT_IN_RANGE){
+            creep.moveTo(target);
         }
         if (creep.store.getUsedCapacity() == 0){
             creep.energy = ENERGY_NEED;
@@ -112,20 +123,32 @@ const otherRoom = function(creep: Creep){
             return;
         }
 
+        const containers: StructureContainer[] = []
         for (const info of creep.room.containers){
             const container = Game.getObjectById(info.id)!;
-            if (container.store.getFreeCapacity() < 1200){
-                if (creep.withdraw(container, RESOURCE_ENERGY) == ERR_NOT_IN_RANGE){
-                    creep.moveTo(container);
+            if (container){
+                if (container.store.getFreeCapacity() < 1200){
+                    containers.push(container);
                 }
-                return;
+            }else{
+                creep.room.memory.flagPurge = BOOLEAN_TRUE;
             }
         }
-
-        if (creep.store[RESOURCE_ENERGY] > 800){
-            creep.energy = ENERGY_ENOUGH;
+        containers.sort((a, b) => { return b.store[RESOURCE_ENERGY] - a.store[RESOURCE_ENERGY]; })
+        if (containers[0]){
+            if (creep.withdraw(containers[0], RESOURCE_ENERGY) == ERR_NOT_IN_RANGE){
+                creep.moveTo(containers[0]);
+            }
+            return;
         }
 
-        creep.moveTo(move_target);
+        if (creep.bornRoom == 'W35N57'){
+            if (creep.store[RESOURCE_ENERGY] > 800){
+                creep.energy = ENERGY_ENOUGH;
+            }
+            creep.moveTo(move_target);
+        }else if (creep.store.getFreeCapacity() == 0){
+            creep.energy = ENERGY_ENOUGH;
+        }
     }
 }

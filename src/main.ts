@@ -54,4 +54,6 @@ module.exports.loop = () => {
     for(const name in Game.creeps) {
         Game.creeps[name].run();
     }
+
+    (global as any).sadaharu.update();
 };

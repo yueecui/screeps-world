@@ -1,3 +1,0 @@
-interface StructureLink{
-    run(): void;
-}

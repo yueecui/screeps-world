@@ -10,5 +10,5 @@ export default function () {
             if (!(room.code in G)) G[room.code] = G[room_name];
         }
     }
-    G.abc = new Sadaharu();
+    G.sadaharu = new Sadaharu();
 }
