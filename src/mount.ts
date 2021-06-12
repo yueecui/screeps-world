@@ -6,6 +6,8 @@ export default function(){
     roomExtension();
     creepExtension();
     globalExtension();
-    console.log(`[${Game.time}] 重新挂载完成！`);
+    // if (!('sim' in Game.rooms)){
+        console.log(`[${Game.time}] 重新挂载完成！`);
+    // }
 };
 

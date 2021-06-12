@@ -64,6 +64,7 @@ const execute = function(creep: Creep){
         if (creep.room.storage){
             creep.obtainEnergy({
                 storage: true,
+                terminal: true,
             });
             return;
         // 外矿
@@ -85,6 +86,7 @@ const execute = function(creep: Creep){
         }
         creep.obtainEnergy({
             container: [CONTAINER_TYPE_SOURCE],
+            terminal: true,
         });
     }
 

@@ -20,7 +20,7 @@ interface Room {
    * @param structure 指定的continaer或是storage
    * @returns number 计算额度后的能量数值
    */
-  getStructureEnergyCapacity(structure: StructureContainer | StructureStorage): number;
+  getStructureEnergyCapacity(structure: StructureContainer | StructureStorage | StructureTerminal): number;
 
   /**
    * 获取房间内已经接近满的source container

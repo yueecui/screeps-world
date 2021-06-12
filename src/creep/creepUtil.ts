@@ -33,12 +33,14 @@ const roleMap: Record<ANY_ROLE_NAME, (creep: Creep) => void> = {
     '攻击': roleAttacker,
 }
 
+
+
 export default function () {
     Creep.prototype.run = function(){
         if (this.spawning){
             return;
         }
-        if (this.role){
+        if (this.role && this.role in roleMap){
             roleMap[this.role](this);
         }else{
             this.say('没有配置角色');

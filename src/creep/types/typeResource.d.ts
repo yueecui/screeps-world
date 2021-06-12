@@ -13,7 +13,7 @@ interface Creep {
   /**
    * 寻找最合适的能量存储
    */
-  findEnergyStore(opt: obtainEnergyOpt): StructureContainer | StructureStorage | null;
+  findEnergyStore(opt: obtainEnergyOpt): StructureContainer | StructureStorage | StructureTerminal | null;
   /**
    * 尝试回收creep附近的掉落能量、墓碑能量、废墟能量
    * @returns true表示成功拾取到
@@ -35,6 +35,7 @@ interface obtainEnergyOpt{
   min_amount?: number,
   container?: ANY_CONTAINER_TYPE[];
   storage?: boolean;
+  terminal?: boolean;
   priority?: 0 | 1 | 2;
 }
 

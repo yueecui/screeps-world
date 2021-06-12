@@ -36,11 +36,26 @@ interface Game{
     spawningInTick: string[]
 }
 
+type Haru = [number, number, DirectionConstant, DirectionConstant?]
+
+interface SadaharuConfig {
+    /** 房间名字 */
+    roomName: string
+    /** 中心的定位坐标 */
+    center: [number, number]
+    /** 8组扩展的定位坐标，以及往哪个方向扩展（只能是斜的方向），第四个参数是最后2组扩展，表示spawn位置的 */
+    haru: Haru[]
+    /** lab区的定位坐标，以及“上”的方向（只能是正的方向） */
+    lab: [number, number]
+}
+
 interface Memory{
     /** 临时用旗标，什么都可以写 */
     tempFlags: Record<string, any>;
     /** 老的roomCode */
     roomCodeReplace: Record<string, string>;
+
+    sadaharuData: Record<string, SadaharuConfig>
 }
 
 type ANY_BOOLEAN =

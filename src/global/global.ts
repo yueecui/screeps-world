@@ -2,6 +2,17 @@ import { Sadaharu } from "./sadaharu";
 import { ConsoleCommandRoom } from './cmdRoom';
 
 export default function () {
+    // 初始化
+    if (Memory.tempFlags == undefined){
+        Memory.tempFlags = {};
+    }
+    if (Memory.roomCodeReplace == undefined){
+        Memory.roomCodeReplace = {};
+    }
+    if (Memory.sadaharuData == undefined){
+        Memory.sadaharuData = {};
+    }
+    // 扩展控制命令行
     const G = global as any;
     for (const room_name in Game.rooms){
         const room = Game.rooms[room_name];
@@ -10,5 +21,5 @@ export default function () {
             if (!(room.code in G)) G[room.code] = G[room_name];
         }
     }
-    G.sadaharu = new Sadaharu();
+    G.haru = new Sadaharu();
 }

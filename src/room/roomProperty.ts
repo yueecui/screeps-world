@@ -102,13 +102,10 @@ export default function () {
 
     Object.defineProperty(Room.prototype, 'spawnConfig', {
         get: function () {
-            if (!this.memory.data.spawnConfig){
-                this.memory.data.spawnConfig = {};
+            if (!this.memory.spawnConfig){
+                this.memory.spawnConfig = {};
             }
-            return this.memory.data.spawnConfig;
-        },
-        set: function(new_value: Record<string, any>){
-            this.memory.data.spawnConfig = new_value;
+            return this.memory.spawnConfig;
         },
         enumerable: false,
         configurable: true

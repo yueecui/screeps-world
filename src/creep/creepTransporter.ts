@@ -142,7 +142,8 @@ export default function () {
     // 检查
     Creep.prototype.checkWorkTransporterController = function(){
         if (this.work != WORK_TRANSPORTER_CONTROLLER){
-            const empty_containers = this.room.getEmptyControllerContainers();
+            const room = Game.rooms[this.belongRoom];
+            const empty_containers = room.getEmptyControllerContainers();
             if (empty_containers.length > 0){
                 // 设定工作状态
                 this.clearQueue();
@@ -328,7 +329,7 @@ export default function () {
     Creep.prototype.checkWorkTransporterTombstone = function(){
         if (this.work != WORK_TRANSPORTER_TOMBSTONE && this.room.storage){
             const found = this.room.find(FIND_TOMBSTONES, { filter: (tomestone) => {
-                return tomestone.creep.owner.username == 'Invader' && tomestone.store.getUsedCapacity() > 0;
+                return tomestone.store.getUsedCapacity() > 0 && (tomestone.creep.owner.username == 'Invader' || tomestone.ticksToDecay < 150);
             }});
             if (found.length > 0){
                 // 设定工作状态

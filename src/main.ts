@@ -55,5 +55,5 @@ module.exports.loop = () => {
         Game.creeps[name].run();
     }
 
-    (global as any).sadaharu.update();
+    (global as any).haru.update();
 };

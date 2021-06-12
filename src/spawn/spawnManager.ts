@@ -15,7 +15,7 @@ export default function(): void{
     for (const room_name in Game.rooms){
         const room = Game.rooms[room_name];
         if (room.controller && room.controller.my){
-            if (room.spawns.length == 0){
+            if (room.spawns.length == 0 && room.controller.level > 2 && room.name != 'sim'){
                 console.log(`房间[${room.name}]没有找到Spawn`);
                 continue;
             }
@@ -184,7 +184,7 @@ const isValidCreep = function (spawn_room: Room, room_name: string, config: Spaw
 
         // 检查剩余时间不足的视为死亡
         let spawn_advance_time = Memory.rooms[room_name].spawnConfig.advance[config.baseName];
-        const advance_tick = config.body(spawn_room).length * 3 + (spawn_advance_time != null ? spawn_advance_time : 0);
+        const advance_tick = config.body(spawn_room).length * CREEP_SPAWN_TIME + (spawn_advance_time != null ? spawn_advance_time : 0);
         if (!creep.ticksToLive || creep.ticksToLive <= advance_tick){
             return false;
         }

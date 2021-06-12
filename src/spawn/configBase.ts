@@ -212,6 +212,7 @@ const role_BB: SpawnConfig = {
             role: '建造',
             mode: MODE_BUILDER
         }
+
     },
     amount: function(room) {
         let amount = room.getSpawnAmount(this.baseName);
@@ -279,7 +280,7 @@ const role_UP: SpawnConfig = {
         if (amount > -1) return amount;
 
         const controller = room.controller!;
-        if (controller.ticksToDowngrade < 1500){
+        if (controller.ticksToDowngrade < 10000){
             return 1;
         }else if (controller.level == 2){
             return 2;
@@ -287,11 +288,11 @@ const role_UP: SpawnConfig = {
             return 5;
         }else if (room.storage){
             const energy = room.storage.store[RESOURCE_ENERGY];
-            if (energy > 300000){
+            if (energy > 400000){
                 return 3;
-            }else if(energy > 150000){
+            }else if(energy > 250000){
                 return 2;
-            }else if (energy < 50000){
+            }else if (energy < 150000){
                 return 0;
             }
         }
@@ -311,26 +312,30 @@ const role_UP: SpawnConfig = {
 }
 
 /** 测试用 */
-const role_DE: SpawnConfig = {
+const role_MA: SpawnConfig = {
     type: SPAWN_TYPE_IN_ROOM,
-    baseName: 'DE',
+    baseName: 'MA',
     advance: false,
     memory: (spawn_room, work_room_name) => {
         return {
-            room: work_room_name,
-            role: '攻击'
+            room: 'W41N52',
+            role: '手动'
         }
     },
     amount: function(spawn_room, work_room_name) {
-        return 1;
+        let amount = spawn_room.getSpawnAmount(this.baseName);
+        if (amount > -1) return amount;
+        return 0;
     },
     isLive: (spawn_room, creep) => {
         return true;
     },
     needSpawn: (spawn_room, work_room_name) => {
-        return spawn_room.name == 'W35N57';
+        return true;
     },
-    body: generateBodyOutsideDefender
+    body: (spawn_room) => {
+        return [ATTACK, MOVE]
+    }
 }
 
 // 高优先级
@@ -338,8 +343,8 @@ export const SPAWN_BASE_PRIORITY_HIGH: Map<string, SpawnConfig> = new Map([
     // 全灭后的救灾蚂蚁
     ['HELP', role_HELP],
 
-    // 外矿防御者
-    // ['DE', role_DE],
+    // 手动脚本角色
+    ['MA', role_MA],
 
     // ROOM内能量采集者，A和B对应2个采集点
     ['GA', role_GA],

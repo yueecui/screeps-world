@@ -24,13 +24,13 @@ export default function () {
             this.room.unbookingContainer(this.name);
             return false;
         }
-        let target = Game.getObjectById(this.energyTarget!) as StructureContainer | StructureStorage | null;
+        let target = Game.getObjectById(this.energyTarget!) as StructureContainer | StructureStorage | StructureTerminal | null;
         if (target && target.store[RESOURCE_ENERGY] == 0){
             this.room.unbookingContainer(this.name);
             this.energyTarget = null;
             target = null;
         }
-        if (!target || (target.structureType != STRUCTURE_CONTAINER && target.structureType != STRUCTURE_STORAGE)){
+        if (!target || (target.structureType != STRUCTURE_CONTAINER && target.structureType != STRUCTURE_STORAGE && target.structureType != STRUCTURE_TERMINAL)){
             opt = opt == undefined ? {} : opt;
             target = this.findEnergyStore(opt);
 
@@ -59,10 +59,11 @@ export default function () {
         // 初始化参数
         opt.min_amount = opt.min_amount == undefined ? this.store.getFreeCapacity(RESOURCE_ENERGY) : opt.min_amount;
         opt.container = opt.container == undefined ? [] : opt.container;
-        opt.storage = opt.storage == undefined ? true : opt.storage;
+        opt.storage = !!opt.storage;
+        opt.terminal = !!opt.terminal;
         opt.priority = opt.priority == undefined ? PRIORITY_NONE : opt.priority;
 
-        let structures: Array<StructureContainer | StructureStorage> = [];
+        let structures: Array<StructureContainer | StructureStorage | StructureTerminal> = [];
         if (opt.container){
             _.each(
                 _.filter(this.room.containers, (info) => {
@@ -80,6 +81,11 @@ export default function () {
             && this.room.storage
             && this.room.storage.store[RESOURCE_ENERGY] > 0){
             structures.push(this.room.storage)
+        }
+        if (opt.terminal
+            && this.room.terminal
+            && this.room.terminal.store[RESOURCE_ENERGY] > 0){
+            structures.push(this.room.terminal)
         }
 
         // 根据最小需求量过滤
