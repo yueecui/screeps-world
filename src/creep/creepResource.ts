@@ -82,7 +82,8 @@ export default function () {
             && this.room.storage.store[RESOURCE_ENERGY] > 0){
             structures.push(this.room.storage)
         }
-        if (opt.terminal
+        if (this.room.code != 'R1'
+            && opt.terminal
             && this.room.terminal
             && this.room.terminal.store[RESOURCE_ENERGY] > 0){
             structures.push(this.room.terminal)

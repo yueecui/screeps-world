@@ -8,18 +8,19 @@ export default function(creep: Creep) {
         if (creep.inStayPos){
             creep.work = WORK_NORMAL;
         }else{
-            creep.recycleNearby(); // 回收周围的能量
             creep.goToStay();
         }
     }else{
+        creep.recycleNearby(); // 回收周围的能量
         masterMindWork(creep);
     }
 }
 
 // 主脑工作
 const masterMindWork = function(creep: Creep){
-    const storage = creep.room.storage;
-    if (!storage) return;
+    let target: AnyStoreStructure|undefined = creep.room.storage;
+    if (!target || !target.pos.isNearTo(creep)) {target = creep.room.terminal};
+    if (!target) return;
     const storage_link = creep.room.storageLink;
     if (!storage_link) return;
 
@@ -32,8 +33,8 @@ const masterMindWork = function(creep: Creep){
         if (need_amount > 0){
             if (pickup_amount == 0 || creep.store[RESOURCE_ENERGY] >= need_amount){
                 creep.transfer(storage_link, RESOURCE_ENERGY);
-            }else if(storage.store[RESOURCE_ENERGY] >= pickup_amount ){
-                creep.withdraw(storage, RESOURCE_ENERGY, pickup_amount);
+            }else if(target.store[RESOURCE_ENERGY] >= pickup_amount ){
+                creep.withdraw(target, RESOURCE_ENERGY, pickup_amount);
             }
         }
     }else{
@@ -41,7 +42,7 @@ const masterMindWork = function(creep: Creep){
             creep.withdraw(storage_link, RESOURCE_ENERGY);
         }else if (creep.store.getUsedCapacity() > 0){
             for (const name in creep.store){
-                creep.transfer(storage, name as ResourceConstant);
+                creep.transfer(target, name as ResourceConstant);
                 break;
             }
         }

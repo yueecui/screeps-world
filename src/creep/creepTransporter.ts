@@ -34,6 +34,7 @@ export default function () {
                 min_amount: this.room.getExtensionMaxCapacity(),
                 container: [CONTAINER_TYPE_SOURCE],
                 storage: true,
+                // terminal: true,
             });
         }
         if (this.energy == ENERGY_NEED){

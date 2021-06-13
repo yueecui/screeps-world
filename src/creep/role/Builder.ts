@@ -8,7 +8,7 @@
 import {
     ENERGY_NEED,
     WORK_IDLE, WORK_BUILD, WORK_REPAIR,
-    MODE_BUILDER, MODE_REPAIRER, CONTAINER_TYPE_SOURCE, ENERGY_ENOUGH } from "@/global/constant";
+    MODE_BUILDER, MODE_REPAIRER, CONTAINER_TYPE_SOURCE, ENERGY_ENOUGH, PRIORITY_STORAGE } from "@/global/constant";
 
 const REPAIR_PERCENT = 0.7;  // 耐久度低到什么程度开始修理
 
@@ -64,7 +64,8 @@ const execute = function(creep: Creep){
         if (creep.room.storage){
             creep.obtainEnergy({
                 storage: true,
-                terminal: true,
+                // terminal: true,
+                // priority: PRIORITY_STORAGE
             });
             return;
         // 外矿
@@ -86,7 +87,7 @@ const execute = function(creep: Creep){
         }
         creep.obtainEnergy({
             container: [CONTAINER_TYPE_SOURCE],
-            terminal: true,
+            // terminal: true,
         });
     }
 
@@ -229,7 +230,7 @@ const repairTargetWall = function(creep: Creep, target: StructureWall){
 // 寻找一个可以修理的目标
 const findRepairRampart = function(creep: Creep){
     const target = Game.getObjectById(creep.target!) as StructureRampart | null;
-    if (target && target.hits < 100000){
+    if (target && target.structureType == STRUCTURE_RAMPART && target.hits < 100000){
         return target;
     }
 

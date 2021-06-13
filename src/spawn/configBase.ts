@@ -292,7 +292,7 @@ const role_UP: SpawnConfig = {
                 return 3;
             }else if(energy > 250000){
                 return 2;
-            }else if (energy < 150000){
+            }else if (energy < 100000){
                 return 0;
             }
         }
@@ -338,6 +338,33 @@ const role_MA: SpawnConfig = {
     }
 }
 
+/** 临时搬运者 */
+const role_TT: SpawnConfig = {
+    type: SPAWN_TYPE_IN_ROOM,
+    baseName: 'TT',
+    advance: true,
+    memory: (spawn_room, work_room_name) => {
+        return {
+            role: '手动',
+        }
+    },
+    amount: function(room) {
+        if (room.code =='R2' && room.terminal && room.terminal?.store.getUsedCapacity() > 0){
+            return 1;
+        }
+        return 0;
+    },
+    isLive: (room, creep) => {
+        return true;
+    },
+    needSpawn: (room) => {
+        // 随时需要
+        return true;
+    },
+    body: generateBodyTransporter
+}
+
+
 // 高优先级
 export const SPAWN_BASE_PRIORITY_HIGH: Map<string, SpawnConfig> = new Map([
     // 全灭后的救灾蚂蚁
@@ -370,6 +397,9 @@ export const SPAWN_BASE_PRIORITY_LOW: Map<string, SpawnConfig> = new Map([
     ['BB', role_BB],
     // 优先修理的建筑者
     ['BR', role_BR],
+
+    // 临时搬运者
+    ['TT', role_TT],
     // 升级者
     ['UP', role_UP],
 ]);

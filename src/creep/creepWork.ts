@@ -30,6 +30,12 @@ export default function () {
                 if (source_node.energy > 0){
                     this.work = WORK_HARVEST;
                 }
+                if (room.sources[this.memory.node].link != null && this.store[RESOURCE_ENERGY] >= 100){
+                    const link = Game.getObjectById(room.sources[this.memory.node].link!);
+                    if (link){
+                        this.transfer(link, RESOURCE_ENERGY, 100);
+                    }else room.memory.flagPurge = BOOLEAN_TRUE;
+                }
             }else{
                 this.work = WORK_MOVE;
             }

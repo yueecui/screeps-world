@@ -36,7 +36,7 @@ interface obtainEnergyOpt{
   container?: ANY_CONTAINER_TYPE[];
   storage?: boolean;
   terminal?: boolean;
-  priority?: 0 | 1 | 2;
+  priority?: PRIORITY_TYPE;
 }
 
 type PRIORITY_TYPE =
