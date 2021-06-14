@@ -318,7 +318,9 @@ const role_MA: SpawnConfig = {
     advance: false,
     memory: (spawn_room, work_room_name) => {
         return {
-            room: 'W41N52',
+            room: 'W46N49',
+            mode: 1,
+            node: 0,
             role: '手动'
         }
     },
@@ -332,16 +334,97 @@ const role_MA: SpawnConfig = {
     },
     needSpawn: (spawn_room, work_room_name) => {
         if (spawn_room.code != 'R3') return false;
-        if (Game.time - Memory.tempFlags.lastClaim >= 1000){
-            Memory.tempFlags.spawnClaim = 1;
-            return true;
-        }
-        return false;
+        return true;
     },
     body: (spawn_room) => {
-        return [CLAIM, CLAIM, CLAIM, MOVE, MOVE, MOVE]
+        return [CLAIM, MOVE]
     }
 }
+
+/** 帮忙建筑工 */
+const role_MB: SpawnConfig = {
+    type: SPAWN_TYPE_IN_ROOM,
+    baseName: 'MB',
+    advance: false,
+    memory: (spawn_room, work_room_name) => {
+        return {
+            room: 'W46N49',
+            mode: 0,
+            node: 0,
+            work: 0,
+            role: '手动'
+        }
+    },
+    amount: function(spawn_room, work_room_name) {
+        let amount = spawn_room.getSpawnAmount(this.baseName);
+        if (amount > -1) return amount;
+        return 1;
+    },
+    isLive: (spawn_room, creep) => {
+        return true;
+    },
+    needSpawn: (spawn_room, work_room_name) => {
+        return true;
+    },
+    body: generateBodyBuilder
+}
+
+/** 帮忙建筑工 */
+const role_MC: SpawnConfig = {
+    type: SPAWN_TYPE_IN_ROOM,
+    baseName: 'MC',
+    advance: false,
+    memory: (spawn_room, work_room_name) => {
+        return {
+            room: 'W46N49',
+            mode: 0,
+            node: 1,
+            work: 0,
+            role: '手动'
+        }
+    },
+    amount: function(spawn_room, work_room_name) {
+        let amount = spawn_room.getSpawnAmount(this.baseName);
+        if (amount > -1) return amount;
+        return 1;
+    },
+    isLive: (spawn_room, creep) => {
+        return true;
+    },
+    needSpawn: (spawn_room, work_room_name) => {
+        return true;
+    },
+    body: generateBodyBuilder
+}
+
+/** 斥候 */
+const role_SC: SpawnConfig = {
+    type: SPAWN_TYPE_IN_ROOM,
+    baseName: 'SC',
+    advance: false,
+    memory: (spawn_room, work_room_name) => {
+        return {
+            mode: 1,
+            node: 0,
+            role: '斥候'
+        }
+    },
+    amount: function(spawn_room, work_room_name) {
+        let amount = spawn_room.getSpawnAmount(this.baseName);
+        if (amount > -1) return amount;
+        return 0;
+    },
+    isLive: (spawn_room, creep) => {
+        return true;
+    },
+    needSpawn: (spawn_room, work_room_name) => {
+        return true;
+    },
+    body: (spawn_room) =>{
+        return [MOVE];
+    }
+}
+
 
 /** 临时搬运者 */
 const role_TT: SpawnConfig = {
@@ -375,8 +458,8 @@ export const SPAWN_BASE_PRIORITY_HIGH: Map<string, SpawnConfig> = new Map([
     // 全灭后的救灾蚂蚁
     ['HELP', role_HELP],
 
-    // 手动脚本角色
-    ['MA', role_MA],
+    // 斥候
+    ['SC', role_SC],
 
     // ROOM内能量采集者，A和B对应2个采集点
     ['GA', role_GA],
@@ -398,6 +481,13 @@ export const SPAWN_BASE_PRIORITY_MID: Map<string, SpawnConfig> = new Map([
 
 // 低优先级
 export const SPAWN_BASE_PRIORITY_LOW: Map<string, SpawnConfig> = new Map([
+    // 手动脚本角色
+    // ['MA', role_MA],
+    // 手动脚本角色
+    ['MB', role_MB],
+    // 手动脚本角色
+    ['MC', role_MC],
+
     // 优先建造的建筑者
     ['BB', role_BB],
     // 优先修理的建筑者
@@ -405,6 +495,7 @@ export const SPAWN_BASE_PRIORITY_LOW: Map<string, SpawnConfig> = new Map([
 
     // 临时搬运者
     // ['TT', role_TT],
+
     // 升级者
     ['UP', role_UP],
 ]);

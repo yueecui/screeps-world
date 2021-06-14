@@ -1,11 +1,14 @@
 import { CONTAINER_TYPE_SOURCE, ENERGY_ENOUGH, ENERGY_NEED, MODE_NONE } from "@/global/constant";
-import creepProperty from "../creepProperty";
 
 /**
  * 本模式主要是用来处理一些临时操作
  */
 
 export default function (creep: Creep) {
+    if (creep.roomCode == 'R3' && (creep.mode == 0 || creep.mode == 1)){
+        execute(creep);
+        return;
+    }
     if (creep.baseName == 'MA'){
         if (creep.bornRoom == 'W41N54'){
             r3_claim(creep)
@@ -158,16 +161,36 @@ const r4temp = function(creep: Creep){
 }
 
 
+const pos_order = [
+    new RoomPosition(12, 2,  'W42N50'),
+    new RoomPosition(24, 6,  'W46N49'),
+]
+
 // 以前的脚本
 const execute = function(creep: Creep){
-    if (creep.room.name != 'W41N54'){
+    if (creep.memory.room != 'W46N49'){
+        return;
+    }
+    if (creep.memory.work < 2){
+        const pos = pos_order[creep.memory.node];
+        if (pos){
+            if (creep.pos.isNearTo(pos)){
+                creep.memory.work += 1;
+            }else{
+                creep.moveTo(pos, {reusePath: 50, visualizePathStyle:{}});
+            }
+        }
         return;
     }
     if (creep.mode == 1){
         const controller = creep.room.controller!;
         if (creep.pos.isNearTo(controller)){
-            if (creep.claimController(controller) == OK){
-                creep.memory.r = '回收';
+            if (!controller.sign){
+                creep.signController(controller, '别打我，我是菜狗~don\'t attack me, i\'m newbie.')
+            }else{
+                if (creep.claimController(controller) == OK){
+                    creep.memory.r = '回收';
+                }
             }
         }else{
             creep.moveTo(controller);
@@ -176,26 +199,39 @@ const execute = function(creep: Creep){
         creep.recycleNearby(); // 回收周围的能量
         creep.updateEnergyStatus();
         if (creep.energy == ENERGY_NEED){
-            creep.obtainEnergy({
-                container: [CONTAINER_TYPE_SOURCE],
-                storage: false,
-            });
+            const found = creep.room.find(FIND_HOSTILE_STRUCTURES, {filter: (stru)=> {return 'store' in stru && stru.store[RESOURCE_ENERGY] > 0;}})
+            if (found.length){
+                const target = creep.pos.findClosestByRange(found);
+                if (target){
+                    if (creep.withdraw(target, RESOURCE_ENERGY) == ERR_NOT_IN_RANGE){
+                        creep.moveTo(target);
+                    }
+                    return;
+                }
+            }
 
-            // const source_info = creep.room.sources[creep.memory.node];
-            // const target = Game.getObjectById(source_info.id)!;
-            // if (creep.pos.isNearTo(target)){
-            //     creep.harvest(target);
-            // }else{
-            //     creep.moveTo(target);
-            // }
+            if (creep.room.countBaseNameCreeps('GA', 'GB') == 2){
+                creep.obtainEnergy({
+                    container: [CONTAINER_TYPE_SOURCE],
+                    storage: false,
+                });
+            }else{
+                const source_info = creep.room.sources[creep.memory.node];
+                const target = Game.getObjectById(source_info.id)!;
+                if (creep.pos.isNearTo(target)){
+                    creep.harvest(target);
+                }else{
+                    creep.moveTo(target);
+                }
+            }
         }else{
-            // if (creep.memory.node == 0){
-            //     const controller = creep.room.controller!;
-            //     if (creep.upgradeController(controller) == ERR_NOT_IN_RANGE){
-            //         creep.moveTo(controller);
-            //     }
-            //     return;
-            // }
+            const controller = creep.room.controller!;
+            if (creep.memory.node == 0 && controller.level == 1){
+                if (creep.upgradeController(controller) == ERR_NOT_IN_RANGE){
+                    creep.moveTo(controller);
+                }
+                return;
+            }
 
             const found = creep.room.find(FIND_CONSTRUCTION_SITES);
             found.sort((a,b) => {

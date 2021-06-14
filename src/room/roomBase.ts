@@ -12,8 +12,12 @@ interface findPosParam{
 export default function () {
     // 每tick检查的主方法
     Room.prototype.tickRun = function() {
-        // 初始化memory
+        // 初始化
         this.init();
+
+        // 测试
+        // 更新任务
+        // this.inspectTask();
 
         // 定期检查
         if (Game.time % 5 == 0){
@@ -22,6 +26,8 @@ export default function () {
             // this.memory.lastSpawnTime = (this.energyAvailable < this.energyCapacityAvailable || this.energyAvailable == 300) ? 1 : 0;
         }
         if (this.memory.flagPurge || Game.time % 20 == 0){
+
+            // 以下为旧模式任务
             // 强制刷新孵化能量任务队列
             this.memory.lastSpawnTime = 1
             this.updateRoomStructureStatus();   // 重新缓存特定建筑信息（例如塔）
@@ -29,15 +35,15 @@ export default function () {
         }
 
         if (this.memory.flagPurge){
-            console.log(`[${Game.time}] Room ${this.name} 强制刷新缓存完成`)
+            console.log(`[${Game.time}] Room ${this.name} 强制刷新缓存完成`);
+            this.memory.flagPurge = BOOLEAN_FALSE;
         }
-        this.memory.flagPurge = BOOLEAN_FALSE;
 
         // 每tick任务
-        if (this.isUnderAttack) this.checkEnemy();
-        this.checkSpawnEnergy();  // 只有刷新时间不为0时才执行
-        this.linkRun();  //运转所有link
-        this.updateVisual();  // 刷新界面显示
+        if (this.isUnderAttack) this.checkEnemy();      // 受到攻击的情况下每回合检测敌人
+        this.checkSpawnEnergy();                        // 只有刷新时间不为0时才执行
+        this.linkRun();                                 // 运转所有link
+        this.updateVisual();                            // 刷新界面显示
     };
 
     Room.prototype.errorCheck = function(){
