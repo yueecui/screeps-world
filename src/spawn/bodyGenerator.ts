@@ -51,7 +51,7 @@ export const generateBodyEnergyHarvester = function(room: Room, node_index: numb
     let move_amount = 1;
 
     // link模式
-    if (room.sources[node_index].link != null && cap >= 1400){
+    if (room.sources[node_index]?.link != null && cap >= 1400){
         work_amount = 10; // 一次挖20，5次挖到100, 100存一次
         carry_amount = 3; // 150容量，超100就存，留50富裕免得掉地上
         move_amount = 5;

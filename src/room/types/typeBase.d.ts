@@ -27,6 +27,8 @@ interface Room {
 
     /** 房间的定春布局数据，缓存到global中 */
     sada: SadaharuData|null
+    /** 孵化时使用的能量顺序 */
+    energyOrder: Id<StructureExtension|StructureSpawn>[]
 
     // 状态
     /** 是否处于有敌人的状态 */
@@ -45,8 +47,10 @@ interface Room {
     init(): void;
     /** room memory 初始化 */
     initMemory(): void;
-    /** 生成haru data */
-    generateHaruData(): SadaharuData | null;
+    /** 生成sada data */
+    generateSadaData(): SadaharuData|undefined;
+    /** 生成孵化时使用能量的顺序 */
+    generateEnergyOrder(): void;
 
 
     /** 更新room中各个建筑的数据（定期任务） */

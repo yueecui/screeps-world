@@ -186,7 +186,15 @@ export default function () {
     Object.defineProperty(Room.prototype, 'sada', {
         get: function () {
             if (this.memory.layout != LAYOUT_SADAHARU) return null;
-            return Memory.sadaharuConfigs[this.name] ?? null;
+            return global.cache.rooms[this.name].sadaData;
+        },
+        enumerable: false,
+        configurable: true
+    });
+
+    Object.defineProperty(Room.prototype, 'energyOrder', {
+        get: function () {
+            return global.cache.rooms[this.name].enerygyOrder;
         },
         enumerable: false,
         configurable: true
