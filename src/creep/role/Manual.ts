@@ -177,8 +177,8 @@ const execute = function(creep: Creep){
     if (creep.memory.room != 'W46N49'){
         return;
     }
-    if (creep.memory.work < 3){
-        const pos = pos_order[creep.memory.node];
+    if (creep.memory.work < pos_order.length){
+        const pos = pos_order[creep.memory.work];
         if (pos){
             if (creep.pos.getRangeTo(pos) == 0){
                 creep.memory.work += 1;

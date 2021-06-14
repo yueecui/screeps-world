@@ -358,7 +358,7 @@ const role_MB: SpawnConfig = {
     amount: function(spawn_room, work_room_name) {
         let amount = spawn_room.getSpawnAmount(this.baseName);
         if (amount > -1) return amount;
-        return 1;
+        return 0;
     },
     isLive: (spawn_room, creep) => {
         return true;
@@ -386,7 +386,7 @@ const role_MC: SpawnConfig = {
     amount: function(spawn_room, work_room_name) {
         let amount = spawn_room.getSpawnAmount(this.baseName);
         if (amount > -1) return amount;
-        return 1;
+        return 0;
     },
     isLive: (spawn_room, creep) => {
         return true;
