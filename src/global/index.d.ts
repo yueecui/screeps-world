@@ -25,8 +25,22 @@ declare namespace NodeJS {
         log: any;
 
         // 定春布局范围
-        abc: any;
+        haru: any;
+
+        // 各类缓存
+        cache: {
+            rooms: Record<string, RoomCache>
+        }
     }
+}
+
+interface RoomCache{
+    /** 是否初始化完成 */
+    init: boolean
+    /** 可用的孵化能量记录，变化的时候需要重新索引haru */
+    energy: number
+    /** haru设置 */
+    sadaData: SadaharuData | null
 }
 
 interface Game{
@@ -36,29 +50,16 @@ interface Game{
     spawningInTick: string[]
 }
 
-type Haru = [number, number, DirectionConstant, DirectionConstant?]
-
-interface SadaharuConfig {
-    /** 房间名字 */
-    roomName: string
-    /** 中心的定位坐标 */
-    center: [number, number]
-    /** 8组扩展的定位坐标，以及往哪个方向扩展（只能是斜的方向），第四个参数是最后2组扩展，表示spawn位置的 */
-    haru: Haru[]
-    /** lab区的定位坐标，以及“上”的方向（只能是正的方向） */
-    lab: [number, number]
-}
-
 interface Memory{
     /** 临时用旗标，什么都可以写 */
     tempFlags: Record<string, any>;
     /** 老的roomCode */
     roomCodeReplace: Record<string, string>;
 
-    sadaharuData: Record<string, SadaharuConfig>
+    sadaharuConfigs: Record<string, SadaharuConfig>
 }
 
-type ANY_BOOLEAN =
+type BOOLEAN_ANY =
     | BOOLEAN_FALSE
     | BOOLEAN_TRUE
 

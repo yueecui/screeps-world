@@ -2,7 +2,7 @@ interface RoomMemory {
     /**
      * 强制清除缓存的标记
      */
-    flagPurge: ANY_BOOLEAN;
+    flagPurge: BOOLEAN_ANY;
     /**
      * 本房间最后一次孵化的时间
      *
@@ -26,6 +26,8 @@ interface RoomMemory {
      */
     energyPlan: EnergyPlan[];
 
+    /** 使用的布局类型 */
+    layout: LAYOUT_ANY;
 
     /** 房间数据，这部分数据删掉后会完全自动重置 */
     data: {
@@ -40,11 +42,11 @@ interface RoomMemory {
     /** 当前房间的状态，用于判断 */
     status: {
         /** 房间里有敌人 */
-        underAttack: ANY_BOOLEAN;
+        underAttack: BOOLEAN_ANY;
         /** 仅限预定房间，有敌方的core在抢预定 */
-        hasInvaderCore?: ANY_BOOLEAN;
+        hasInvaderCore?: BOOLEAN_ANY;
         /** 控制器的LINK是否需要能量 */
-        controllerLinkNeedEnergy?: ANY_BOOLEAN;
+        controllerLinkNeedEnergy?: BOOLEAN_ANY;
     }
     /** 房间配置，这部分数据均为手工配置的数据，删了的话需要重新配置 */
     roomConfig: {
@@ -54,6 +56,12 @@ interface RoomMemory {
         resShowPos: [number, number];
         /** 每个元素是一个外矿房间名 */
         outside: string[];
+        /** wall的hp数值 */
+        wallHp?: number;
+        /** rampart低于这个数值时，开始修理 */
+        rampartHpMin?: number;
+        /** rampart每次修理到这个数值 */
+        rampartHpMax?: number;
     }
     /** 孵化配置，这部分数据为手工数据，删除的话会重置回默认 */
     spawnConfig: {

@@ -1,5 +1,5 @@
 import creepExtensionProperty from './creepProperty';
-import creepExtensionUtil from './creepUtil';
+import creepExtensionUtil from './creepBase';
 import creepExtensionResource from './creepResource';
 import creepExtensionTransporter from './creepTransporter';
 import creepExtensionHarvester from './creepWork';

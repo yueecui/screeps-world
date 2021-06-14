@@ -25,6 +25,9 @@ interface Room {
     controllerLink: StructureLink|null
     sourceLinks: StructureLink[]
 
+    /** 房间的定春布局数据，缓存到global中 */
+    sada: SadaharuData|null
+
     // 状态
     /** 是否处于有敌人的状态 */
     isUnderAttack: boolean;
@@ -32,18 +35,18 @@ interface Room {
     /** 控制器的LINK是否需要能量 */
     controllerLinkNeedEnergy: boolean;
 
-    /**
-     * 房间定期检查
-     */
+
+
+    /** 房间定期检查 */
     tickRun(): void;
-    /**
-     * 检查room的各个任务队列是否存在错误，如果存在就自动修复
-     */
+    /** 检查room的各个任务队列是否存在错误，如果存在就自动修复 */
     errorCheck(): void;
-    /**
-     * 初始化memory
-     */
+    /** room数据初始化 */
+    init(): void;
+    /** room memory 初始化 */
     initMemory(): void;
+    /** 生成haru data */
+    generateHaruData(): SadaharuData | null;
 
 
     /** 更新room中各个建筑的数据（定期任务） */
@@ -115,4 +118,40 @@ interface Room {
     * @return boolean 判断结果
     */
    hasUnqueueTaskTower(): boolean;
+}
+
+
+type LAYOUT_ANY =
+    | LAYOUT_FREE
+    | LAYOUT_SADAHARU
+
+type LAYOUT_FREE = 0
+type LAYOUT_SADAHARU = 1
+
+
+type Haru = [number, number, DirectionConstant, DirectionConstant?]
+
+interface SadaharuConfig {
+    /** 中心的定位坐标 */
+    center: [number, number]
+    /** 8组扩展的定位坐标，以及往哪个方向扩展（只能是斜的方向），第四个参数是最后2组扩展，表示spawn位置的 */
+    haru: Haru[]
+    /** lab区的定位坐标，以及“上”的方向（只能是正的方向） */
+    lab: [number, number]
+}
+
+interface SadaharuData{
+    spawn: {
+        center: Id<StructureSpawn>|null,
+        left: Id<StructureSpawn>|null,
+        right: Id<StructureSpawn>|null,
+    }
+    haru: {
+        mainPos: RoomPosition,
+        mainMember: (Id<StructureSpawn>|Id<StructureExtension>)[],
+        subPos: RoomPosition,
+        subMember: Id<StructureExtension>[],
+        energy: number, // 建筑变化，等级提升
+    }[],
+    // lab: 以后再弄
 }

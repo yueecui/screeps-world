@@ -331,10 +331,15 @@ const role_MA: SpawnConfig = {
         return true;
     },
     needSpawn: (spawn_room, work_room_name) => {
-        return true;
+        if (spawn_room.code != 'R3') return false;
+        if (Game.time - Memory.tempFlags.lastClaim >= 1000){
+            Memory.tempFlags.spawnClaim = 1;
+            return true;
+        }
+        return false;
     },
     body: (spawn_room) => {
-        return [ATTACK, MOVE]
+        return [CLAIM, CLAIM, CLAIM, MOVE, MOVE, MOVE]
     }
 }
 
@@ -399,7 +404,7 @@ export const SPAWN_BASE_PRIORITY_LOW: Map<string, SpawnConfig> = new Map([
     ['BR', role_BR],
 
     // 临时搬运者
-    ['TT', role_TT],
+    // ['TT', role_TT],
     // 升级者
     ['UP', role_UP],
 ]);

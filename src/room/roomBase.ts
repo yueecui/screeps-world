@@ -1,6 +1,8 @@
 import { TASK_WAITING,
     CONTAINER_TYPE_NONE, CONTAINER_TYPE_CONTROLLER, CONTAINER_TYPE_SOURCE, CONTAINER_TYPE_MINERAL,
-    LINK_TYPE_NONE, LINK_TYPE_STORAGE, LINK_TYPE_CONTROLLER, LINK_TYPE_SOURCE, BOOLEAN_FALSE, BOOLEAN_TRUE } from "@/global/constant";
+    LINK_TYPE_NONE, LINK_TYPE_STORAGE, LINK_TYPE_CONTROLLER, LINK_TYPE_SOURCE, BOOLEAN_FALSE, BOOLEAN_TRUE, LAYOUT_FREE, LAYOUT_SADAHARU } from "@/global/constant";
+import { filter } from "lodash";
+import { type } from "os";
 
 interface findPosParam{
     pos: RoomPosition,
@@ -12,7 +14,7 @@ export default function () {
     // 每tick检查的主方法
     Room.prototype.tickRun = function() {
         // 初始化memory
-        this.initMemory();
+        this.init();
 
         // 定期检查
         if (Game.time % 5 == 0){
@@ -70,9 +72,117 @@ export default function () {
         this.memory.energyPlan = newPlan;
     }
 
+    Room.prototype.init = function(){
+        // 已经初始化，并且可用的孵化能量没变化的情况下就不重制，不然重置
+        if (global.cache.rooms[this.name]?.init && global.cache.rooms[this.name]?.energy == this.energyCapacityAvailable) return;
+
+        // 初始化 Memory，不改代码其实不会需要再执行，所以每次全局重置时初始化即可
+        this.initMemory();
+
+        // 初始化 global的缓存
+        global.cache.rooms[this.name] = {
+            init: true,
+            // 可用的孵化能量
+            energy: this.energyCapacityAvailable,
+            // tasks: []
+            sadaData: null
+        }
+
+        const cache = global.cache.rooms[this.name];
+        if (this.memory.layout == LAYOUT_SADAHARU){
+            cache.sadaData = this.generateHaruData()
+        }
+    }
+
+    Room.prototype.generateHaruData = function(){
+        const sada_config = Memory.sadaharuConfigs[this.name];
+        if (sada_config == undefined) return null;
+
+        const haru_data: SadaharuData = {
+            spawn: {
+                center: null,
+                left: null,
+                right: null,
+            },
+            haru: []
+        }
+        const find_structure = (x:number, y:number) => {
+            const look = new RoomPosition(x, y, this.name).lookFor(LOOK_STRUCTURES)
+            return _.find(look, (struct) => { return struct.structureType == STRUCTURE_EXTENSION || struct.structureType == STRUCTURE_SPAWN });
+        }
+        // 找center spawn
+        {
+            const found = find_structure(sada_config.center[0]+1, sada_config.center[1]-1);
+            if (found && found instanceof StructureSpawn){
+                haru_data.spawn.center = found.id;
+            }
+        }
+        // 找haru
+        for (const haru_config of sada_config.haru){
+            const mainPos = new RoomPosition(haru_config[0], haru_config[1], this.name);
+            const mainMember: (Id<StructureSpawn>|Id<StructureExtension>)[] = [];
+            let subPos = mainPos;
+            let found;
+            switch (haru_config[2]){
+                case TOP_LEFT:
+                    found = find_structure(haru_config[0], haru_config[1]+1);
+                    if (found && (found instanceof StructureSpawn || found instanceof StructureExtension)) { mainMember.push(found.id); }
+                    found = find_structure(haru_config[0]+1, haru_config[1]);
+                    if (found && (found instanceof StructureSpawn || found instanceof StructureExtension)) { mainMember.push(found.id); }
+                    subPos = new RoomPosition(haru_config[0] - 1, haru_config[1] - 1, this.name);
+                    break;
+                case TOP_RIGHT:
+                    found = find_structure(haru_config[0], haru_config[1]+1);
+                    if (found && (found instanceof StructureSpawn || found instanceof StructureExtension)) { mainMember.push(found.id); }
+                    found = find_structure(haru_config[0]-1, haru_config[1]);
+                    if (found && (found instanceof StructureSpawn || found instanceof StructureExtension)) { mainMember.push(found.id); }
+                    subPos = new RoomPosition(haru_config[0] + 1, haru_config[1] - 1, this.name);
+                    break;
+                case BOTTOM_LEFT:
+                    found = find_structure(haru_config[0], haru_config[1]-1);
+                    if (found && (found instanceof StructureSpawn || found instanceof StructureExtension)) { mainMember.push(found.id); }
+                    found = find_structure(haru_config[0]+1, haru_config[1]);
+                    if (found && (found instanceof StructureSpawn || found instanceof StructureExtension)) { mainMember.push(found.id); }
+                    subPos = new RoomPosition(haru_config[0] - 1, haru_config[1] + 1, this.name);
+                    break;
+                case BOTTOM_RIGHT:
+                    found = find_structure(haru_config[0], haru_config[1]-1);
+                    if (found && (found instanceof StructureSpawn || found instanceof StructureExtension)) { mainMember.push(found.id); }
+                    found = find_structure(haru_config[0]-1, haru_config[1]);
+                    if (found && (found instanceof StructureSpawn || found instanceof StructureExtension)) { mainMember.push(found.id); }
+                    subPos = new RoomPosition(haru_config[0] + 1, haru_config[1] + 1, this.name);
+                    break;
+            }
+
+            const haru = {
+                mainPos: mainPos,
+                mainMember: mainMember,
+                subPos: subPos,
+                subMember: _.map(subPos.findInRange(FIND_MY_STRUCTURES, 1, { filter: { structureType: STRUCTURE_EXTENSION }}) as StructureExtension[], (struct)=>{ return struct.id;}),
+                energy: 0,
+            }
+
+            // 统计能量
+            for (const id of [...haru.mainMember, ...haru.subMember]){
+                const obj = Game.getObjectById(id as Id<StructureExtension|StructureSpawn>);
+                if (obj instanceof StructureSpawn){
+                    haru.energy += 300;
+                }else if (obj instanceof StructureExtension){
+                    haru.energy += this.getExtensionMaxCapacity();
+                }
+            }
+            haru_data.haru.push(haru);
+        }
+
+        return haru_data;
+    }
+
     Room.prototype.initMemory = function(){
-        if (this.memory.data == undefined){
-            this.memory.data = {
+        const new_memory: RoomMemory = {
+            flagPurge: this.memory.flagPurge ?? BOOLEAN_TRUE,
+            lastSpawnTime: this.memory.lastSpawnTime ?? 0,
+            layout: this.memory.layout ?? LAYOUT_FREE,
+            data: this.memory.data ?? {
                 sources: [],
                 mineral: null,
                 containers: [],
@@ -86,48 +196,31 @@ export default function () {
                 storage: {
                     link: null,
                 }
-            }
-        }
-        if (this.memory.status == undefined){
-            this.memory.status = {
+            },
+            status: this.memory.status ?? {
                 underAttack: BOOLEAN_FALSE,
-            }
-        }
-        if (this.memory.roomConfig == undefined){
-            this.memory.roomConfig = {
+            },
+            roomConfig: this.memory.roomConfig ?? {
                 code: this.name,
                 resShowPos: [0, 0],
                 outside: [],
-            }
-        }
-        if (this.memory.spawnConfig == undefined){
-            this.memory.spawnConfig = {
+            },
+            spawnConfig: this.memory.spawnConfig ?? {
                 advance: {},
                 amount: {},
-            }
-        }
-        if (this.memory.creepConfig == undefined){
-            this.memory.creepConfig = {
+            },
+            creepConfig: this.memory.creepConfig ?? {
                 stay: {},
-            }
-        }
-        if (this.memory.flagPurge == undefined){
-            this.memory.flagPurge = BOOLEAN_TRUE;
-        }
-
-        if (this.memory.lastSpawnTime == undefined){
-            this.memory.lastSpawnTime = 0;
-        }
-        if (this.memory.taskSpawn == undefined){
-            this.memory.taskSpawn = {}
-        }
-        if (this.memory.taskTowers == undefined){
-            this.memory.taskTowers = {};
+            },
+            // 以下为测试
+            tasks: this.memory.tasks ?? [],
+            // 以下即将过期
+            taskSpawn: this.memory.taskSpawn ?? {},
+            taskTowers: this.memory.taskTowers ?? {},
+            energyPlan: this.memory.energyPlan ?? {},
         }
 
-        if (this.memory.energyPlan == undefined){
-            this.memory.energyPlan = [];
-        }
+        this.memory = new_memory;
     }
 
 

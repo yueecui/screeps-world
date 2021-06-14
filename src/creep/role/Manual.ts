@@ -7,7 +7,11 @@ import creepProperty from "../creepProperty";
 
 export default function (creep: Creep) {
     if (creep.baseName == 'MA'){
-        attack_temp(creep);
+        if (creep.bornRoom == 'W41N54'){
+            r3_claim(creep)
+        }else{
+            attack_temp(creep);
+        }
     }else if (creep.room.code == 'R2'){
         r4temp(creep);
     }else{
@@ -205,5 +209,46 @@ const execute = function(creep: Creep){
                 creep.say('❓');
             }
         }
+    }
+}
+
+const r3_claim = function(creep: Creep){
+    if (Memory.tempFlags.spawnClaim == 1){
+        Memory.tempFlags.lastClaim = Game.time;
+        Memory.tempFlags.spawnClaim = 0;
+        creep.mode = 0;
+    }
+    if (creep.mode == 0){
+        if (creep.pos.roomName != 'W40N45'){
+            const target = new RoomPosition(25, 25, 'W40N45');
+            creep.moveTo(target, {reusePath: 50, visualizePathStyle: {}});
+            return;
+        }else{
+            creep.mode = 1;
+        }
+    }
+    if (creep.pos.roomName != 'W38N45'){
+        const target = new RoomPosition(34, 7, 'W38N45');
+        creep.moveTo(target, {reusePath: 50, visualizePathStyle: {}});
+    }else{
+        const target = creep.room.controller!;
+        if (creep.pos.isNearTo(target)){
+            if (target.sign?.username != 'Yuee'){
+                creep.signController(target, '这ROOM归我啦！');
+                return;
+            }
+            if (creep.attackController(target) == ERR_TIRED){
+                if (target.level == 1 && target.ticksToDowngrade < 1000){
+                    Game.rooms[creep.bornRoom].memory.spawnConfig.amount.MA = 0;
+                    Game.notify(`攻击计数器结束，当前级别${target.level}，下次降级${target.ticksToDowngrade} ticks后，停止刷新`)
+                }else{
+                    Game.notify(`攻击计数器结束，当前级别${target.level}，下次降级${target.ticksToDowngrade} ticks后`)
+                }
+                creep.suicide();
+            };
+        }else{
+            creep.moveTo(target);
+        }
+
     }
 }

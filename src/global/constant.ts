@@ -1,6 +1,10 @@
 export const BOOLEAN_FALSE: BOOLEAN_FALSE = 0;
 export const BOOLEAN_TRUE: BOOLEAN_TRUE = 1;
 
+// ROOM
+export const LAYOUT_FREE: LAYOUT_FREE = 0
+export const LAYOUT_SADAHARU: LAYOUT_SADAHARU = 1
+
 // Creep的角色名
 
 export const ROLE_GOTO_RECYCLE: ROLE_GOTO_RECYCLE = '回收';

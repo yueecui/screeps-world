@@ -9,9 +9,14 @@ export default function () {
     if (Memory.roomCodeReplace == undefined){
         Memory.roomCodeReplace = {};
     }
-    if (Memory.sadaharuData == undefined){
-        Memory.sadaharuData = {};
+    if (Memory.sadaharuConfigs == undefined){
+        Memory.sadaharuConfigs = {};
     }
+    // 初始化全局缓存
+    global.cache = {
+        rooms: {}
+    }
+
     // 扩展控制命令行
     const G = global as any;
     for (const room_name in Game.rooms){

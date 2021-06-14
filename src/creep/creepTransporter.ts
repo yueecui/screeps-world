@@ -228,6 +228,7 @@ export default function () {
         if (this.energy == ENERGY_NEED){
             // 只从energy target中获取
             this.obtainEnergy({
+                container: [CONTAINER_TYPE_SOURCE],
                 storage: false,
             })
         }else{
@@ -361,12 +362,13 @@ export default function () {
                 this.moveTo(target);
             }
         }else if (this.store.getUsedCapacity() > 0){
-            if (this.pos.isNearTo(this.room.storage!)){
+            const room = Game.rooms[this.belongRoom]!;
+            if (this.pos.isNearTo(room.storage!)){
                 for (const name in this.store){
-                    this.transfer(this.room.storage!, name as ResourceConstant);
+                    this.transfer(room.storage!, name as ResourceConstant);
                 }
             }else{
-                this.moveTo(this.room.storage!);
+                this.moveTo(room.storage!);
             }
         }else{
             this.work = WORK_IDLE;

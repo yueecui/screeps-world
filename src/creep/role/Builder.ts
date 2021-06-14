@@ -196,10 +196,11 @@ const repairTarget = function(creep: Creep, target: AnyStructure){
 
 // 寻找一个可以修理的目标
 const findRepairWall = function(creep: Creep){
+    const wallHp = creep.room.memory.roomConfig?.wallHp ?? 100;
     let targets = creep.room.find(FIND_STRUCTURES, { filter: function(s){
-        return s.structureType == STRUCTURE_WALL && s.hits < 100000;
+        return s.structureType == STRUCTURE_WALL && s.hits < wallHp * 1000;
     }}) as StructureWall[];
-    const last_target = targets.filter((s) => { return s.id == creep.memory.t as Id<StructureRampart | StructureWall>; });
+    const last_target = targets.filter((s) => { return s.id == creep.memory.t as Id<StructureWall>; });
     if (last_target[0]){
         return last_target[0];
     }else{
@@ -218,7 +219,8 @@ const findRepairWall = function(creep: Creep){
 
 // 修理目标
 const repairTargetWall = function(creep: Creep, target: StructureWall){
-    if (target.hits >= 100000){
+    const wallHp = creep.room.memory.roomConfig?.wallHp ?? 100;
+    if (target.hits >= wallHp * 1000){
         creep.target = null;
         return;
     }
@@ -229,13 +231,15 @@ const repairTargetWall = function(creep: Creep, target: StructureWall){
 
 // 寻找一个可以修理的目标
 const findRepairRampart = function(creep: Creep){
+    const rampartHpMin = creep.room.memory.roomConfig?.rampartHpMin ?? 50;
+    const rampartHpMax = creep.room.memory.roomConfig?.rampartHpMax ?? 100;
     const target = Game.getObjectById(creep.target!) as StructureRampart | null;
-    if (target && target.structureType == STRUCTURE_RAMPART && target.hits < 100000){
+    if (target && target.structureType == STRUCTURE_RAMPART && target.hits < rampartHpMax * 1000){
         return target;
     }
 
     let targets = creep.room.find(FIND_STRUCTURES, { filter: function(s){
-        return s.structureType == STRUCTURE_RAMPART && s.hits < 50000;
+        return s.structureType == STRUCTURE_RAMPART && s.hits < rampartHpMin * 1000;
     }}) as StructureRampart[];
 
     if (targets[0]){
@@ -251,7 +255,8 @@ const findRepairRampart = function(creep: Creep){
 
 // 修理目标
 const repairTargetRampart = function(creep: Creep, target: StructureRampart){
-    if (target.hits >= 100000){
+    const rampartHpMax = creep.room.memory.roomConfig?.rampartHpMax ?? 100;
+    if (target.hits >= rampartHpMax * 1000){
         creep.target = null;
         return;
     }

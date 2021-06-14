@@ -1,4 +1,4 @@
-import { BOOLEAN_FALSE, BOOLEAN_TRUE, LINK_TYPE_CONTROLLER, LINK_TYPE_NONE, LINK_TYPE_SOURCE, LINK_TYPE_STORAGE } from "@/global/constant";
+import { BOOLEAN_FALSE, BOOLEAN_TRUE, LAYOUT_SADAHARU, LINK_TYPE_CONTROLLER, LINK_TYPE_NONE, LINK_TYPE_SOURCE, LINK_TYPE_STORAGE } from "@/global/constant";
 
 export default function () {
     // 定义各个属性
@@ -178,6 +178,15 @@ export default function () {
                 }
             }
             return this._sourceLinks;
+        },
+        enumerable: false,
+        configurable: true
+    });
+
+    Object.defineProperty(Room.prototype, 'sada', {
+        get: function () {
+            if (this.memory.layout != LAYOUT_SADAHARU) return null;
+            return Memory.sadaharuConfigs[this.name] ?? null;
         },
         enumerable: false,
         configurable: true

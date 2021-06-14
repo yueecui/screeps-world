@@ -48,16 +48,16 @@ class SadaharuLayout{
     edit: boolean = false
     // 编辑时，是否拆分数据
     editSplit: boolean = false
+    roomName: string
     data: SadaharuConfig = {
-        roomName: '',
         center: [25, 25],
         haru: [],
         lab: [25, 25]
     }
 
     constructor(room_name:string){
-        this.data.roomName = room_name;
-        this.visual = new RoomVisual(this.data.roomName);
+        this.roomName = room_name;
+        this.visual = new RoomVisual(this.roomName);
     }
 
     new(){
@@ -71,7 +71,7 @@ class SadaharuLayout{
     }
 
     startEdit(split: boolean = false){
-        if (Game.rooms[this.data.roomName]){
+        if (Game.rooms[this.roomName]){
             this.edit = true;
             this.editSplit = split;
             return true;
@@ -110,17 +110,17 @@ class SadaharuLayout{
 
     updateFlags(){
         // 有视野并且设定了旗子的情况下
-        if (!(this.edit && Game.rooms[this.data.roomName])) return;
-        const room = Game.rooms[this.data.roomName];
+        if (!(this.edit && Game.rooms[this.roomName])) return;
+        const room = Game.rooms[this.roomName];
         // 检查中心旗子
         {
             const flag_name = '[EDIT]center';
             if (Game.flags[flag_name]){
                 const flag = Game.flags[flag_name];
                 this.data.center = [flag.pos.x, flag.pos.y];
-                if (flag.pos.roomName != this.data.roomName){
-                    this.data.roomName = flag.pos.roomName;
-                    this.visual = new RoomVisual(this.data.roomName);
+                if (flag.pos.roomName != this.roomName){
+                    this.roomName = flag.pos.roomName;
+                    this.visual = new RoomVisual(this.roomName);
                 }
                 if (!this.editSplit) this.resetPosByCenter();
             }else{
@@ -330,6 +330,10 @@ export class Sadaharu {
 
     constructor(){
         clearEditFlag();
+        if (Game.rooms.sim){
+            this.load('sim');
+            this.edit('sim');
+        }
     }
 
     new(room_name: string){
@@ -401,23 +405,23 @@ export class Sadaharu {
 
     save(room_name: string){
         if (!this.data[room_name]) return `Room [${room_name}] 的数据不存在`;
-        Memory.sadaharuData[room_name] = JSON.parse(JSON.stringify(this.data[room_name].data));
+        Memory.sadaharuConfigs[room_name] = JSON.parse(JSON.stringify(this.data[room_name].data));
         return `Room [${room_name}] 数据已经保存到Memory`;
     }
 
     load(room_name: string){
         if (room_name == this._edit) this.edit(room_name);
-        if (!Memory.sadaharuData[room_name]) return `Memory中没有 Room [${room_name}] 的数据`;
+        if (!Memory.sadaharuConfigs[room_name]) return `Memory中没有 Room [${room_name}] 的数据`;
         if (this.data[room_name] == undefined){
             this.new(room_name)
         }
-        this.data[room_name].data = JSON.parse(JSON.stringify(Memory.sadaharuData[room_name]));
+        this.data[room_name].data = JSON.parse(JSON.stringify(Memory.sadaharuConfigs[room_name]));
         return `Memory中的Room [${room_name}] 的数据已加载`;
     }
 
     delete(room_name: string){
-        if (!Memory.sadaharuData[room_name]) return `Memory中没有 Room [${room_name}] 的数据`;
-        delete Memory.sadaharuData[room_name];
+        if (!Memory.sadaharuConfigs[room_name]) return `Memory中没有 Room [${room_name}] 的数据`;
+        delete Memory.sadaharuConfigs[room_name];
         return `Memory中的Room [${room_name}] 的数据已删除`;
     }
 

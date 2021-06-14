@@ -33,7 +33,6 @@ export default function () {
         if (!target || (target.structureType != STRUCTURE_CONTAINER && target.structureType != STRUCTURE_STORAGE && target.structureType != STRUCTURE_TERMINAL)){
             opt = opt == undefined ? {} : opt;
             target = this.findEnergyStore(opt);
-
         }
         if (target){
             if (this.pos.isNearTo(target)){
@@ -82,13 +81,12 @@ export default function () {
             && this.room.storage.store[RESOURCE_ENERGY] > 0){
             structures.push(this.room.storage)
         }
-        if (this.room.code != 'R1'
-            && opt.terminal
-            && this.room.terminal
-            && this.room.terminal.store[RESOURCE_ENERGY] > 0){
-            structures.push(this.room.terminal)
-        }
-
+        // if (this.room.code != 'R1'
+        //     && opt.terminal
+        //     && this.room.terminal
+        //     && this.room.terminal.store[RESOURCE_ENERGY] > 0){
+        //     structures.push(this.room.terminal)
+        // }
         // 根据最小需求量过滤
         structures = _.filter(structures, (structure) => {
             return this.room.getStructureEnergyCapacity(structure) >= opt.min_amount!;
