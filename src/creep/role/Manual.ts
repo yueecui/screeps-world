@@ -225,13 +225,13 @@ const execute = function(creep: Creep){
                 }
             }
         }else{
-            const controller = creep.room.controller!;
-            if (creep.memory.node == 0 && controller.level == 1){
-                if (creep.upgradeController(controller) == ERR_NOT_IN_RANGE){
-                    creep.moveTo(controller);
-                }
-                return;
-            }
+            // const controller = creep.room.controller!;
+            // if (creep.memory.node == 0 && controller.level == 2){
+            //     if (creep.upgradeController(controller) == ERR_NOT_IN_RANGE){
+            //         creep.moveTo(controller);
+            //     }
+            //     return;
+            // }
 
             const found = creep.room.find(FIND_CONSTRUCTION_SITES);
             found.sort((a,b) => {
