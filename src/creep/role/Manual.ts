@@ -162,7 +162,12 @@ const r4temp = function(creep: Creep){
 
 
 const pos_order = [
-    new RoomPosition(12, 2,  'W42N50'),
+    new RoomPosition(2, 11,  'W42N51'),
+    new RoomPosition(18, 47,  'W42N51'),
+    new RoomPosition(11, 12,  'W42N50'),
+    new RoomPosition(25, 25,  'W43N50'),
+    new RoomPosition(25, 25,  'W44N50'),
+    new RoomPosition(25, 25,  'W45N50'),
     new RoomPosition(26, 45,  'W46N50'),
     new RoomPosition(24, 6,  'W46N49'),
 ]
@@ -175,7 +180,7 @@ const execute = function(creep: Creep){
     if (creep.memory.work < 3){
         const pos = pos_order[creep.memory.node];
         if (pos){
-            if (creep.pos.isNearTo(pos)){
+            if (creep.pos.getRangeTo(pos) == 0){
                 creep.memory.work += 1;
             }else{
                 creep.moveTo(pos, {reusePath: 50, visualizePathStyle:{}});
@@ -243,6 +248,8 @@ const execute = function(creep: Creep){
                     creep.moveTo(found[0]);
                 }
             }else{
+                Memory.rooms[creep.bornRoom].spawnConfig.amount.MB = 0;
+                Memory.rooms[creep.bornRoom].spawnConfig.amount.MC = 0;
                 creep.say('❓');
             }
         }
