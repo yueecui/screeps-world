@@ -108,7 +108,7 @@ export default function () {
         }
         const find_structure = (x:number, y:number) => {
             const look = new RoomPosition(x, y, this.name).lookFor(LOOK_STRUCTURES)
-            return _.find(look, (struct) => { return struct.structureType == STRUCTURE_EXTENSION || struct.structureType == STRUCTURE_SPAWN });
+            return _.find(look, (struct) => { return struct.isActive() && (struct.structureType == STRUCTURE_EXTENSION || struct.structureType == STRUCTURE_SPAWN) });
         }
         // 找center spawn
         {
@@ -121,44 +121,51 @@ export default function () {
         for (const haru_config of sada_config.haru){
             const mainPos = new RoomPosition(haru_config[0], haru_config[1], this.name);
             const mainMember: (Id<StructureSpawn>|Id<StructureExtension>)[] = [];
-            let subPos = mainPos;
             let found;
+            let offset = {
+                struct1: [0, 0],
+                struct2: [0, 0],
+                sub: [0, 0]
+            }
             switch (haru_config[2]){
                 case TOP_LEFT:
-                    found = find_structure(haru_config[0], haru_config[1]+1);
-                    if (found && (found instanceof StructureSpawn || found instanceof StructureExtension)) { mainMember.push(found.id); }
-                    found = find_structure(haru_config[0]+1, haru_config[1]);
-                    if (found && (found instanceof StructureSpawn || found instanceof StructureExtension)) { mainMember.push(found.id); }
-                    subPos = new RoomPosition(haru_config[0] - 1, haru_config[1] - 1, this.name);
-                    break;
+                    offset = {
+                        struct1: [0, 1],
+                        struct2: [1, 0],
+                        sub: [-1, -1]
+                    };break;
                 case TOP_RIGHT:
-                    found = find_structure(haru_config[0], haru_config[1]+1);
-                    if (found && (found instanceof StructureSpawn || found instanceof StructureExtension)) { mainMember.push(found.id); }
-                    found = find_structure(haru_config[0]-1, haru_config[1]);
-                    if (found && (found instanceof StructureSpawn || found instanceof StructureExtension)) { mainMember.push(found.id); }
-                    subPos = new RoomPosition(haru_config[0] + 1, haru_config[1] - 1, this.name);
-                    break;
+                    offset = {
+                        struct1: [0, 1],
+                        struct2: [-1, 0],
+                        sub: [1, -1]
+                    };break;
                 case BOTTOM_LEFT:
-                    found = find_structure(haru_config[0], haru_config[1]-1);
-                    if (found && (found instanceof StructureSpawn || found instanceof StructureExtension)) { mainMember.push(found.id); }
-                    found = find_structure(haru_config[0]+1, haru_config[1]);
-                    if (found && (found instanceof StructureSpawn || found instanceof StructureExtension)) { mainMember.push(found.id); }
-                    subPos = new RoomPosition(haru_config[0] - 1, haru_config[1] + 1, this.name);
-                    break;
+                    offset = {
+                        struct1: [0, -1],
+                        struct2: [1, 0],
+                        sub: [-1, 1]
+                    };break;
+
                 case BOTTOM_RIGHT:
-                    found = find_structure(haru_config[0], haru_config[1]-1);
-                    if (found && (found instanceof StructureSpawn || found instanceof StructureExtension)) { mainMember.push(found.id); }
-                    found = find_structure(haru_config[0]-1, haru_config[1]);
-                    if (found && (found instanceof StructureSpawn || found instanceof StructureExtension)) { mainMember.push(found.id); }
-                    subPos = new RoomPosition(haru_config[0] + 1, haru_config[1] + 1, this.name);
-                    break;
+                    offset = {
+                        struct1: [0, -1],
+                        struct2: [-1, 0],
+                        sub: [1, 1]
+                    };break;
             }
+
+            found = find_structure(haru_config[0]+offset.struct1[0], haru_config[1]+offset.struct1[1]);
+            if (found && (found instanceof StructureSpawn || found instanceof StructureExtension)) { mainMember.push(found.id); }
+            found = find_structure(haru_config[0]+offset.struct2[0], haru_config[1]+offset.struct2[1]);
+            if (found && (found instanceof StructureSpawn || found instanceof StructureExtension)) { mainMember.push(found.id); }
+            const subPos = new RoomPosition(haru_config[0]+offset.sub[0], haru_config[1]+offset.sub[1], this.name);
 
             const haru = {
                 mainPos: mainPos,
                 mainMember: mainMember,
                 subPos: subPos,
-                subMember: _.map(subPos.findInRange(FIND_MY_STRUCTURES, 1, { filter: { structureType: STRUCTURE_EXTENSION }}) as StructureExtension[], (struct)=>{ return struct.id;}),
+                subMember: _.map(subPos.findInRange(FIND_MY_STRUCTURES, 1, { filter: (struct) => { return struct.isActive() && struct.structureType == STRUCTURE_EXTENSION; }}) as StructureExtension[], (struct)=>{ return struct.id;}),
                 energy: 0,
             }
 
