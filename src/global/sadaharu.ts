@@ -237,7 +237,7 @@ class SadaharuLayout{
         this.visual.text('Spawn', x, y+0.1, { font: 0.5, color: '#03ff15', stroke: '#000' })
     }
 
-    getHaruPos(haru: Haru){
+    getHaruPos(haru: HaruConfig){
         const result: {
             sub: [number, number],
             extension: [number, number][],

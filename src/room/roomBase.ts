@@ -1,8 +1,7 @@
 import { TASK_WAITING,
     CONTAINER_TYPE_NONE, CONTAINER_TYPE_CONTROLLER, CONTAINER_TYPE_SOURCE, CONTAINER_TYPE_MINERAL,
     LINK_TYPE_NONE, LINK_TYPE_STORAGE, LINK_TYPE_CONTROLLER, LINK_TYPE_SOURCE, BOOLEAN_FALSE, BOOLEAN_TRUE, LAYOUT_FREE, LAYOUT_SADAHARU } from "@/global/constant";
-import { filter } from "lodash";
-import { type } from "os";
+import { SadaData } from "./class/sadaData";
 
 interface findPosParam{
     pos: RoomPosition,
@@ -63,7 +62,6 @@ export default function () {
         }
         // 检查能量合约，是否有蚂蚁死了
         const newPlan = [];
-        console.log(JSON.stringify(this.memory.energyPlan));
         for (const plan of this.memory.energyPlan){
             if (plan.cName in Game.creeps
                 && _.filter(this.containers, (c)=>{ return c.id == plan.sid }).length > 0){
@@ -89,132 +87,24 @@ export default function () {
 
         // 以下只有属于我的房间才进行初始化
         if (this.my){
+            // 初始化定春布局数据
             const cache = global.cache.rooms[this.name];
             if (this.memory.layout == LAYOUT_SADAHARU){
-                cache.sadaData = this.generateSadaData();
-            }
-            this.generateEnergyOrder();
-        }
-    }
-
-    Room.prototype.generateSadaData = function(){
-        const sada_config = Memory.sadaharuConfigs[this.name];
-        if (sada_config == undefined) return undefined;
-
-        const sada_data: SadaharuData = {
-            spawn: {
-                center: null,
-                left: null,
-                right: null,
-            },
-            haru: []
-        }
-        const find_structure = (x:number, y:number) => {
-            const look = new RoomPosition(x, y, this.name).lookFor(LOOK_STRUCTURES)
-            return _.find(look, (struct) => { return struct.isActive() && (struct.structureType == STRUCTURE_EXTENSION || struct.structureType == STRUCTURE_SPAWN) });
-        }
-        // 找center spawn
-        {
-            const found = find_structure(sada_config.center[0]+1, sada_config.center[1]-1);
-            if (found && found instanceof StructureSpawn){
-                sada_data.spawn.center = found.id;
-            }
-        }
-        // 找haru
-        for (const haru_config of sada_config.haru){
-            const mainPos = new RoomPosition(haru_config[0], haru_config[1], this.name);
-            const mainMember: (Id<StructureSpawn>|Id<StructureExtension>)[] = [];
-            let found;
-            let offset = {
-                struct1: [0, 0],
-                struct2: [0, 0],
-                sub: [0, 0]
-            }
-            switch (haru_config[2]){
-                case TOP_LEFT:
-                    offset = {
-                        struct1: [0, 1],
-                        struct2: [1, 0],
-                        sub: [-1, -1]
-                    };break;
-                case TOP_RIGHT:
-                    offset = {
-                        struct1: [0, 1],
-                        struct2: [-1, 0],
-                        sub: [1, -1]
-                    };break;
-                case BOTTOM_LEFT:
-                    offset = {
-                        struct1: [0, -1],
-                        struct2: [1, 0],
-                        sub: [-1, 1]
-                    };break;
-
-                case BOTTOM_RIGHT:
-                    offset = {
-                        struct1: [0, -1],
-                        struct2: [-1, 0],
-                        sub: [1, 1]
-                    };break;
-            }
-
-            found = find_structure(haru_config[0]+offset.struct1[0], haru_config[1]+offset.struct1[1]);
-            if (found && (found instanceof StructureSpawn || found instanceof StructureExtension)) { mainMember.push(found.id); }
-            found = find_structure(haru_config[0]+offset.struct2[0], haru_config[1]+offset.struct2[1]);
-            if (found && (found instanceof StructureSpawn || found instanceof StructureExtension)) { mainMember.push(found.id); }
-            const subPos = new RoomPosition(haru_config[0]+offset.sub[0], haru_config[1]+offset.sub[1], this.name);
-
-            const haru = {
-                mainPos: mainPos,
-                mainMember: mainMember,
-                subPos: subPos,
-                subMember: _.map(subPos.findInRange(FIND_MY_STRUCTURES, 1, { filter: (struct) => { return struct.isActive() && struct.structureType == STRUCTURE_EXTENSION; }}) as StructureExtension[], (struct)=>{ return struct.id;}),
-                energy: 0,
-            }
-
-            // 统计能量
-            for (const id of [...haru.mainMember, ...haru.subMember]){
-                const obj = Game.getObjectById(id as Id<StructureExtension|StructureSpawn>);
-                if (obj instanceof StructureSpawn){
-                    haru.energy += 300;
-                }else if (obj instanceof StructureExtension){
-                    haru.energy += this.getExtensionMaxCapacity();
+                const sada_config = Memory.sadaharuConfigs[this.name];
+                if (sada_config){
+                    cache.sadaData = new SadaData(this, sada_config);
                 }
             }
-            sada_data.haru.push(haru);
+            // 生成能量顺序
+            this.generateEnergyOrder();
         }
-
-        return sada_data;
     }
 
     Room.prototype.generateEnergyOrder = function(){
         const cache = global.cache.rooms[this.name];
         // 生成顺序
         if (cache.sadaData){
-            const order: Id<StructureExtension|StructureSpawn>[] = [];
-            if (cache.sadaData.spawn.center) order.push(cache.sadaData.spawn.center);
-
-            for (const haru of cache.sadaData.haru){
-                const member = [...haru.mainMember, ...haru.subMember].map(
-                    (struct_id) => {
-                        return Game.getObjectById(struct_id as Id<StructureExtension|StructureSpawn>)!;
-                    }
-                )
-                let center_pos: RoomPosition;
-                if (this.storage){
-                    center_pos = this.storage.pos;
-                }else{
-                    const center_spawn = Game.getObjectById(cache.sadaData.spawn.center!);
-                    if (center_spawn){
-                        center_pos = center_spawn.pos;
-                    }else{
-                        center_pos = new RoomPosition(25, 25, this.name);
-                    }
-                }
-                member.sort((a, b) =>{ return center_pos.getRangeTo(a) - center_pos.getRangeTo(b); });
-                order.push(...member.map((struct)=>{return struct.id;}));
-            }
-            cache.enerygyOrder = order;
+            cache.energyOrder = cache.sadaData.energyOrder;
         }else{
             const found = this.find(FIND_MY_STRUCTURES, { filter: (struct) => { return struct.isActive() && (struct.structureType == STRUCTURE_SPAWN || struct.structureType == STRUCTURE_EXTENSION) }}) as (StructureExtension|StructureSpawn)[];
             let center_pos: RoomPosition;
@@ -229,7 +119,7 @@ export default function () {
                 }
             }
             found.sort((a, b) =>{ return center_pos.getRangeTo(a) - center_pos.getRangeTo(b); });
-            cache.enerygyOrder = found.map((struct)=>{return struct.id;});
+            cache.energyOrder = found.map((struct)=>{return struct.id;});
         }
     }
 

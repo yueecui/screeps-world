@@ -26,7 +26,7 @@ interface Room {
     sourceLinks: StructureLink[]
 
     /** 房间的定春布局数据，缓存到global中 */
-    sada: SadaharuData|null
+    sada: SadaData|null
     /** 孵化时使用的能量顺序 */
     energyOrder: Id<StructureExtension|StructureSpawn>[]
 
@@ -47,8 +47,6 @@ interface Room {
     init(): void;
     /** room memory 初始化 */
     initMemory(): void;
-    /** 生成sada data */
-    generateSadaData(): SadaharuData|undefined;
     /** 生成孵化时使用能量的顺序 */
     generateEnergyOrder(): void;
 
@@ -133,29 +131,39 @@ type LAYOUT_FREE = 0
 type LAYOUT_SADAHARU = 1
 
 
-type Haru = [number, number, DirectionConstant, DirectionConstant?]
+type HaruConfig = [number, number, DirectionConstant, DirectionConstant?]
 
 interface SadaharuConfig {
     /** 中心的定位坐标 */
     center: [number, number]
     /** 8组扩展的定位坐标，以及往哪个方向扩展（只能是斜的方向），第四个参数是最后2组扩展，表示spawn位置的 */
-    haru: Haru[]
+    haru: HaruConfig[]
     /** lab区的定位坐标，以及“上”的方向（只能是正的方向） */
     lab: [number, number]
 }
 
-interface SadaharuData{
-    spawn: {
-        center: Id<StructureSpawn>|null,
-        left: Id<StructureSpawn>|null,
-        right: Id<StructureSpawn>|null,
-    }
-    haru: {
-        mainPos: RoomPosition,
-        mainMember: (Id<StructureSpawn>|Id<StructureExtension>)[],
-        subPos: RoomPosition,
-        subMember: Id<StructureExtension>[],
-        energy: number, // 建筑变化，等级提升
-    }[],
-    // lab: 以后再弄
+declare interface SadaData{
+    room: Room;
+    config: SadaharuConfig;
+    centerSpawn: Id<StructureSpawn>|null;
+    leftSpawn: Id<StructureSpawn>|null;
+    rightSpawn: Id<StructureSpawn>|null;
+    haru: HaruData[];
+
+    // 能量使用顺序
+    energyOrder: Id<StructureSpawn|StructureExtension>[]
+}
+
+declare interface HaruData{
+    room: Room
+    config: HaruConfig
+    mainPos: RoomPosition|null
+    mainMember: (Id<StructureSpawn|StructureExtension>)[]
+    subPos: RoomPosition|null
+    subMember: Id<StructureExtension>[]
+    energyMax: number
+
+    // 计算属性
+    /** 当前可用能量 */
+    energy: number
 }

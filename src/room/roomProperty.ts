@@ -194,7 +194,8 @@ export default function () {
 
     Object.defineProperty(Room.prototype, 'energyOrder', {
         get: function () {
-            return global.cache.rooms[this.name].enerygyOrder;
+
+            return global.cache.rooms[this.name].energyOrder;
         },
         enumerable: false,
         configurable: true

@@ -40,9 +40,9 @@ interface RoomCache{
     /** 可用的孵化能量记录，变化的时候需要重新索引haru */
     energy: number
     /** haru设置 */
-    sadaData?: SadaharuData
+    sadaData?: SadaData
     /** 孵化时使用的能量顺序 */
-    enerygyOrder?: (Id<StructureExtension|StructureSpawn>)[]
+    energyOrder?: (Id<StructureExtension|StructureSpawn>)[]
 }
 
 interface Game{
