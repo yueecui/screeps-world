@@ -163,6 +163,7 @@ const r4temp = function(creep: Creep){
 
 const pos_order = [
     new RoomPosition(12, 2,  'W42N50'),
+    new RoomPosition(26, 45,  'W46N50'),
     new RoomPosition(24, 6,  'W46N49'),
 ]
 
@@ -171,7 +172,7 @@ const execute = function(creep: Creep){
     if (creep.memory.room != 'W46N49'){
         return;
     }
-    if (creep.memory.work < 2){
+    if (creep.memory.work < 3){
         const pos = pos_order[creep.memory.node];
         if (pos){
             if (creep.pos.isNearTo(pos)){
@@ -234,9 +235,9 @@ const execute = function(creep: Creep){
             // }
 
             const found = creep.room.find(FIND_CONSTRUCTION_SITES);
-            found.sort((a,b) => {
-                return creep.pos.getRangeTo(a) - creep.pos.getRangeTo(b);
-            })
+            // found.sort((a,b) => {
+            //     return creep.pos.getRangeTo(a) - creep.pos.getRangeTo(b);
+            // })
             if (found.length){
                 if (creep.build(found[0]) == ERR_NOT_IN_RANGE){
                     creep.moveTo(found[0]);
