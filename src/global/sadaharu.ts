@@ -385,7 +385,7 @@ export class Sadaharu {
                     return `Room [${current_name}] 正在使用编辑，已关闭，请再次执行指令`;
                 }
             }else{
-                if (this.data[room_name].startEdit(split)){
+                if (this.data[room_name].startEdit(split ?? true)){
                     this._edit = room_name;
                     return `Room [${room_name}] 已经启用编辑`;
                 }else{

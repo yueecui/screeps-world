@@ -248,15 +248,17 @@ export default function () {
                 }
             }else if (controller_info.type == STRUCTURE_CONTAINER){
                 const container = Game.getObjectById(controller_info.id as Id<StructureContainer>);
-                if (container && container.store[RESOURCE_ENERGY] > 0){
-                    if (this.pos.isNearTo(container)){
-                        if (this.withdraw(container, RESOURCE_ENERGY) == OK){
-                            this.energy = ENERGY_ENOUGH;
-                        };
-                    }else{
-                        this.moveTo(container);
+                if (container){
+                    if (container.store[RESOURCE_ENERGY] > 0){
+                        if (this.pos.isNearTo(container)){
+                            if (this.withdraw(container, RESOURCE_ENERGY) == OK){
+                                this.energy = ENERGY_ENOUGH;
+                            };
+                        }else{
+                            this.moveTo(container);
+                        }
+                        return;
                     }
-                    return;
                 }else{
                     this.room.memory.flagPurge = BOOLEAN_TRUE;
                 }

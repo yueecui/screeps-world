@@ -223,12 +223,14 @@ const role_BB: SpawnConfig = {
         return true;
     },
     needSpawn: (room) => {
-        if (room.storage && room.storage.store[RESOURCE_ENERGY] < 50000) return false;
+        if (room.controller!.level >= 4 && room.storage && room.storage.store[RESOURCE_ENERGY] < 50000) return false;
         const found = room.find(FIND_MY_CONSTRUCTION_SITES);
         let total_progress = 0;
         for (const site of found){
             total_progress += (site.progressTotal - site.progress);
-            if (total_progress >= CONSTRUCTION_SITES_PROGRESS_TO_NEED_BUILDER){
+            if (room.controller!.level >= 4 && total_progress >= CONSTRUCTION_SITES_PROGRESS_TO_NEED_BUILDER){
+                return true;
+            }else if (room.controller!.level < 4 && total_progress >= CONSTRUCTION_SITES_PROGRESS_TO_NEED_BUILDER/3){
                 return true;
             }
         }
@@ -282,9 +284,7 @@ const role_UP: SpawnConfig = {
         const controller = room.controller!;
         if (controller.ticksToDowngrade < 10000){
             return 1;
-        }else if (controller.level == 2){
-            return 2;
-        }else if (controller.level == 3){
+        }else if (controller.level == 2 || controller.level == 3){
             return 5;
         }else if (room.storage){
             const energy = room.storage.store[RESOURCE_ENERGY];
