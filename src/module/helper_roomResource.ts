@@ -59,9 +59,6 @@ export default function(){
             const roomResAll = rooms.map(e=>[e.name,this.getStorageTerminalRes(e)]).reduce((map: {[roomName: string]: ResourceRecord},entry)=>{map[entry[0]] = entry[1];return map},{})
             const all = rooms.reduce((all: ResourceRecord, room)=> this.addStore(all,roomResAll[room.name]),{});
 
-
-            // const all = this.getMyAllRoomRes()
-
             // StrategyMarket.showAllRes()
             const time = Game.cpu.getUsed()
             const base: ResourceConstant[] = [RESOURCE_ENERGY,"U","L","K","Z","X","O","H",RESOURCE_POWER,RESOURCE_OPS]
