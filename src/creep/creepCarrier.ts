@@ -6,9 +6,54 @@ import {
     WORK_TRANSPORTER_CONTROLLER,
     PRIORITY_CONTAINER,
     WORK_TRANSPORTER_STORAGE_MINERAL,
-} from '@/module/constant';
+    TASK_TOWER_ENERGY,
+} from '@/common/constant';
 
 export default function () {
+    // ------------------------------------------------------
+    // 接受发布过来的新任务
+    // ------------------------------------------------------
+    Creep.prototype.acceptTask = function (task) {
+        if (this.memory.task == undefined) this.memory.task = [];
+        this.memory.task.push(task);
+    }
+
+    // ------------------------------------------------------
+    // 检查是否有可获取的任务
+    // ------------------------------------------------------
+    Creep.prototype.checkTask = function () {
+        const room = Game.rooms[this.workRoom];
+        // 只在房间有视野的情况下接受任务
+        if (room == undefined) return;
+
+        // this.task = room.assignTask(this);
+    }
+
+
+    // ------------------------------------------------------
+    // 检查是否有可获取的任务
+    // ------------------------------------------------------
+    Creep.prototype.doTask = function () {
+        if (this.task == undefined) return;
+
+        // 根据任务类型执行不同操作
+        switch (this.task.type){
+            case TASK_TOWER_ENERGY:
+                this.doTaskTowerEnergy();break;
+        }
+    }
+
+
+    // ------------------------------------------------------
+    // 检查是否有可获取的任务
+    // ------------------------------------------------------
+    Creep.prototype.doTaskTowerEnergy = function () {
+        // 检查运送货物的数量是否足够
+        // 获取资源
+        // 运送资源
+    }
+
+
     // ------------------------------------------------------
     // 孵化能量搬运
     // ------------------------------------------------------
@@ -143,7 +188,7 @@ export default function () {
     // 检查
     Creep.prototype.checkWorkTransporterController = function(){
         if (this.work != WORK_TRANSPORTER_CONTROLLER){
-            const room = Game.rooms[this.belongRoom];
+            const room = Game.rooms[this.workRoom];
             const empty_containers = room.getEmptyControllerContainers();
             if (empty_containers.length > 0){
                 // 设定工作状态
@@ -362,7 +407,7 @@ export default function () {
                 this.moveTo(target);
             }
         }else if (this.store.getUsedCapacity() > 0){
-            const room = Game.rooms[this.belongRoom]!;
+            const room = Game.rooms[this.workRoom]!;
             if (this.pos.isNearTo(room.storage!)){
                 for (const name in this.store){
                     this.transfer(room.storage!, name as ResourceConstant);

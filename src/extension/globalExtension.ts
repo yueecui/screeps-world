@@ -1,6 +1,6 @@
-import { Sadaharu } from "./sadaharuLayout";
-import { ConsoleCommandRoom } from './cmdRoom';
-import roomResource from './helper_roomResource';
+import { Sadaharu } from "@/module/sadaharuLayout";
+import { ConsoleCommandRoom } from '@/module/cmdRoom';
+import roomResource from '@/module/helper_roomResource';
 
 export default function () {
     // 初始化

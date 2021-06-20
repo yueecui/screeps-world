@@ -53,20 +53,21 @@ export default function () {
         configurable: true
     });
 
-    Object.defineProperty(Creep.prototype, 'bornRoom', {
+
+    Object.defineProperty(Creep.prototype, 'workRoom', {
         get: function () {
-            return this.memory.born ? this.memory.born : '??';
+            return this.memory.room ? this.memory.room : this.memory.born;
+        },
+        set: function(new_value: string){
+            this.memory.room = new_value;
         },
         enumerable: false,
         configurable: true
     });
 
-    Object.defineProperty(Creep.prototype, 'belongRoom', {
+    Object.defineProperty(Creep.prototype, 'bornRoom', {
         get: function () {
-            return this.memory.belong ? this.memory.belong : this.memory.born;
-        },
-        set: function(new_value: string){
-            this.memory.belong = new_value;
+            return this.memory.born ? this.memory.born : '??';
         },
         enumerable: false,
         configurable: true
@@ -141,6 +142,15 @@ export default function () {
         },
         set: function(new_value: Id<AnyStoreStructure>){
             this.memory.et = new_value;
+        },
+        enumerable: false,
+        configurable: true
+    });
+
+    Object.defineProperty(Creep.prototype, 'task', {
+        get: function () {
+            if (this.memory.task == undefined) this.memory.task = [];
+            return this.memory.task;
         },
         enumerable: false,
         configurable: true

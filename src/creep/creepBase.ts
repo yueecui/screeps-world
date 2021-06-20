@@ -1,5 +1,5 @@
 import roleHarvester from '@/creep/role/Harvester';
-import roleTransporter from '@/creep/role/Transporter';
+import roleTransporter from '@/creep/role/Carrier';
 import roleBuilder from '@/creep/role/Builder';
 import roleUpgrader from '@/creep/role/Upgrader';
 import roleAttacker from '@/creep/role/Attacker';
@@ -13,7 +13,7 @@ import {
     ENERGY_NEED,
     WORK_TRANSPORTER_SPAWN, WORK_TRANSPORTER_TOWER, WORK_TRANSPORTER_STORAGE_ENERGY,
     TASK_WAITING, TASK_ACCEPTED, MODE_NONE, WORK_IDLE,
-} from '@/module/constant';
+} from '@/common/constant';
 
 // 任务队列最大长度
 const TASK_QUEUE_MAX = 5;

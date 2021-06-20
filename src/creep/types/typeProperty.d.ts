@@ -15,7 +15,7 @@ interface Creep {
     index: number;
     roomCode: string;
     /** 该creep属于哪个room */
-    belongRoom: string;
+    workRoom: string;
     bornRoom: string;
 
     role: ANY_ROLE_NAME;
@@ -25,6 +25,8 @@ interface Creep {
     target: Id<any> | null;
     energy: ENERGY_STATUS;
     energyTarget: Id<AnyStoreStructure> | null;
+
+    task: Task<TASK_ANY> | undefined;
 
     /** 计算属性 */
     stayPos: RoomPosition | null;

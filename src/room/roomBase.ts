@@ -1,6 +1,6 @@
 import { TASK_WAITING,
     CONTAINER_TYPE_NONE, CONTAINER_TYPE_CONTROLLER, CONTAINER_TYPE_SOURCE, CONTAINER_TYPE_MINERAL,
-    LINK_TYPE_NONE, LINK_TYPE_STORAGE, LINK_TYPE_CONTROLLER, LINK_TYPE_SOURCE, BOOLEAN_FALSE, BOOLEAN_TRUE, LAYOUT_FREE, LAYOUT_SADAHARU } from "@/module/constant";
+    LINK_TYPE_NONE, LINK_TYPE_STORAGE, LINK_TYPE_CONTROLLER, LINK_TYPE_SOURCE, BOOLEAN_FALSE, BOOLEAN_TRUE, LAYOUT_FREE, LAYOUT_SADAHARU } from "@/common/constant";
 import { SadaData } from "./class/sadaData";
 
 interface findPosParam{
@@ -46,31 +46,10 @@ export default function () {
             if (Game.rooms[name]) Game.rooms[name].run();
         }
 
-        // 临时检查塔
+        // 检查塔
         for (const tower_id of this.towers){
             const tower = Game.getObjectById(tower_id);
-            if (tower){
-                const closestHostile = tower.pos.findClosestByRange(FIND_HOSTILE_CREEPS);
-                if(closestHostile) {
-                    tower.attack(closestHostile);
-                    continue
-                }
-
-                const my_creep = tower.room.find(FIND_MY_CREEPS, {filter: (creep) => {
-                    return creep.hits < creep.hitsMax;
-                }});
-                if (my_creep.length){
-                    tower.heal(my_creep[0]);
-                    continue;
-                }
-
-                const found = this.find(FIND_MY_STRUCTURES, {filter: (struct) => {
-                    return struct.structureType == STRUCTURE_RAMPART && struct.hits < 300;
-                }})
-                if (found.length){
-                    tower.repair(found[0]);
-                }
-            }
+            if (tower) tower.work();
         }
     }
 
@@ -193,7 +172,9 @@ export default function () {
                 stay: {},
             },
             // 以下为测试
-            tasks: this.memory.tasks ?? [],
+            task: this.memory.task ?? [],
+            taskDoing: this.memory.taskDoing ?? [],
+            taskStatus: this.memory.taskStatus ?? {},
             // 以下即将过期
             taskSpawn: this.memory.taskSpawn ?? {},
             taskTowers: this.memory.taskTowers ?? {},
@@ -250,7 +231,7 @@ export default function () {
                 container_info.type = ((container_id: Id<StructureContainer>) => {
                     const container = Game.getObjectById(container_id)!;
                     // 判断是否为mineral的container
-                    if (this.mineral.container == null
+                    if (this.mineral && this.mineral.container == null
                         && container.pos.getRangeTo(Game.getObjectById(this.mineral.id)!) <= 2){
                             const found = Game.getObjectById(this.mineral.id)!.pos.lookFor(LOOK_STRUCTURES);
                             if (found[0] && found[0].structureType == STRUCTURE_EXTRACTOR){

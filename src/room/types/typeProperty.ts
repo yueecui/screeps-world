@@ -19,9 +19,13 @@ interface Room {
     my: boolean
     /** 显示房间是否为我预定的 */
     myReserve: boolean
+
+    /** 快捷方式 */
     storageLink: StructureLink|null
     controllerLink: StructureLink|null
     sourceLinks: StructureLink[]
+    carriers: Creep[]
+
 
     // 布局类型
     layout: LAYOUT_ANY

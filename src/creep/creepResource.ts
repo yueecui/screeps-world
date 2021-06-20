@@ -5,7 +5,7 @@ import {
     PRIORITY_NONE,
     PRIORITY_CONTAINER,
     PRIORITY_STORAGE
-} from '@/module/constant';
+} from '@/common/constant';
 
 export default function () {
     // 更新虫子当前的能量状态
@@ -136,7 +136,7 @@ export default function () {
         const find_dropped = this.room.find(FIND_DROPPED_RESOURCES, { filter: (obj) => { return obj.resourceType == res_type && this.pos.isNearTo(obj); } });
         for (const find of find_dropped){
             // 采集者不拿已经堆满的container上的掉落能量
-            if (this.memory.r == ROLE_HARVESTER){
+            if (this.role == ROLE_HARVESTER){
                 const lookfor_container = this.room.lookAt(find).filter((r) => {
                     return (r.type == 'structure'
                             && (r.structure as StructureContainer).structureType == STRUCTURE_CONTAINER

@@ -1,3 +1,37 @@
+interface Room {
+    /** 分配任务 */
+    assignTask(): void;
+
+    /** 增加任务 */
+    addTask(task_info: Task<TASK_ANY>): void;
+
+
+    /** 判断任务是否已经添加 */
+    hasTask(task_info: Task<TASK_ANY>): boolean;
+
+    /** 根据房间等级等情况，获得通用源 */
+    getCommonSource(): Id<AnyStoreStructure>[];
+}
+
+
+// 先存到Memory里
+// 后面稳定再改到global里
+interface RoomMemory {
+    task: Task<TASK_ANY>[]
+    taskDoing: Task<TASK_ANY>[]
+    taskStatus: {[key:string]: number}
+}
+
+type TASK_STATUS_ANY =
+    | TASK_STATUS_NONE
+    | TASK_STATUS_PENDING
+    | TASK_STATUS_DOING
+
+type TASK_STATUS_NONE = 0
+type TASK_STATUS_PENDING = 1
+type TASK_STATUS_DOING = 2
+
+
 /** 运输任务 */
 interface Task<T extends TASK_ANY>{
     /** 任务类型 */
@@ -14,7 +48,7 @@ interface Task<T extends TASK_ANY>{
 
 type TaskSource<T extends TASK_ANY>
     = T extends TASK_NORMAL_SPAWN_ENERGY | TASK_HARU_SPAWN_ENERGY | TASK_CONTROLLER_ENERGY | TASK_TOWER_ENERGY | TASK_LAB_ENERGY
-    ? Id<StructureContainer | StructureStorage | StructureTerminal>
+    ? undefined
     : T extends TASK_STORE_SOURCE | TASK_STORE_MINERAL
     ? Id<StructureContainer>
     : T extends TASK_RECYCLE_TOMBSTONE
@@ -58,16 +92,3 @@ type TASK_STORE_SOURCE = 11
 type TASK_STORE_MINERAL = 12
 type TASK_RECYCLE_TOMBSTONE = 41
 type TASK_RECYCLE_RUIN = 42
-
-
-interface Room {
-    /** 增加任务 */
-    addTask(): void;
-}
-
-
-// 先存到Memory里
-// 后面稳定再改到global里
-interface RoomMemory {
-    tasks: Task<TASK_ANY>[]
-}

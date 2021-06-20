@@ -1,4 +1,4 @@
-import { CONTAINER_TYPE_SOURCE, ENERGY_ENOUGH, ENERGY_NEED, MODE_NONE } from "@/module/constant";
+import { CONTAINER_TYPE_SOURCE, ENERGY_ENOUGH, ENERGY_NEED, MODE_NONE } from "@/common/constant";
 
 /**
  * 本模式主要是用来处理一些临时操作
@@ -195,7 +195,7 @@ const execute = function(creep: Creep){
                 creep.signController(controller, '别打我，我是菜狗~don\'t attack me, i\'m newbie.')
             }else{
                 if (creep.claimController(controller) == OK){
-                    creep.memory.r = '回收';
+                    creep.role = '回收';
                 }
             }
         }else{

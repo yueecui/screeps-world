@@ -1,7 +1,7 @@
 import creepExtensionProperty from './creepProperty';
 import creepExtensionBase from './creepBase';
 import creepExtensionResource from './creepResource';
-import creepExtensionTransporter from './creepTransporter';
+import creepExtensionTransporter from './creepCarrier';
 import creepExtensionHarvester from './creepWork';
 import creepExtensionAttacker from './creepAttack';
 

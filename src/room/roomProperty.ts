@@ -1,4 +1,4 @@
-import { BOOLEAN_FALSE, BOOLEAN_TRUE, LAYOUT_FREE, LAYOUT_SADAHARU, LINK_TYPE_CONTROLLER, LINK_TYPE_NONE, LINK_TYPE_SOURCE, LINK_TYPE_STORAGE } from "@/module/constant";
+import { BOOLEAN_FALSE, BOOLEAN_TRUE, LAYOUT_FREE, LAYOUT_SADAHARU, LINK_TYPE_CONTROLLER, LINK_TYPE_NONE, LINK_TYPE_SOURCE, LINK_TYPE_STORAGE } from "@/common/constant";
 
 export default function () {
     // 定义各个属性
@@ -178,6 +178,17 @@ export default function () {
                 }
             }
             return this._sourceLinks;
+        },
+        enumerable: false,
+        configurable: true
+    });
+
+    Object.defineProperty(Room.prototype, 'carriers', {
+        get: function () {
+            if (this._carries === undefined){
+                this._carries = _.filter(Game.creeps, creep => !creep.spawning && creep.workRoom == this.name && creep.role == '运输');
+            }
+            return this._carries;
         },
         enumerable: false,
         configurable: true

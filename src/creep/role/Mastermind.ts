@@ -1,4 +1,4 @@
-import { WORK_IDLE, WORK_NORMAL } from "@/module/constant";
+import { WORK_IDLE, WORK_NORMAL } from "@/common/constant";
 
 /**
  * 主脑

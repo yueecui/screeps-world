@@ -9,7 +9,7 @@ import {
     MODE_HARVEST_MINERAL,
     ROLE_GOTO_RECYCLE,
     BOOLEAN_TRUE,
-} from '@/module/constant';
+} from '@/common/constant';
 
 export default function () {
     // ------------------------------------------------------

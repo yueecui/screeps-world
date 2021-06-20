@@ -1,4 +1,4 @@
-import { BOOLEAN_TRUE, TASK_WAITING } from "@/module/constant";
+import { BOOLEAN_TRUE, TASK_WAITING } from "@/common/constant";
 
 export default function () {
 

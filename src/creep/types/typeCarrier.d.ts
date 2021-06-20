@@ -1,5 +1,17 @@
 // 运输相关方法接口扩展
 interface Creep {
+    /** 接受发过来的新任务 */
+    acceptTask(task: Task<TASK_ANY>): void;
+
+
+    /** 检查是否有可用的任务 */
+    checkTask(): void;
+    /** 执行任务 */
+    doTask(): void;
+
+    /** 执行任务：给塔补充能量 */
+    doTaskTowerEnergy(): void;
+
     /**
      * 检查房间的孵化能量是否足够，
      * 不足的情况下会设工作状态为 WORK_TRANSPORTER_SPAWN

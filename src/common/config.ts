@@ -9,3 +9,9 @@ export const MINERAL_CONTAINER_FULL = 1500;
 
 // 当CONTROLLER CONTAINER的容量不足下面的数值时，进行补充
 export const CONTROLLER_CONTAINER_EMPTY = 1000;
+
+
+
+// 塔的能量低于下面的数值时
+export const TOWER_ENERGY_NEED_ADD = 700;
+
