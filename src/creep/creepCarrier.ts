@@ -9,13 +9,23 @@ import {
     TASK_TOWER_ENERGY,
 } from '@/common/constant';
 
+
 export default function () {
+    // ------------------------------------------------------
+    // 检查是否拥有可以完成任务的存储量
+    // ------------------------------------------------------
+    Creep.prototype.hasEnoughCapacity = function(task) {
+
+        return true;
+    };
+
+
     // ------------------------------------------------------
     // 接受发布过来的新任务
     // ------------------------------------------------------
     Creep.prototype.acceptTask = function (task) {
-        if (this.memory.task == undefined) this.memory.task = [];
-        this.memory.task.push(task);
+        // if (this.memory.task == undefined) this.memory.task = [];
+        // this.memory.task.push(task);
     }
 
     // ------------------------------------------------------
@@ -37,10 +47,10 @@ export default function () {
         if (this.task == undefined) return;
 
         // 根据任务类型执行不同操作
-        switch (this.task.type){
-            case TASK_TOWER_ENERGY:
-                this.doTaskTowerEnergy();break;
-        }
+        // switch (this.task.type){
+        //     case TASK_TOWER_ENERGY:
+        //         this.doTaskTowerEnergy();break;
+        // }
     }
 
 

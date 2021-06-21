@@ -12,16 +12,19 @@ import { BOOLEAN_TRUE, CONTAINER_TYPE_NONE, CONTAINER_TYPE_SOURCE, TASK_STATUS_N
 export default function () {
 
     Room.prototype.assignTask = function() {
-        if (this.memory.task == undefined) this.memory.task = [];
-        if (this.memory.task.length == 0) return;
         if (this.carriers.length == 0) return;
-        const carriers_available = this.carriers.filter(creep => creep.task == undefined);
-        if (carriers_available.length == 0) return;
-
-
-
-        // 先就按顺序取前面的任务
-        return this.memory.task.shift();
+        while (this.tasks.length > 0){
+            const carriers_available = this.carriers.filter(creep => creep.task.length == 0);
+            if (carriers_available.length == 0) return;
+            const task = this.tasks[0];
+            for (const carrier of carriers_available){
+                if (carrier.hasEnoughCapacity(task)){
+                    carrier.acceptTask(task);
+                    _.pull(this.tasks, task);
+                    this.taskDoing.push(task);
+                }
+            }
+        }
     }
 
 

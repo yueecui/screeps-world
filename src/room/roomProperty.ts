@@ -194,6 +194,28 @@ export default function () {
         configurable: true
     });
 
+    Object.defineProperty(Room.prototype, 'tasks', {
+        get: function () {
+            if (this.memory.task === undefined){
+                this.memory.task = [];
+            }
+            return this.memory.task;
+        },
+        enumerable: false,
+        configurable: true
+    });
+
+    Object.defineProperty(Room.prototype, 'taskDoing', {
+        get: function () {
+            if (this.memory.taskDoing === undefined){
+                this.memory.taskDoing = [];
+            }
+            return this.memory.taskDoing;
+        },
+        enumerable: false,
+        configurable: true
+    });
+
     Object.defineProperty(Room.prototype, 'layout', {
         get: function () {
             if (this.memory.layout == undefined) return LAYOUT_FREE;

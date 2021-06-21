@@ -25,6 +25,8 @@ interface Room {
     controllerLink: StructureLink|null
     sourceLinks: StructureLink[]
     carriers: Creep[]
+    tasks: Task<TASK_ANY>[]
+    taskDoing: Task<TASK_ANY>[]
 
 
     // 布局类型

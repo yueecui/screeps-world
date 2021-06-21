@@ -26,7 +26,7 @@ interface Creep {
     energy: ENERGY_STATUS;
     energyTarget: Id<AnyStoreStructure> | null;
 
-    task: Task<TASK_ANY> | undefined;
+    task: Task<TASK_ANY>[];
 
     /** 计算属性 */
     stayPos: RoomPosition | null;

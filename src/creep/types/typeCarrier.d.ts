@@ -2,6 +2,8 @@
 interface Creep {
     /** 接受发过来的新任务 */
     acceptTask(task: Task<TASK_ANY>): void;
+    /** 检查是否拥有可以完成任务的存储量 */
+    hasEnoughCapacity(task: Task<TASK_ANY>): boolean;
 
 
     /** 检查是否有可用的任务 */

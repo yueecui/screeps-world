@@ -46,7 +46,6 @@ interface RoomCache{
     /** 孵化时使用的能量顺序 */
     energyOrder?: (Id<StructureExtension|StructureSpawn>)[]
 }
-
 interface Game{
     /** 当前所有活着的工蚁统计，每轮刷新 */
     allLivedCreeps: Record<string, LivedCreeps>

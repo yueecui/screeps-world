@@ -160,8 +160,8 @@ export default function () {
         get: function () {
             if (this._stayPos === undefined){
                 let stay;
-                if (Memory.rooms[this.belongRoom].creepConfig.stay[this.baseName]){
-                    stay = Memory.rooms[this.belongRoom].creepConfig.stay[this.baseName];
+                if (Memory.rooms[this.workRoom].creepConfig.stay[this.baseName]){
+                    stay = Memory.rooms[this.workRoom].creepConfig.stay[this.baseName];
                 }else if (this.memory.stay){
                     stay = this.memory.stay;
                 }
