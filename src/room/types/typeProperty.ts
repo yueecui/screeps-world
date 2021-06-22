@@ -26,7 +26,8 @@ interface Room {
     sourceLinks: StructureLink[]
     carriers: Creep[]
     tasks: Task<TASK_ANY>[]
-    taskDoing: Task<TASK_ANY>[]
+    taskDoing: {[key:number]: Task<TASK_ANY>}
+    taskStatus: {[key:string]: number}
 
 
     // 布局类型

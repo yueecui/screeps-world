@@ -40,16 +40,13 @@ export default function () {
 
     StructureTower.prototype.checkStatus = function () {
         if (this.store[RESOURCE_ENERGY] >= TOWER_ENERGY_NEED_ADD) return;
-        const task_info: Task<TASK_TOWER_ENERGY> = {
+        this.room.createTask({
             type: TASK_TOWER_ENERGY,
-            source: undefined,
-            target: this.id,
+            object: this.id,
             cargo: {
                 [RESOURCE_ENERGY]: Math.min(TOWER_CAPACITY, this.store.getFreeCapacity(RESOURCE_ENERGY))
-            }
-        };
-        if (this.room.hasTask(task_info)) return;
-        this.room.addTask(task_info);
+            },
+        });
     }
 
     StructureTower.prototype.calcDamage = function (target){

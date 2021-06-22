@@ -1,50 +1,67 @@
 interface Room {
-    /** 分配任务 */
-    assignTask(): void;
-
-    /** 增加任务 */
-    addTask(task_info: Task<TASK_ANY>): void;
-
-
+    /** 本tick本room已经发布的任务数量，从1开始 */
+    taskIndex: number;
+    /** 创建任务 */
+    createTask<T extends TASK_ANY>(task_info: Task<T>): boolean;
     /** 判断任务是否已经添加 */
     hasTask(task_info: Task<TASK_ANY>): boolean;
+
+    /** 分配任务 */
+    assignTask(): void;
 
     /** 根据房间等级等情况，获得通用源 */
     getCommonSource(): Id<AnyStoreStructure>[];
 }
 
 
+
 // 先存到Memory里
 // 后面稳定再改到global里
 interface RoomMemory {
     task: Task<TASK_ANY>[]
-    taskDoing: Task<TASK_ANY>[]
+    taskDoing: {[key:number]: Task<TASK_ANY>}
     taskStatus: {[key:string]: number}
 }
-
-type TASK_STATUS_ANY =
-    | TASK_STATUS_NONE
-    | TASK_STATUS_PENDING
-    | TASK_STATUS_DOING
-
-type TASK_STATUS_NONE = 0
-type TASK_STATUS_PENDING = 1
-type TASK_STATUS_DOING = 2
-
 
 /** 运输任务 */
 interface Task<T extends TASK_ANY>{
     /** 任务类型 */
     type: T
-    /** 搬运来源 */
-    source: TaskSource<T>
-    /** 搬运目标 */
-    target: TaskTarget<T>
-    /** 当前执行的creep */
-    creep?: Id<Creep>
+    /** 任务目标ID */
+    object: TaskObjectId<T>
     /** 搬运货物信息，计算时会从来源处扣除 */
     cargo: {[P in ResourceConstant]?: number}
+    /** 任务创建时间 */
+
+    /** ID，由创建时间和序号来生成 */
+    id?: number
+    createTime?: number;
+    /** 任务接受时间 */
+    acceptTime?: number;
+
+    /** 当前执行的creep */
+    creep?: Id<Creep>
+    /** 搬运来源 */
+    source?: Id<any>
+    /** 搬运目标 */
+    target?: Id<any>
 }
+
+
+type TaskObjectId<T extends TASK_ANY>
+    = T extends TASK_NORMAL_SPAWN_ENERGY | TASK_HARU_SPAWN_ENERGY | TASK_CONTROLLER_ENERGY
+    ? string
+    : T extends TASK_TOWER_ENERGY
+    ? Id<StructureTower>
+    : T extends TASK_LAB_ENERGY
+    ? Id<StructureLab>
+    : T extends TASK_STORE_SOURCE | TASK_STORE_MINERAL
+    ? Id<StructureContainer>
+    : T extends TASK_RECYCLE_TOMBSTONE
+    ? Id<Tombstone>
+    : T extends TASK_RECYCLE_RUIN
+    ? Id<Ruin>
+    : never
 
 type TaskSource<T extends TASK_ANY>
     = T extends TASK_NORMAL_SPAWN_ENERGY | TASK_HARU_SPAWN_ENERGY | TASK_CONTROLLER_ENERGY | TASK_TOWER_ENERGY | TASK_LAB_ENERGY
@@ -92,3 +109,13 @@ type TASK_STORE_SOURCE = 11
 type TASK_STORE_MINERAL = 12
 type TASK_RECYCLE_TOMBSTONE = 41
 type TASK_RECYCLE_RUIN = 42
+
+
+// type TASK_STATUS_ANY =
+//     | TASK_STATUS_NONE
+//     | TASK_STATUS_PENDING
+//     | TASK_STATUS_DOING
+
+// type TASK_STATUS_NONE = 0
+// type TASK_STATUS_PENDING = 1
+// type TASK_STATUS_DOING = 2

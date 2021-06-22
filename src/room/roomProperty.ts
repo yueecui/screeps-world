@@ -208,9 +208,20 @@ export default function () {
     Object.defineProperty(Room.prototype, 'taskDoing', {
         get: function () {
             if (this.memory.taskDoing === undefined){
-                this.memory.taskDoing = [];
+                this.memory.taskDoing = {};
             }
             return this.memory.taskDoing;
+        },
+        enumerable: false,
+        configurable: true
+    });
+
+    Object.defineProperty(Room.prototype, 'taskStatus', {
+        get: function () {
+            if (this.memory.taskStatus === undefined){
+                this.memory.taskStatus = {};
+            }
+            return this.memory.taskStatus;
         },
         enumerable: false,
         configurable: true
