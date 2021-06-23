@@ -53,7 +53,7 @@ export default function () {
         }
 
         // 分配任务
-        this.assignTask();
+        // this.assignTask();
     }
 
     Room.prototype.errorCheck = function(){

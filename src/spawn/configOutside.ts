@@ -99,7 +99,8 @@ const role_ENG: SpawnConfig = {
         // 1.目标房间没有控制器
         // 2.已被其他人占领
         // 3.处于攻击状态
-        if (!room.controller
+        if (!room
+            || !room.controller
             || room.controller.owner != undefined
             || room.isUnderAttack) return false;
         return true;
@@ -138,7 +139,8 @@ const role_BB: SpawnConfig = {
         // 2.已被其他人占领
         // 3.房间不是我预定的
         // 4.处于攻击状态
-        if (!room.controller
+        if (!room
+            || !room.controller
             || room.controller.owner != undefined
             || !room.myReserve
             || room.isUnderAttack) return false;
@@ -183,7 +185,8 @@ const role_GA: SpawnConfig = {
         // 4.处于攻击状态
         // 5.采集点0没有container
         // 6.房间还有修建者
-        if (!room.controller
+        if (!room
+            || !room.controller
             || room.controller.owner != undefined
             || !room.myReserve
             || room.isUnderAttack
@@ -236,7 +239,8 @@ const role_GB: SpawnConfig = {
         // 4.处于攻击状态
         // 5.采集点1没有container
         // 6.房间还有修建者
-        if (!room.controller
+        if (!room
+            || !room.controller
             || room.controller.owner != undefined
             || !room.myReserve
             || room.isUnderAttack
@@ -282,7 +286,8 @@ const role_TO: SpawnConfig = {
         // 4.处于攻击状态
         // 5.房间里没有采集者
         // 6.房间里还有修建者
-        if (!room.controller
+        if (!room
+            || !room.controller
             || room.controller.owner != undefined
             || !room.myReserve
             || room.isUnderAttack

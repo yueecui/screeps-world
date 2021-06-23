@@ -14,6 +14,7 @@ export default function () {
         if (!force && this.hasTask(task_info)) return false;
         // 补充、修正任务数据
         this.taskIndex = this.taskIndex ?? 0 + 1;
+        // T表示运输任务
         task_info.id = 'T' + Game.time % 10000 * 100 + this.taskIndex;
         task_info.createTime = Game.time;
 

@@ -15,10 +15,10 @@ export default function (creep: Creep) {
     if (creep.memory.room != undefined){
         otherRoom(creep);
     }else{
-        if (creep.doTask()) return;
-        return;
-        // updateStatus(creep);
-        // execute(creep);
+        // if (creep.doTask()) return;
+        // return;
+        updateStatus(creep);
+        execute(creep);
     }
 }
 
