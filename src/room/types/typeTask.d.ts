@@ -2,7 +2,7 @@ interface Room {
     /** 本tick本room已经发布的任务数量，从1开始 */
     taskIndex: number;
     /** 创建运输任务 */
-    createTask<T extends TASK_ANY>(task_info: Task<T>, priority?: TASK_PRIORITY_ANY): boolean;
+    createTask<T extends TASK_ANY>(task_info: Task<T>, priority?: TASK_PRIORITY_ANY, force?: boolean): boolean;
     /** 判断运输任务是否已经添加 */
     hasTask(task_info: Task<TASK_ANY>): boolean;
 

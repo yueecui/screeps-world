@@ -176,7 +176,7 @@ export default function () {
             },
             // 以下为测试
             tasks: this.memory.tasks ?? [],
-            taskDoing: this.memory.taskDoing ?? [],
+            taskDoing: this.memory.taskDoing ?? {},
             taskStatus: this.memory.taskStatus ?? {},
             // 以下即将过期
             taskSpawn: this.memory.taskSpawn ?? {},

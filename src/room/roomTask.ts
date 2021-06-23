@@ -9,9 +9,9 @@ import { BOOLEAN_TRUE, CONTAINER_TYPE_NONE, CONTAINER_TYPE_SOURCE, TASK_PRIORITY
 
 
 export default function () {
-    Room.prototype.createTask = function(task_info, priority=TASK_PRIORITY_LOW) {
+    Room.prototype.createTask = function(task_info, priority=TASK_PRIORITY_LOW, force=false) {
         // 检查是否已添加
-        if (this.hasTask(task_info)) return false;
+        if (!force && this.hasTask(task_info)) return false;
         // 补充、修正任务数据
         this.taskIndex = this.taskIndex ?? 0 + 1;
         task_info.id = 'T' + Game.time % 10000 * 100 + this.taskIndex;
@@ -71,7 +71,7 @@ export default function () {
                 type: task.type,
                 object: task.object,
                 cargo: this.sendTask(task, carriers_available[0])
-            }, TASK_PRIORITY_HIGH);
+            }, TASK_PRIORITY_HIGH, true);
         }
     }
 
