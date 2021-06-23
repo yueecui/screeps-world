@@ -196,10 +196,10 @@ export default function () {
 
     Object.defineProperty(Room.prototype, 'tasks', {
         get: function () {
-            if (this.memory.task === undefined){
-                this.memory.task = [];
+            if (this.memory.tasks === undefined){
+                this.memory.tasks = [];
             }
-            return this.memory.task;
+            return this.memory.tasks;
         },
         enumerable: false,
         configurable: true

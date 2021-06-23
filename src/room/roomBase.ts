@@ -51,6 +51,9 @@ export default function () {
             const tower = Game.getObjectById(tower_id);
             if (tower) tower.work();
         }
+
+        // 分配任务
+        this.assignTask();
     }
 
     Room.prototype.errorCheck = function(){
@@ -172,7 +175,7 @@ export default function () {
                 stay: {},
             },
             // 以下为测试
-            task: this.memory.task ?? [],
+            tasks: this.memory.tasks ?? [],
             taskDoing: this.memory.taskDoing ?? [],
             taskStatus: this.memory.taskStatus ?? {},
             // 以下即将过期

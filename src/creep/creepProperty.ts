@@ -147,10 +147,10 @@ export default function () {
         configurable: true
     });
 
-    Object.defineProperty(Creep.prototype, 'task', {
+    Object.defineProperty(Creep.prototype, 'taskQueue', {
         get: function () {
-            if (this.memory.task == undefined) this.memory.task = [];
-            return this.memory.task;
+            if (this.memory.taskQueue == undefined) this.memory.taskQueue = [];
+            return this.memory.taskQueue;
         },
         enumerable: false,
         configurable: true

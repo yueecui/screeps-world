@@ -14,8 +14,8 @@ interface CreepMemory {
 
     /** Creep工作的目标room */
     room: string
-    /** 接受的任务列表 */
-    task: Task<TASK_ANY>[]
+    /** 接受的任务队列 */
+    taskQueue: TaskId[]
 
 
     /** Creep当前的工作目标 */

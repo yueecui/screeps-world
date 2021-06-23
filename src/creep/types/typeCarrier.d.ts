@@ -1,18 +1,25 @@
 // 运输相关方法接口扩展
 interface Creep {
-    /** 接受发过来的新任务 */
-    acceptTask(task: Task<TASK_ANY>): void;
     /** 检查是否拥有可以完成任务的存储量 */
     hasEnoughCapacity(task: Task<TASK_ANY>): boolean;
+    /** 预定货物 */
+    hasEnoughCargo(task: Task<TASK_ANY>): boolean;
+    /** 接受发过来的新任务 */
+    acceptTask(task: Task<TASK_ANY>): TaskCargo;
+    /** 执行任务，返回值为是否执行了操作 */
+    doTask(): boolean;
+    /** 任务完成后的处理 */
+    completeTask(task: Task<TASK_ANY>): void;
+    /** 删除掉任务的处理 */
+    removeTask(task: Task<TASK_ANY>, recreate?: boolean): void;
+    /** 预定货物 */
+    orderCargo(task: Task<TASK_ANY>, room: Room): boolean;
 
-
-    /** 检查是否有可用的任务 */
-    checkTask(): void;
-    /** 执行任务 */
-    doTask(): void;
 
     /** 执行任务：给塔补充能量 */
-    doTaskTowerEnergy(): void;
+    doTaskTowerEnergy(task: Task<TASK_TOWER_ENERGY>): boolean;
+
+
 
     /**
      * 检查房间的孵化能量是否足够，

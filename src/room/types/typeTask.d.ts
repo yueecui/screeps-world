@@ -1,16 +1,18 @@
 interface Room {
     /** 本tick本room已经发布的任务数量，从1开始 */
     taskIndex: number;
-    /** 创建任务 */
-    createTask<T extends TASK_ANY>(task_info: Task<T>): boolean;
-    /** 判断任务是否已经添加 */
+    /** 创建运输任务 */
+    createTask<T extends TASK_ANY>(task_info: Task<T>, priority?: TASK_PRIORITY_ANY): boolean;
+    /** 判断运输任务是否已经添加 */
     hasTask(task_info: Task<TASK_ANY>): boolean;
 
-    /** 分配任务 */
+    /** 分配运输任务 */
     assignTask(): void;
+    /** 将运输任务发送给蚂蚁 */
+    sendTask(task: Task<TASK_ANY>, creep: Creep): TaskCargo;
 
     /** 根据房间等级等情况，获得通用源 */
-    getCommonSource(): Id<AnyStoreStructure>[];
+    getCommonSource(): AnyStoreStructure[];
 }
 
 
@@ -18,76 +20,45 @@ interface Room {
 // 先存到Memory里
 // 后面稳定再改到global里
 interface RoomMemory {
-    task: Task<TASK_ANY>[]
-    taskDoing: {[key:number]: Task<TASK_ANY>}
-    taskStatus: {[key:string]: number}
+    /** 未处理的运输任务队列 */
+    tasks: Task<TASK_ANY>[]
+    /** 进行中的运输任务队列 */
+    taskDoing: {[key:string]: Task<TASK_ANY>}
+    /** 发布运输任务的状态 */
+    taskStatus: {[key:string]: TaskId}
 }
 
 /** 运输任务 */
 interface Task<T extends TASK_ANY>{
+    // 创建时参数
     /** 任务类型 */
     type: T
     /** 任务目标ID */
     object: TaskObjectId<T>
     /** 搬运货物信息，计算时会从来源处扣除 */
-    cargo: {[P in ResourceConstant]?: number}
-    /** 任务创建时间 */
-
+    cargo: TaskCargo
     /** ID，由创建时间和序号来生成 */
-    id?: number
+    id?: TaskId
+    /** 任务创建时间 */
     createTime?: number;
+
+    // 分配时参数
     /** 任务接受时间 */
     acceptTime?: number;
-
     /** 当前执行的creep */
     creep?: Id<Creep>
-    /** 搬运来源 */
-    source?: Id<any>
-    /** 搬运目标 */
-    target?: Id<any>
+
+    // 执行时参数
+    /** 状态编号 */
+    state?: number
+    /** 预定的物资 */
+    order?: cargoOrder[]
 }
 
+type TaskId = string
 
-type TaskObjectId<T extends TASK_ANY>
-    = T extends TASK_NORMAL_SPAWN_ENERGY | TASK_HARU_SPAWN_ENERGY | TASK_CONTROLLER_ENERGY
-    ? string
-    : T extends TASK_TOWER_ENERGY
-    ? Id<StructureTower>
-    : T extends TASK_LAB_ENERGY
-    ? Id<StructureLab>
-    : T extends TASK_STORE_SOURCE | TASK_STORE_MINERAL
-    ? Id<StructureContainer>
-    : T extends TASK_RECYCLE_TOMBSTONE
-    ? Id<Tombstone>
-    : T extends TASK_RECYCLE_RUIN
-    ? Id<Ruin>
-    : never
 
-type TaskSource<T extends TASK_ANY>
-    = T extends TASK_NORMAL_SPAWN_ENERGY | TASK_HARU_SPAWN_ENERGY | TASK_CONTROLLER_ENERGY | TASK_TOWER_ENERGY | TASK_LAB_ENERGY
-    ? undefined
-    : T extends TASK_STORE_SOURCE | TASK_STORE_MINERAL
-    ? Id<StructureContainer>
-    : T extends TASK_RECYCLE_TOMBSTONE
-    ? Id<Tombstone>
-    : T extends TASK_RECYCLE_RUIN
-    ? Id<Ruin>
-    : never
-
-type TaskTarget<T extends TASK_ANY>
-    = T extends TASK_NORMAL_SPAWN_ENERGY
-    ? Id<StructureExtension|StructureSpawn>
-    : T extends TASK_HARU_SPAWN_ENERGY
-    ? number
-    : T extends TASK_CONTROLLER_ENERGY
-    ? Id<StructureContainer>
-    : T extends TASK_TOWER_ENERGY
-    ? Id<StructureTower>
-    : T extends TASK_LAB_ENERGY
-    ? Id<StructureLab>
-    : T extends TASK_STORE_SOURCE | TASK_STORE_MINERAL | TASK_RECYCLE_TOMBSTONE | TASK_RECYCLE_RUIN
-    ? undefined  // 这些存到storage / terminal，不需要特定的target
-    : never
+type TaskCargo = {[P in ResourceConstant]?: number}
 
 type TASK_ANY =
     |TASK_NORMAL_SPAWN_ENERGY
@@ -111,11 +82,32 @@ type TASK_RECYCLE_TOMBSTONE = 41
 type TASK_RECYCLE_RUIN = 42
 
 
-// type TASK_STATUS_ANY =
-//     | TASK_STATUS_NONE
-//     | TASK_STATUS_PENDING
-//     | TASK_STATUS_DOING
+type TaskObjectId<T extends TASK_ANY>
+    = T extends TASK_NORMAL_SPAWN_ENERGY | TASK_HARU_SPAWN_ENERGY | TASK_CONTROLLER_ENERGY
+    ? string
+    : T extends TASK_TOWER_ENERGY
+    ? Id<StructureTower>
+    : T extends TASK_LAB_ENERGY
+    ? Id<StructureLab>
+    : T extends TASK_STORE_SOURCE | TASK_STORE_MINERAL
+    ? Id<StructureContainer>
+    : T extends TASK_RECYCLE_TOMBSTONE
+    ? Id<Tombstone>
+    : T extends TASK_RECYCLE_RUIN
+    ? Id<Ruin>
+    : never
 
-// type TASK_STATUS_NONE = 0
-// type TASK_STATUS_PENDING = 1
-// type TASK_STATUS_DOING = 2
+type TASK_PRIORITY_ANY =
+    | TASK_PRIORITY_HIGH
+    | TASK_PRIORITY_MIDDLE
+    | TASK_PRIORITY_LOW
+
+type TASK_PRIORITY_HIGH = 0
+type TASK_PRIORITY_MIDDLE = 1
+type TASK_PRIORITY_LOW = 2
+
+type cargoOrder = {
+    id: Id<AnyStoreStructure>
+    type: ResourceConstant
+    amount: number
+}
