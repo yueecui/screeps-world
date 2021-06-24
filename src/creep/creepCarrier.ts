@@ -44,7 +44,7 @@ export default function () {
     // ------------------------------------------------------
     Creep.prototype.orderCargo = function(task, room) {
         if (room == undefined) return false;
-        const cargo_sources = room.getCommonSource();
+        const cargo_sources = room.getCommonSource();  // TODO:必要的时候可能需要从LINK取能量
         if (cargo_sources.length == 0) return false;
         if (task.order == undefined) task.order = [];
 
@@ -52,8 +52,7 @@ export default function () {
             let need = task.cargo[name as ResourceConstant]! - this.store[name as ResourceConstant];
             if (need <= 0) continue;
             for (const source of cargo_sources){
-                // TODO:这里应该读取的是计算过其他订单占用后的数量
-                if (source.store[name as ResourceConstant] >= need){
+                if (source.getCalcCapacity(name as ResourceConstant) >= need){
                     task.order.push({
                         id: source.id,
                         room: source.room.name,
