@@ -1,3 +1,9 @@
+import {
+    ENERGY_NEED, ENERGY_ENOUGH,
+    WORK_IDLE, WORK_TRANSPORTER_SPAWN, WORK_TRANSPORTER_TOWER, WORK_TRANSPORTER_STORAGE_ENERGY, WORK_TRANSPORTER_CONTROLLER,
+    MODE_SPAWN, MODE_CONTROLLER, WORK_TRANSPORTER_STORAGE_MINERAL, WORK_TRANSPORTER_TOMBSTONE, TRUE
+} from '@/common/constant';
+
 const IDLE_POS = { x: 28, y: 27 }
 
 // 如果目标无视野，则先走到下面的位置
@@ -9,10 +15,10 @@ export default function (creep: Creep) {
     if (creep.memory.room != undefined){
         otherRoom(creep);
     }else{
-        // if (creep.doTask()) return;
-        // return;
-        updateStatus(creep);
-        execute(creep);
+        creep.doTask();
+        return;
+        // updateStatus(creep);
+        // execute(creep);
     }
 }
 

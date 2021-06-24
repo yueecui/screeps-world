@@ -1,3 +1,6 @@
+import { CONTAINER_TYPE_CONTROLLER, CONTAINER_TYPE_SOURCE, CONTAINER_TYPE_MINERAL, PLAN_PAY, LINK_TYPE_CONTROLLER, TRUE, LINK_TYPE_SOURCE, LINK_TYPE_NONE } from "@/common/constant";
+import { CONTROLLER_CONTAINER_EMPTY, SOURCE_CONTAINER_FULL, MINERAL_CONTAINER_FULL } from "@/common/config"
+
 export default function () {
     // 预定一个container的能量变化
     Room.prototype.bookingContainer = function(creep_name, container_id, type, amount){
@@ -75,6 +78,8 @@ export default function () {
             if (container == null) { return false; }
             return this.getStructureEnergyCapacity(container) < CONTROLLER_CONTAINER_EMPTY; }
         ) as StructureContainer[];
+
+
     };
 
     // 运转所有link

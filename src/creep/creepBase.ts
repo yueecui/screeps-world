@@ -9,6 +9,12 @@ import roleManual from '@/creep/role/Manual';
 import roleMastermind from '@/creep/role/Mastermind';
 import roleScout from '@/creep/role/Scout';
 
+import {
+    ENERGY_NEED,
+    WORK_TRANSPORTER_SPAWN, WORK_TRANSPORTER_TOWER, WORK_TRANSPORTER_STORAGE_ENERGY,
+    TASK_WAITING, TASK_ACCEPTED, MODE_NONE, WORK_IDLE,
+} from '@/common/constant';
+
 // 任务队列最大长度
 const TASK_QUEUE_MAX = 5;
 

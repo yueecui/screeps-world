@@ -1,6 +1,8 @@
 /**
  * 一个房间内运作必备的虫子的配置
  */
+ import { SPAWN_TYPE_IN_ROOM, MODE_BUILDER, MODE_HARVEST_ENERGY, MODE_HARVEST_MINERAL, MODE_HELP, MODE_REPAIRER, MODE_SPAWN, TRUE, FALSE, MODE_OUTSIDE, MODE_CONTROLLER } from "@/common/constant";
+import { CONSTRUCTION_SITES_PROGRESS_TO_NEED_BUILDER } from '@/common/config';
 import { BodyGenerator } from './bodyGenerator';
 
 /** 全灭后救灾的蚂蚁 */
@@ -500,10 +502,10 @@ export const SPAWN_BASE_PRIORITY_MID: Map<string, SpawnConfig> = new Map([
 // 低优先级
 export const SPAWN_BASE_PRIORITY_LOW: Map<string, SpawnConfig> = new Map([
     // 手动脚本角色
-    // ['MA', role_MA],
+    ['MA', role_MA],
     // ['MB', role_MB],
     // ['MC', role_MC],
-    // ['MT', role_MT],
+    ['MT', role_MT],
 
     // 优先建造的建筑者
     ['BB', role_BB],

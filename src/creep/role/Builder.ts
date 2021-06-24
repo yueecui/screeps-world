@@ -5,6 +5,11 @@
 
 // 修理一旦开始就会修完
 
+import {
+    ENERGY_NEED,
+    WORK_IDLE, WORK_BUILD, WORK_REPAIR,
+    MODE_BUILDER, MODE_REPAIRER, CONTAINER_TYPE_SOURCE, ENERGY_ENOUGH, PRIORITY_STORAGE } from "@/common/constant";
+
 const REPAIR_PERCENT = 0.7;  // 耐久度低到什么程度开始修理
 
 export default function (creep: Creep) {

@@ -14,6 +14,8 @@ interface Creep {
     removeTask(task: Task<TASK_ANY>, recreate?: boolean): void;
     /** 预定货物 */
     orderCargo(task: Task<TASK_ANY>, room: Room): boolean;
+    /** 取得货物 */
+    obtainCargo(task: Task<TASK_ANY>): boolean;
 
 
     /** 执行任务：给塔补充能量 */

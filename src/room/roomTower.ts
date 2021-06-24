@@ -1,3 +1,5 @@
+import { TRUE, TASK_WAITING } from "@/common/constant";
+
 export default function () {
 
     // 根据房间等级获取扩展的最大容量

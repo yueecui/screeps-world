@@ -5,6 +5,9 @@
 // 拣墓碑
 // 拣废墟
 
+import { TRUE, CONTAINER_TYPE_NONE, CONTAINER_TYPE_SOURCE, TASK_PRIORITY_HIGH, TASK_PRIORITY_LOW, TASK_PRIORITY_MIDDLE, TASK_TOWER_ENERGY } from "@/common/constant";
+
+
 export default function () {
     Room.prototype.createTask = function(task_info, priority=TASK_PRIORITY_LOW, force=false) {
         // 检查是否已添加
@@ -53,7 +56,6 @@ export default function () {
         while (this.tasks.length > 0){
             const carriers_available = this.carriers.filter(creep => creep.taskQueue.length == 0);
             if (carriers_available.length == 0) return;
-            carriers_available.sort((a,b) => { return a.store.getCapacity() - b.store.getCapacity() });  // 按容量排序，优先使用最合适容量的运输车
             const task = this.tasks[0];
             // 第一轮筛选
             // TODO：还需要做距离筛选、寿命筛选
@@ -65,10 +67,11 @@ export default function () {
             }
             if (task.acceptTime) continue;
             // 第一轮没找到合适目标（没有容量足够的目标） 则拆分订单
+            // TODO：还需要更精细的筛选规则
             this.createTask({
                 type: task.type,
                 object: task.object,
-                cargo: this.sendTask(task, carriers_available[carriers_available.length-1])  // 用最大容量的那个去运
+                cargo: this.sendTask(task, carriers_available[0])
             }, TASK_PRIORITY_HIGH, true);
         }
     }

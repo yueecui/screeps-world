@@ -1,3 +1,6 @@
+import { TASK_WAITING,
+    CONTAINER_TYPE_NONE, CONTAINER_TYPE_CONTROLLER, CONTAINER_TYPE_SOURCE, CONTAINER_TYPE_MINERAL,
+    LINK_TYPE_NONE, LINK_TYPE_STORAGE, LINK_TYPE_CONTROLLER, LINK_TYPE_SOURCE, FALSE, TRUE, LAYOUT_FREE, LAYOUT_SADAHARU } from "@/common/constant";
 import { SadaData } from "./class/sadaData";
 
 interface findPosParam{
@@ -50,7 +53,7 @@ export default function () {
         }
 
         // 分配任务
-        // this.assignTask();
+        this.assignTask();
     }
 
     Room.prototype.errorCheck = function(){

@@ -1,3 +1,20 @@
+import {
+    ENERGY_NEED, ENERGY_ENOUGH,
+    WORK_IDLE, WORK_TRANSPORTER_SPAWN, WORK_TRANSPORTER_TOWER, WORK_TRANSPORTER_STORAGE_ENERGY, WORK_TRANSPORTER_TOMBSTONE,
+    TASK_WAITING, TASK_ACCEPTED,
+    CONTAINER_TYPE_SOURCE,
+    WORK_TRANSPORTER_CONTROLLER,
+    PRIORITY_CONTAINER,
+    WORK_TRANSPORTER_STORAGE_MINERAL,
+    TASK_TOWER_ENERGY,
+    TASK_STATUS_ORDER,
+    TASK_STATUS_DELIVER,
+    TASK_STATUS_INIT,
+    TASK_STATUS_OBTAIN,
+} from '@/common/constant';
+import { ICON_PAUSE, ICON_QUESTION_MARK_1, ICON_SEARCH_1, ICON_SEARCH_2 } from '@/common/emoji';
+
+
 export default function () {
     // ------------------------------------------------------
     // 检查是否拥有可以完成任务的存储量
@@ -27,7 +44,7 @@ export default function () {
     // ------------------------------------------------------
     Creep.prototype.orderCargo = function(task, room) {
         if (room == undefined) return false;
-        const cargo_sources = room.getCommonSource();  // TODO:必要的时候可能需要从LINK取能量
+        const cargo_sources = room.getCommonSource();
         if (cargo_sources.length == 0) return false;
         if (task.order == undefined) task.order = [];
 
@@ -35,9 +52,11 @@ export default function () {
             let need = task.cargo[name as ResourceConstant]! - this.store[name as ResourceConstant];
             if (need <= 0) continue;
             for (const source of cargo_sources){
-                if (source.getCalcCapacity(name as ResourceConstant) >= need){
+                // TODO:这里应该读取的是计算过其他订单占用后的数量
+                if (source.store[name as ResourceConstant] >= need){
                     task.order.push({
                         id: source.id,
+                        room: source.room.name,
                         type: name as ResourceConstant,
                         amount: need
                     });
@@ -143,45 +162,89 @@ export default function () {
     }
 
     // ------------------------------------------------------
+    // 预定货物
+    // ------------------------------------------------------
+    Creep.prototype.orderCargo = function(task, room) {
+        if (room == undefined) return false;
+        const cargo_sources = room.getCommonSource();  // TODO:必要的时候可能需要从LINK取能量
+        if (cargo_sources.length == 0) return false;
+        if (task.order == undefined) task.order = [];
+
+        for (const name in task.cargo){
+            let need = task.cargo[name as ResourceConstant]! - this.store[name as ResourceConstant];
+            if (need <= 0) continue;
+            for (const source of cargo_sources){
+                if (source.getCalcCapacity(name as ResourceConstant) >= need){
+                    task.order.push({
+                        id: source.id,
+                        room: source.room.name,
+                        type: name as ResourceConstant,
+                        amount: need
+                    });
+                    need = 0;
+                    break;
+                }
+            }
+            // 如果所有源都没有足够的货物，则返回false
+            if (need > 0) return false;
+        }
+        return true;
+    };
+
+    // ------------------------------------------------------
+    // 按预定取得货物
+    // ------------------------------------------------------
+    Creep.prototype.obtainCargo = function(task) {
+        if (task.order && task.order.length > 0) {
+            const room = Game.rooms[task.order[0].room];
+            if (!room){
+                this.moveTo(new RoomPosition(25, 25, task.order[0].room));
+                return true;
+            }
+            const target = Game.getObjectById(task.order[0].id);
+            if (target == null){
+                // 目标失踪的话重新寻找源来预定货物
+                task.order.splice(0, task.order.length);
+                task.state = TASK_STATUS_ORDER;
+                return false;
+            }
+            if (this.pos.isNearTo(target)){
+                // TODO：考虑下如果是storage，可以顺手存东西
+                const result = this.withdraw(target, task.order[0].type, task.order[0].amount);
+                if (result == OK){
+                    task.order.splice(0, 1);
+                }
+            }else{
+                this.moveTo(target);
+            }
+            return true;
+        }else{
+            // 没有货物需要取了，进入下一步送货
+            task.state = TASK_STATUS_DELIVER;
+            return false;
+        }
+    };
+
+
+    // ------------------------------------------------------
     // 执行任务：给塔补充能量
     // ------------------------------------------------------
     Creep.prototype.doTaskTowerEnergy = function (task) {
-        switch(task.state ?? 0){
-            case 0:  // 初始化
+        switch(task.state ?? TASK_STATUS_INIT){
+            case TASK_STATUS_INIT:  // 初始化
                 task.state = this.hasEnoughCargo(task) ? 3 : 1;
                 return this.doTaskTowerEnergy(task);
-            case 1:  // 从源预定货物
+            case TASK_STATUS_ORDER:  // 从源预定货物
                 if (this.orderCargo(task, Game.rooms[this.workRoom])){
-                    task.state = 2;
+                    task.state = TASK_STATUS_OBTAIN;
                     return this.doTaskTowerEnergy(task);
                 }else{
                     this.say(ICON_PAUSE);
                     return false;
                 }
-            case 2:  // 从预定的源里获取货物
-                if (task.order && task.order.length > 0) {
-                    const target = Game.getObjectById(task.order[0].id);
-                    if (target == null){
-                        // 目标失踪的话重新寻找源来预定货物
-                        task.order.splice(0, task.order.length);
-                        task.state = 1;
-                        return this.doTaskTowerEnergy(task);
-                    }
-                    if (this.pos.isNearTo(target)){
-                        // TODO：需要把不用的材料存进去
-                        const result = this.withdraw(target, task.order[0].type, task.order[0].amount);
-                        if (result == OK){
-                            task.order.splice(0, 1);
-                        }
-                    }else{
-                        this.moveTo(target);
-                    }
-                    return true;
-                }else{
-                    task.state = 3;
-                    return this.doTaskTowerEnergy(task);
-                }
-            case 3:  // 运送货物去目的地中
+            case TASK_STATUS_OBTAIN:  // 从预定的源里获取货物
+                return this.obtainCargo(task) ? true : this.doTaskTowerEnergy(task);
+            case TASK_STATUS_DELIVER:  // 运送货物去目的地中
                 const target = Game.getObjectById(task.object);
                 // 目标不存在时取消任务
                 if (target == null) {
@@ -204,7 +267,6 @@ export default function () {
                 }
                 return true;
         }
-        return false;
     }
 
 

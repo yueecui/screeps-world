@@ -1,7 +1,10 @@
 /**
  * 房间外矿虫子配置
  */
- import { BodyGenerator } from './bodyGenerator';
+
+import { SPAWN_TYPE_OUTSIDE, MODE_BUILDER, MODE_HARVEST_ENERGY, MODE_HARVEST_MINERAL, MODE_HELP, MODE_REPAIRER, MODE_SPAWN, TRUE, FALSE, MODE_OUTSIDE } from "@/common/constant";
+import { BodyGenerator } from './bodyGenerator';
+
 
 /** 外矿防御者 */
 const role_DE: SpawnConfig = {

@@ -1,3 +1,16 @@
+import {
+    ENERGY_NEED, ENERGY_ENOUGH,
+    WORK_IDLE,
+    CONTAINER_TYPE_CONTROLLER,
+    WORK_HARVEST,
+    WORK_MOVE,
+    WORK_REPAIR,
+    MODE_HARVEST_ENERGY,
+    MODE_HARVEST_MINERAL,
+    ROLE_GOTO_RECYCLE,
+    TRUE,
+} from '@/common/constant';
+
 export default function () {
     // ------------------------------------------------------
     // 采集能量

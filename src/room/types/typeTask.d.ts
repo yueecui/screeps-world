@@ -50,7 +50,7 @@ interface Task<T extends TASK_ANY>{
 
     // 执行时参数
     /** 状态编号 */
-    state?: number
+    state?: TASK_STATUS_ANY
     /** 预定的物资 */
     order?: cargoOrder[]
 }
@@ -108,6 +108,18 @@ type TASK_PRIORITY_LOW = 2
 
 type cargoOrder = {
     id: Id<AnyStoreStructure>
+    room: string
     type: ResourceConstant
     amount: number
 }
+
+type TASK_STATUS_ANY =
+    |TASK_STATUS_INIT
+    |TASK_STATUS_ORDER
+    |TASK_STATUS_OBTAIN
+    |TASK_STATUS_DELIVER
+
+type TASK_STATUS_INIT = 0
+type TASK_STATUS_ORDER = 1
+type TASK_STATUS_OBTAIN = 2
+type TASK_STATUS_DELIVER = 3
