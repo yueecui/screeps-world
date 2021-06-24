@@ -1,25 +1,127 @@
 import { CONTAINER_TYPE_SOURCE, ENERGY_ENOUGH, ENERGY_NEED, MODE_NONE } from "@/common/constant";
+import { ICON_QUESTION_MARK_1, ICON_QUESTION_MARK_2, ICON_QUESTION_MARK_3 } from "@/common/emoji";
 
 /**
  * 本模式主要是用来处理一些临时操作
  */
 
 export default function (creep: Creep) {
-    if (creep.roomCode == 'R3' && (creep.mode == 0 || creep.mode == 1)){
-        execute(creep);
-        return;
-    }
     if (creep.baseName == 'MA'){
-        if (creep.bornRoom == 'W41N54'){
-            r3_claim(creep)
-        }else{
-            attack_temp(creep);
-        }
-    }else if (creep.room.code == 'R2'){
-        r4temp(creep);
+        dismantle(creep);
+    }else if (creep.baseName == 'MT'){
+        transport(creep);
     }else{
         creep.say('呆');
     }
+}
+
+
+const dismantle = function (creep: Creep) {
+    const flag = Game.flags['MA_target'];
+    if (!flag) {
+        if (creep.room.name != creep.workRoom){
+            creep.moveTo(new RoomPosition(25, 25, creep.workRoom), {visualizePathStyle:{}, reusePath: 50});
+            return;
+        }else{
+            creep.say(ICON_QUESTION_MARK_1);
+            return;
+        }
+    }else{
+        if (creep.pos.isNearTo(flag)){
+            let target;
+            if (creep.target){
+                target = Game.getObjectById(creep.target) as StructureRampart | null;
+            }
+            if (!target || !creep.pos.isNearTo(target)){
+                target = _(flag.pos.lookFor(LOOK_STRUCTURES)).find({ structureType: STRUCTURE_RAMPART});
+                if (target){
+                    creep.target = target.id;
+                }
+            }
+            if (!target){
+                creep.say(ICON_QUESTION_MARK_1);
+                return;
+            }
+            creep.dismantle(target);
+        }else{
+            creep.moveTo(flag, {visualizePathStyle:{}, reusePath: 50});
+        }
+    }
+}
+
+const transport = function (creep: Creep) {
+    if (creep.mode == 0 && creep.store.getFreeCapacity() == 0){
+        creep.mode = 1;
+    }else if (creep.mode == 1 && creep.store.getUsedCapacity() == 0){
+        creep.mode = 0;
+    }
+    if (creep.mode == 0){
+        if (creep.room.name != creep.workRoom){
+            creep.moveTo(new RoomPosition(25, 25, creep.workRoom), {visualizePathStyle:{}, reusePath: 50});
+            return;
+        }
+
+        let target;
+        if (creep.target){
+            target = Game.getObjectById(creep.target);
+        }
+        if (!target){
+            target = find_target(creep);
+        }
+        if (!target){
+            creep.say(ICON_QUESTION_MARK_3);
+            return;
+        }
+        if (creep.pos.isNearTo(target)){
+            if (target instanceof Resource){
+                creep.pickup(target);
+            }else if (target instanceof Structure && 'store' in target){
+                for (const name in (target as AnyStoreStructure).store){
+                    if (name != RESOURCE_LEMERGIUM){
+                        creep.withdraw(target as Structure, name as ResourceConstant);
+                        return;
+                    }
+                }
+            }
+        }else{
+            creep.moveTo(target, {visualizePathStyle:{}});
+            return;
+        }
+        creep.say(ICON_QUESTION_MARK_2)
+    }else{
+        if (creep.room.name != creep.bornRoom){
+            creep.moveTo(new RoomPosition(25, 25, creep.bornRoom), {visualizePathStyle:{}, reusePath: 50});
+            return;
+        }
+        const target = creep.room.storage!;
+        if (creep.pos.isNearTo(target)){
+            for (const name in creep.store){
+                creep.transfer(target, name as ResourceConstant);
+                break;
+            }
+        }else{
+            creep.moveTo(target);
+        }
+    }
+}
+
+const find_target = function (creep:Creep) {
+    const drop_resource = creep.room.find(FIND_DROPPED_RESOURCES, { filter: res=> res.amount>200 });
+    if (drop_resource.length > 0){
+        return creep.pos.findClosestByRange(drop_resource);
+    }
+        // creep.target = target.id;
+        // if (creep.pos.isNearTo(target)){
+        //     creep.pickup(target);
+        // }else{
+        //     creep.moveTo(target);
+        // }
+    const store_structure = creep.room.find(FIND_STRUCTURES, { filter: str=> str.structureType != STRUCTURE_STORAGE && 'store' in str && str.store[RESOURCE_ENERGY] > 0});
+    if (store_structure.length > 0){
+        return creep.pos.findClosestByRange(store_structure);
+    }
+
+    return creep.room.storage;
 }
 
 // 临时

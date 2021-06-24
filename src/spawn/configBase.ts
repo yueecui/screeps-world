@@ -318,26 +318,31 @@ const role_MA: SpawnConfig = {
     advance: false,
     memory: (spawn_room, work_room_name) => {
         return {
-            room: 'W46N49',
-            mode: 1,
-            node: 0,
+            room: 'W49N52',
             role: '手动'
         }
     },
     amount: function(spawn_room, work_room_name) {
         let amount = spawn_room.getSpawnAmount(this.baseName);
         if (amount > -1) return amount;
-        return 0;
+        return 1;
     },
     isLive: (spawn_room, creep) => {
         return true;
     },
     needSpawn: (spawn_room, work_room_name) => {
-        if (spawn_room.code != 'R3') return false;
-        return true;
+        return spawn_room.code == 'R4';
     },
-    body: (spawn_room) => {
-        return [CLAIM, MOVE]
+    body: function(room: Room){
+        const group_amount = 9;
+        const body: BodyPartConstant[] = []
+        for (let i=0;i<group_amount;i++){
+            body.push(WORK, WORK);
+        }
+        for (let i=0;i<group_amount;i++){
+            body.push(MOVE);
+        }
+        return body
     }
 }
 
@@ -364,7 +369,7 @@ const role_MB: SpawnConfig = {
         return true;
     },
     needSpawn: (spawn_room, work_room_name) => {
-        return true;
+        return spawn_room.code == 'R4';
     },
     body: generateBodyBuilder
 }
@@ -392,9 +397,35 @@ const role_MC: SpawnConfig = {
         return true;
     },
     needSpawn: (spawn_room, work_room_name) => {
-        return true;
+        return spawn_room.code == 'R4';
     },
     body: generateBodyBuilder
+}
+
+/** 手工控制的搬运工 */
+const role_MT: SpawnConfig = {
+    type: SPAWN_TYPE_IN_ROOM,
+    baseName: 'MT',
+    advance: true,
+    memory: (spawn_room, work_room_name) => {
+        return {
+            room: 'W49N52',
+            mode: 0,
+            role: '手动'
+        }
+    },
+    amount: function(spawn_room) {
+        let amount = spawn_room.getSpawnAmount(this.baseName);
+        if (amount > -1) return amount;
+        return 1;
+    },
+    isLive: (spawn_room, creep) => {
+        return true;
+    },
+    needSpawn: (spawn_room) => {
+        return spawn_room.code == 'R4';
+    },
+    body: generateBodyTransporter
 }
 
 /** 斥候 */
@@ -482,11 +513,10 @@ export const SPAWN_BASE_PRIORITY_MID: Map<string, SpawnConfig> = new Map([
 // 低优先级
 export const SPAWN_BASE_PRIORITY_LOW: Map<string, SpawnConfig> = new Map([
     // 手动脚本角色
-    // ['MA', role_MA],
-    // 手动脚本角色
-    ['MB', role_MB],
-    // 手动脚本角色
-    ['MC', role_MC],
+    ['MA', role_MA],
+    // ['MB', role_MB],
+    // ['MC', role_MC],
+    ['MT', role_MT],
 
     // 优先建造的建筑者
     ['BB', role_BB],

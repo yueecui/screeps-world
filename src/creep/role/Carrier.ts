@@ -37,7 +37,7 @@ const updateStatus = function(creep: Creep){
             if (creep.checkWorkTransporterSpawn()) return;
             if (creep.checkWorkTransporterStorage_Energy()) return;
             if (creep.checkWorkTransporterTombstone()) return;
-            // if (creep.checkWorkTransporterTower()) return;
+            if (creep.checkWorkTransporterTower()) return;
             // if (creep.checkWorkTransporterStorage_Mineral()) return;
         }
     }else {
@@ -46,7 +46,7 @@ const updateStatus = function(creep: Creep){
 
         // 空闲下才会执行的任务
         if (creep.work == WORK_IDLE){
-            // if (creep.checkWorkTransporterTower()) return;
+            if (creep.checkWorkTransporterTower()) return;
             if (creep.checkWorkTransporterStorage_Energy()) return;
             if (creep.checkWorkTransporterController()) return;
             // if (creep.checkWorkTransporterStorage_Mineral()) return;
