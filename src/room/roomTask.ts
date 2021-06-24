@@ -89,20 +89,29 @@ export default function () {
         return creep.acceptTask(task);
     }
 
-    Room.prototype.getCommonSource = function() {
+    Room.prototype.getCommonSource = function(task) {
         if (!this.my) return []
+        const onlyEnergy = RESOURCE_ENERGY in task.cargo && Object.keys(task.cargo).length == 1;
 
         const result = [];
         if (this.storage) result.push(this.storage);
         if (this.terminal) result.push(this.terminal);
-        if (result.length > 0) return result;
-        // 只有没有storage和terminal时才去查container
-        for (const info of this.memory.data.containers.filter(info => info.type == CONTAINER_TYPE_SOURCE || info.type == CONTAINER_TYPE_NONE)){
+        for (const info of this.containers.filter(info => info.type == CONTAINER_TYPE_NONE || (onlyEnergy && info.type == CONTAINER_TYPE_SOURCE))){
             const container = Game.getObjectById(info.id);
             if (container){
                 result.push(container);
             }else{
                 this.memory.flagPurge = TRUE;
+            }
+        }
+        if (onlyEnergy){
+            for (const info of this.links){
+                const link = Game.getObjectById(info.id);
+                if (link){
+                    result.push(link);
+                }else{
+                    this.memory.flagPurge = TRUE;
+                }
             }
         }
         return result;

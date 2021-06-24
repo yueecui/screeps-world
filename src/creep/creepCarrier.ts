@@ -135,7 +135,7 @@ export default function () {
     // ------------------------------------------------------
     Creep.prototype.orderCargo = function(task, room) {
         if (room == undefined) return false;
-        const cargo_sources = room.getCommonSource();  // TODO:必要的时候可能需要从LINK取能量
+        const cargo_sources = room.getCommonSource(task);  // TODO:必要的时候可能需要从LINK取能量
         if (cargo_sources.length == 0) return false;
         if (task.order == undefined) task.order = [];
 

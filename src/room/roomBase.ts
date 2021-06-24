@@ -49,11 +49,15 @@ export default function () {
         // 检查塔
         for (const tower_id of this.towers){
             const tower = Game.getObjectById(tower_id);
-            if (tower) tower.work();
+            tower ? tower.work() : this.memory.flagPurge = TRUE;
         }
 
         // 分配任务
         if (Game.rooms.sim){
+            for (const container_info of this.containers){
+                const container = Game.getObjectById(container_info.id);
+                container ? container.work() : this.memory.flagPurge = TRUE;
+            }
             this.assignTask();
         }
     }

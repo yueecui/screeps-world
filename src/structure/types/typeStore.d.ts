@@ -11,3 +11,7 @@ interface StructureTerminal{
 interface StructureContainer{
     getCalcCapacity(resource_name: ResourceConstant): number;
 }
+
+interface StructureLink{
+    getCalcCapacity(resource_name: ResourceConstant): number;
+}

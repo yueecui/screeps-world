@@ -23,4 +23,7 @@ export default function () {
     StructureContainer.prototype.getCalcCapacity = function (name) {
         return getCalcCapacity(name, this);
     }
+    StructureLink.prototype.getCalcCapacity = function (name) {
+        return getCalcCapacity(name, this);
+    }
 }

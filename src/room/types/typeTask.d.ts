@@ -12,7 +12,7 @@ interface Room {
     sendTask(task: Task<TASK_ANY>, creep: Creep): TaskCargo;
 
     /** 根据房间等级等情况，获得通用源 */
-    getCommonSource(): (StructureStorage|StructureTerminal|StructureContainer)[];
+    getCommonSource(task: Task<TASK_ANY>): (StructureStorage|StructureTerminal|StructureContainer|StructureLink)[];
 }
 
 
