@@ -28,48 +28,6 @@ export default function () {
     };
 
     // ------------------------------------------------------
-    // 检查是否现在持有足够的货物
-    // ------------------------------------------------------
-    Creep.prototype.hasEnoughCargo = function(task) {
-        for (const name in task.cargo){
-            if (this.store[name as ResourceConstant] < task.cargo[name as ResourceConstant]!){
-                return false;
-            }
-        }
-        return true;
-    };
-
-    // ------------------------------------------------------
-    // 预定货物
-    // ------------------------------------------------------
-    Creep.prototype.orderCargo = function(task, room) {
-        if (room == undefined) return false;
-        const cargo_sources = room.getCommonSource();  // TODO:必要的时候可能需要从LINK取能量
-        if (cargo_sources.length == 0) return false;
-        if (task.order == undefined) task.order = [];
-
-        for (const name in task.cargo){
-            let need = task.cargo[name as ResourceConstant]! - this.store[name as ResourceConstant];
-            if (need <= 0) continue;
-            for (const source of cargo_sources){
-                if (source.getCalcCapacity(name as ResourceConstant) >= need){
-                    task.order.push({
-                        id: source.id,
-                        room: source.room.name,
-                        type: name as ResourceConstant,
-                        amount: need
-                    });
-                    need = 0;
-                    break;
-                }
-            }
-            // 如果所有源都没有足够的货物，则返回false
-            if (need > 0) return false;
-        }
-        return true;
-    };
-
-    // ------------------------------------------------------
     // 接受发布过来的新任务
     // 只接受自己容量够的部分，其他的部分作为返回值发送回去，供拆分
     // ------------------------------------------------------
@@ -102,6 +60,17 @@ export default function () {
         return remain_cargo;
     }
 
+    // ------------------------------------------------------
+    // 检查是否现在持有足够的货物
+    // ------------------------------------------------------
+    Creep.prototype.hasEnoughCargo = function(task) {
+        for (const name in task.cargo){
+            if (this.store[name as ResourceConstant] < task.cargo[name as ResourceConstant]!){
+                return false;
+            }
+        }
+        return true;
+    };
 
     // ------------------------------------------------------
     // 执行任务
@@ -160,6 +129,7 @@ export default function () {
         _.pull(this.taskQueue, task.id);
     }
 
+
     // ------------------------------------------------------
     // 预定货物
     // ------------------------------------------------------
@@ -172,8 +142,10 @@ export default function () {
         for (const name in task.cargo){
             let need = task.cargo[name as ResourceConstant]! - this.store[name as ResourceConstant];
             if (need <= 0) continue;
+            const source_calc_capacity: { id: Id<AnyStoreStructure>, room: string, amount: number}[] = [];
             for (const source of cargo_sources){
-                if (source.getCalcCapacity(name as ResourceConstant) >= need){
+                const calc_capacity = source.getCalcCapacity(name as ResourceConstant);
+                if (calc_capacity >= need){
                     task.order.push({
                         id: source.id,
                         room: source.room.name,
@@ -182,9 +154,31 @@ export default function () {
                     });
                     need = 0;
                     break;
+                }else{
+                    source_calc_capacity.push({
+                        id: source.id,
+                        room: source.room.name,
+                        amount: calc_capacity
+                    });
                 }
             }
-            // 如果所有源都没有足够的货物，则返回false
+
+            // 如果所有源都没有足够的货物，则检查使用多个源是否足够
+            if (_(source_calc_capacity).map(source=>source.amount).sum() >= need){
+                source_calc_capacity.sort((a,b) => b.amount - a.amount);
+                for (const source of source_calc_capacity){
+                    const amount = source.amount >= need ? need : source.amount;
+                    task.order.push({
+                        id: source.id,
+                        room: source.room,
+                        type: name as ResourceConstant,
+                        amount: amount
+                    });
+                    need -= amount;
+                    if (need <= 0) return true;
+                }
+            }
+            // 如果加起来也不够，则返回false
             if (need > 0) return false;
         }
         return true;
@@ -242,7 +236,9 @@ export default function () {
                     return false;
                 }
             case TASK_STATUS_OBTAIN:  // 从预定的源里获取货物
-                return this.obtainCargo(task) ? true : this.doTaskTowerEnergy(task);
+                if (this.obtainCargo(task)) return true;
+                if (task.state != TASK_STATUS_OBTAIN) return this.doTaskTowerEnergy(task);  // 在前一步里改变了任务状态时，重新执行任务
+                return false;
             case TASK_STATUS_DELIVER:  // 运送货物去目的地中
                 const target = Game.getObjectById(task.object);
                 // 目标不存在时取消任务

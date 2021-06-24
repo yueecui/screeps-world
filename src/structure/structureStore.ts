@@ -1,4 +1,4 @@
-const getCalcCapacity = function (name:ResourceConstant, structure: StructureStorage|StructureTerminal|StructureContainer) {
+const getCalcCapacity = function (name:ResourceConstant, structure: AnyStoreStructure) {
     let capacity = structure.store[name];
     if (capacity == 0) return 0;
     for (const name in structure.room.taskDoing){
