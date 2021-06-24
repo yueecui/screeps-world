@@ -99,7 +99,7 @@ export default function () {
             if (container){
                 result.push(container);
             }else{
-                this.memory.flagPurge = BOOLEAN_TRUE;
+                this.memory.flagPurge = TRUE;
             }
         }
         return result;

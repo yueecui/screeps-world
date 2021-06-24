@@ -21,7 +21,7 @@ export default function () {
                     const link = Game.getObjectById(room.sources[this.memory.node].link!);
                     if (link){
                         this.transfer(link, RESOURCE_ENERGY, 100);
-                    }else room.memory.flagPurge = BOOLEAN_TRUE;
+                    }else room.memory.flagPurge = TRUE;
                 }
             }else{
                 this.work = WORK_MOVE;
@@ -139,7 +139,7 @@ export default function () {
                     const link = Game.getObjectById(this.room.sources[this.memory.node].link!);
                     if (link){
                         this.transfer(link, RESOURCE_ENERGY, 100);
-                    }else this.room.memory.flagPurge = BOOLEAN_TRUE;
+                    }else this.room.memory.flagPurge = TRUE;
                 }
             }else if (target instanceof Mineral){
                 const container = Game.getObjectById(this.room.mineral.container!)!;
@@ -247,7 +247,7 @@ export default function () {
                         return;
                     }
                 }else{
-                    this.room.memory.flagPurge = BOOLEAN_TRUE;
+                    this.room.memory.flagPurge = TRUE;
                 }
             }
             this.say('饿');

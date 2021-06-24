@@ -28,8 +28,8 @@ const role_DE: SpawnConfig = {
         // 需要目标房间遭到攻击
         // 由于不一定有视野，所以通过Memory判断
         if (work_room_name && Memory.rooms[work_room_name]){
-            return Memory.rooms[work_room_name].status.underAttack == BOOLEAN_TRUE
-                || Memory.rooms[work_room_name].status.hasInvaderCore == BOOLEAN_TRUE;
+            return Memory.rooms[work_room_name].status.underAttack == TRUE
+                || Memory.rooms[work_room_name].status.hasInvaderCore == TRUE;
         }
         return false;
     },

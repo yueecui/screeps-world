@@ -62,11 +62,11 @@ interface Memory{
     sadaharuConfigs: Record<string, SadaharuConfig>
 }
 
-type BOOLEAN_ANY =
-    | BOOLEAN_FALSE
-    | BOOLEAN_TRUE
+type BOOL_ANY =
+    | FALSE
+    | TRUE
 
-type BOOLEAN_FALSE = 0
-type BOOLEAN_TRUE = 1
+type FALSE = 0
+type TRUE = 1
 
 type LivedCreeps = Record<string, number[]>;

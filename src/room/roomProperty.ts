@@ -136,7 +136,7 @@ export default function () {
                 }else{
                     this._storageLink = Game.getObjectById(info.id);
                     if (this._storageLink == null){
-                        this.memory.flagPurge = BOOLEAN_TRUE;
+                        this.memory.flagPurge = TRUE;
                     }
                 }
             }
@@ -155,7 +155,7 @@ export default function () {
                 }else{
                     this._controllerLink = Game.getObjectById(info.id);
                     if (this._controllerLink == null){
-                        this.memory.flagPurge = BOOLEAN_TRUE;
+                        this.memory.flagPurge = TRUE;
                     }
                 }
             }
@@ -172,7 +172,7 @@ export default function () {
                 for (const info of _.filter(this.links as linkInfo[], (info)=>{ return info.type == LINK_TYPE_SOURCE || info.type == LINK_TYPE_NONE })){
                     const link = Game.getObjectById(info.id);
                     if (link) this._sourceLinks.push(link);
-                    else this.memory.flagPurge = BOOLEAN_TRUE;
+                    else this.memory.flagPurge = TRUE;
                 }
             }
             return this._sourceLinks;
@@ -254,7 +254,7 @@ export default function () {
 
     Object.defineProperty(Room.prototype, 'isUnderAttack', {
         get: function () {
-            return this.memory.status.underAttack == BOOLEAN_TRUE;
+            return this.memory.status.underAttack == TRUE;
         },
         enumerable: false,
         configurable: true
@@ -263,7 +263,7 @@ export default function () {
     Object.defineProperty(Room.prototype, 'hasInvaderCore', {
         get: function () {
             if (this.myReserve){
-                return this.memory.status.hasInvaderCore == BOOLEAN_TRUE;
+                return this.memory.status.hasInvaderCore == TRUE;
             }else{
                 return false;
             }
@@ -275,13 +275,13 @@ export default function () {
     Object.defineProperty(Room.prototype, 'controllerLinkNeedEnergy', {
         get: function () {
             if (this.my){
-                return this.memory.status.controllerLinkNeedEnergy == BOOLEAN_TRUE;
+                return this.memory.status.controllerLinkNeedEnergy == TRUE;
             }else{
                 return false;
             }
         },
         set: function (new_value: boolean) {
-            this.memory.status.controllerLinkNeedEnergy = new_value ? BOOLEAN_TRUE : BOOLEAN_FALSE;
+            this.memory.status.controllerLinkNeedEnergy = new_value ? TRUE : FALSE;
         },
         enumerable: false,
         configurable: true

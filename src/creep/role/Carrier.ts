@@ -127,7 +127,7 @@ const otherRoom = function(creep: Creep){
                     containers.push(container);
                 }
             }else{
-                creep.room.memory.flagPurge = BOOLEAN_TRUE;
+                creep.room.memory.flagPurge = TRUE;
             }
         }
         containers.sort((a, b) => { return b.store[RESOURCE_ENERGY] - a.store[RESOURCE_ENERGY]; })

@@ -29,7 +29,7 @@ export default function () {
 
         if (this.memory.flagPurge){
             console.log(`[${Game.time}] Room ${this.name} 强制刷新缓存完成`);
-            this.memory.flagPurge = BOOLEAN_FALSE;
+            this.memory.flagPurge = FALSE;
         }
 
         // 每tick任务
@@ -138,7 +138,7 @@ export default function () {
 
     Room.prototype.initMemory = function(){
         const new_memory: RoomMemory = {
-            flagPurge: this.memory.flagPurge ?? BOOLEAN_TRUE,
+            flagPurge: this.memory.flagPurge ?? TRUE,
             lastSpawnTime: this.memory.lastSpawnTime ?? 0,
             layout: this.memory.layout ?? LAYOUT_FREE,
             data: this.memory.data ?? {
@@ -157,7 +157,7 @@ export default function () {
                 }
             },
             status: this.memory.status ?? {
-                underAttack: BOOLEAN_FALSE,
+                underAttack: FALSE,
             },
             roomConfig: this.memory.roomConfig ?? {
                 code: this.name,
@@ -372,15 +372,15 @@ export default function () {
 
     Room.prototype.checkEnemy = function(){
         if (this.find(FIND_HOSTILE_CREEPS).length > 0){
-            this.memory.status.underAttack = BOOLEAN_TRUE;
+            this.memory.status.underAttack = TRUE;
         }else{
-            this.memory.status.underAttack = BOOLEAN_FALSE;
+            this.memory.status.underAttack = FALSE;
         }
         if (!this.isUnderAttack){
             if (this.find(FIND_HOSTILE_STRUCTURES).length > 0){
-                this.memory.status.hasInvaderCore = BOOLEAN_TRUE;
+                this.memory.status.hasInvaderCore = TRUE;
             }else{
-                this.memory.status.hasInvaderCore = BOOLEAN_FALSE;
+                this.memory.status.hasInvaderCore = FALSE;
             }
         }
     }
