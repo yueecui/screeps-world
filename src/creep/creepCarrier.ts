@@ -1,16 +1,3 @@
-import {
-    ENERGY_NEED, ENERGY_ENOUGH,
-    WORK_IDLE, WORK_TRANSPORTER_SPAWN, WORK_TRANSPORTER_TOWER, WORK_TRANSPORTER_STORAGE_ENERGY, WORK_TRANSPORTER_TOMBSTONE,
-    TASK_WAITING, TASK_ACCEPTED,
-    CONTAINER_TYPE_SOURCE,
-    WORK_TRANSPORTER_CONTROLLER,
-    PRIORITY_CONTAINER,
-    WORK_TRANSPORTER_STORAGE_MINERAL,
-    TASK_TOWER_ENERGY,
-} from '@/common/constant';
-import { ICON_PAUSE, ICON_QUESTION_MARK_1, ICON_SEARCH_1, ICON_SEARCH_2 } from '@/common/emoji';
-
-
 export default function () {
     // ------------------------------------------------------
     // 检查是否拥有可以完成任务的存储量
@@ -40,7 +27,7 @@ export default function () {
     // ------------------------------------------------------
     Creep.prototype.orderCargo = function(task, room) {
         if (room == undefined) return false;
-        const cargo_sources = room.getCommonSource();
+        const cargo_sources = room.getCommonSource();  // TODO:必要的时候可能需要从LINK取能量
         if (cargo_sources.length == 0) return false;
         if (task.order == undefined) task.order = [];
 

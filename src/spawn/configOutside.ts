@@ -1,15 +1,7 @@
 /**
  * 房间外矿虫子配置
  */
-
-import { SPAWN_TYPE_OUTSIDE, MODE_BUILDER, MODE_CONTROLLER, MODE_HARVEST_ENERGY, MODE_HARVEST_MINERAL, MODE_HELP, MODE_REPAIRER, MODE_SPAWN, BOOLEAN_TRUE, BOOLEAN_FALSE, MODE_OUTSIDE } from "@/common/constant";
-
-import { generateBodyOutsideDefender,
-    generateBodyOutsideReserver,
-    generateBodyBuilder,
-    generateBodyOutsideEnergyHarvester,
-    generateBodyOutsideTransporter,
-    } from './bodyGenerator'
+ import { BodyGenerator } from './bodyGenerator';
 
 /** 外矿防御者 */
 const role_DE: SpawnConfig = {
@@ -41,7 +33,7 @@ const role_DE: SpawnConfig = {
         }
         return false;
     },
-    body: generateBodyOutsideDefender
+    body: BodyGenerator.OutsideDefender
 }
 
 /** 斥候 */
@@ -105,7 +97,7 @@ const role_ENG: SpawnConfig = {
             || room.isUnderAttack) return false;
         return true;
     },
-    body: generateBodyOutsideReserver
+    body: BodyGenerator.OutsideReserver
 }
 
 /** 外矿的建造的建设者 */
@@ -148,7 +140,7 @@ const role_BB: SpawnConfig = {
         const found = room.find(FIND_MY_CONSTRUCTION_SITES);
         return found.length > 0 ? true : false;
     },
-    body: generateBodyBuilder
+    body: BodyGenerator.Builder
 }
 
 /** 外矿能量采集者A */
@@ -195,7 +187,7 @@ const role_GA: SpawnConfig = {
         return true;
     },
     body: (room) =>{
-        return generateBodyOutsideEnergyHarvester(room);
+        return BodyGenerator.OutsideEnergyHarvester(room);
     }
 }
 
@@ -249,7 +241,7 @@ const role_GB: SpawnConfig = {
         return true;
     },
     body: (room) =>{
-        return generateBodyOutsideEnergyHarvester(room);
+        return BodyGenerator.OutsideEnergyHarvester(room);
     }
 }
 
@@ -296,7 +288,7 @@ const role_TO: SpawnConfig = {
 
         return true;
     },
-    body: generateBodyOutsideTransporter
+    body: BodyGenerator.OutsideTransporter
 }
 
 // 高优先级

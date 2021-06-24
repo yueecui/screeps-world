@@ -1,5 +1,3 @@
-import { WORK_IDLE, WORK_UPGRADE } from "@/common/constant";
-
 export default function (creep: Creep) {
     updateStatus(creep);
     execute(creep);

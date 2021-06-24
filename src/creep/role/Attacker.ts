@@ -1,4 +1,3 @@
-
 export default function (creep: Creep) {
     if (creep.room.name != creep.memory.room){
         const pos = new RoomPosition(6, 21, creep.memory.room);

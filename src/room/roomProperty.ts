@@ -1,5 +1,3 @@
-import { BOOLEAN_FALSE, BOOLEAN_TRUE, LAYOUT_FREE, LAYOUT_SADAHARU, LINK_TYPE_CONTROLLER, LINK_TYPE_NONE, LINK_TYPE_SOURCE, LINK_TYPE_STORAGE } from "@/common/constant";
-
 export default function () {
     // 定义各个属性
     Object.defineProperty(Room.prototype, 'sources', {

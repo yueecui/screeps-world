@@ -1,12 +1,3 @@
-import {
-    ROLE_HARVESTER,
-    ENERGY_NEED, ENERGY_ENOUGH,
-    PLAN_PAY,
-    PRIORITY_NONE,
-    PRIORITY_CONTAINER,
-    PRIORITY_STORAGE
-} from '@/common/constant';
-
 export default function () {
     // 更新虫子当前的能量状态
     Creep.prototype.updateEnergyStatus = function(){

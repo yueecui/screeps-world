@@ -1,20 +1,7 @@
 /**
  * 一个房间内运作必备的虫子的配置
  */
-
-import { SPAWN_TYPE_IN_ROOM, MODE_BUILDER, MODE_CONTROLLER, MODE_HARVEST_ENERGY, MODE_HARVEST_MINERAL, MODE_HELP, MODE_REPAIRER, MODE_SPAWN } from "@/common/constant";
-
-import { generateBodyTransporter,
-    generateBodyTransporterHelp,
-    generateBodyEnergyHarvester,
-    generateBodyMineralHarvester,
-    generateBodyMastermind,
-    generateBodyBuilder,
-    generateBodyUpgrader,
-    generateBodyOutsideDefender,
-    } from './bodyGenerator'
-
-import { CONSTRUCTION_SITES_PROGRESS_TO_NEED_BUILDER } from '@/common/config'
+import { BodyGenerator } from './bodyGenerator';
 
 /** 全灭后救灾的蚂蚁 */
 const role_HELP: SpawnConfig = {
@@ -36,7 +23,7 @@ const role_HELP: SpawnConfig = {
     needSpawn: (room) => {
         return room.countBaseNameCreeps('HELP', 'TS', 'TU') == 0 && room.energyAvailable >= 300;
     },
-    body: generateBodyTransporterHelp
+    body: BodyGenerator.TransporterHelp
 }
 
 
@@ -63,7 +50,7 @@ const role_TS: SpawnConfig = {
         // 随时需要
         return true;
     },
-    body: generateBodyTransporter
+    body: BodyGenerator.Transporter
 }
 
 /** 优先搬运升级能量的搬运者 */
@@ -89,7 +76,7 @@ const role_TU: SpawnConfig = {
         // 随时需要
         return true;
     },
-    body: generateBodyTransporter
+    body: BodyGenerator.Transporter
 }
 
 /** ROOM内能量采集者，A和B对应2个采集点 */
@@ -117,7 +104,7 @@ const role_GA: SpawnConfig = {
         return true;
     },
     body: (room) =>{
-        return generateBodyEnergyHarvester(room, 0);
+        return BodyGenerator.EnergyHarvester(room, 0);
     }
 }
 
@@ -145,7 +132,7 @@ const role_GB: SpawnConfig = {
         return true;
     },
     body: (room) =>{
-        return generateBodyEnergyHarvester(room, 1);
+        return BodyGenerator.EnergyHarvester(room, 1);
     }
 }
 
@@ -173,7 +160,7 @@ const role_GM: SpawnConfig = {
         // 没有建extracter时，container不会计数
         return room.mineral && room.mineral.container != null && Game.getObjectById((room.mineral.id))!.mineralAmount > 0;
     },
-    body: generateBodyMineralHarvester
+    body: BodyGenerator.MineralHarvester
 }
 
 /** 中心操作者 */
@@ -199,7 +186,7 @@ const role_MM: SpawnConfig = {
         // 临时
         return room.links.length >= 2;
     },
-    body: generateBodyMastermind
+    body: BodyGenerator.Mastermind
 }
 
 /** 优先建造的建筑者 */
@@ -236,7 +223,7 @@ const role_BB: SpawnConfig = {
         }
         return false;
     },
-    body: generateBodyBuilder
+    body: BodyGenerator.Builder
 }
 
 /** 优先修理的建筑者 */
@@ -263,7 +250,7 @@ const role_BR: SpawnConfig = {
         // 后面应该改成不需要修时不刷新
         return true;
     },
-    body: generateBodyBuilder
+    body: BodyGenerator.Builder
 }
 
 /** 升级者 */
@@ -308,7 +295,7 @@ const role_UP: SpawnConfig = {
         }
         return true;
     },
-    body: generateBodyUpgrader
+    body: BodyGenerator.Upgrader
 }
 
 /** 测试用 */
@@ -371,7 +358,7 @@ const role_MB: SpawnConfig = {
     needSpawn: (spawn_room, work_room_name) => {
         return spawn_room.code == 'R4';
     },
-    body: generateBodyBuilder
+    body: BodyGenerator.Builder
 }
 
 /** 帮忙建筑工 */
@@ -399,7 +386,7 @@ const role_MC: SpawnConfig = {
     needSpawn: (spawn_room, work_room_name) => {
         return spawn_room.code == 'R4';
     },
-    body: generateBodyBuilder
+    body: BodyGenerator.Builder
 }
 
 /** 手工控制的搬运工 */
@@ -425,7 +412,7 @@ const role_MT: SpawnConfig = {
     needSpawn: (spawn_room) => {
         return spawn_room.code == 'R4';
     },
-    body: generateBodyTransporter
+    body: BodyGenerator.Transporter
 }
 
 /** 斥候 */
@@ -480,7 +467,7 @@ const role_TT: SpawnConfig = {
         // 随时需要
         return true;
     },
-    body: generateBodyTransporter
+    body: BodyGenerator.Transporter
 }
 
 
@@ -513,10 +500,10 @@ export const SPAWN_BASE_PRIORITY_MID: Map<string, SpawnConfig> = new Map([
 // 低优先级
 export const SPAWN_BASE_PRIORITY_LOW: Map<string, SpawnConfig> = new Map([
     // 手动脚本角色
-    ['MA', role_MA],
+    // ['MA', role_MA],
     // ['MB', role_MB],
     // ['MC', role_MC],
-    ['MT', role_MT],
+    // ['MT', role_MT],
 
     // 优先建造的建筑者
     ['BB', role_BB],

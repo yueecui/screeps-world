@@ -1,8 +1,3 @@
-import {
-    SPAWN_TYPE_IN_ROOM, SPAWN_TYPE_OUTSIDE,
-    ENERGY_NEED, WORK_IDLE
-} from '@/common/constant';
-
 import { SPAWN_BASE_PRIORITY_HIGH, SPAWN_BASE_PRIORITY_MID, SPAWN_BASE_PRIORITY_LOW } from './configBase'
 import { SPAWN_OUTSIDE_PRIORITY_HIGH, SPAWN_OUTSIDE_PRIORITY_LOW } from './configOutside'
 

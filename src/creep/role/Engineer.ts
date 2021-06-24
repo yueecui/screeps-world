@@ -1,4 +1,3 @@
-
 export default function (creep: Creep) {
     if (creep.memory.room == null){
         creep.say('⁉️');

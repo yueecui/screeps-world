@@ -1,11 +1,9 @@
-import { CONTAINER_TYPE_SOURCE, ENERGY_ENOUGH, ENERGY_NEED, MODE_NONE } from "@/common/constant";
-import { ICON_QUESTION_MARK_1, ICON_QUESTION_MARK_2, ICON_QUESTION_MARK_3 } from "@/common/emoji";
-
 /**
  * 本模式主要是用来处理一些临时操作
  */
 
 export default function (creep: Creep) {
+    const cpu = Game.cpu.getUsed()
     if (creep.baseName == 'MA'){
         dismantle(creep);
     }else if (creep.baseName == 'MT'){
@@ -13,6 +11,7 @@ export default function (creep: Creep) {
     }else{
         creep.say('呆');
     }
+    console.log(creep.name, ':', Game.cpu.getUsed()-cpu);
 }
 
 
@@ -44,7 +43,9 @@ const dismantle = function (creep: Creep) {
             }
             creep.dismantle(target);
         }else{
+            const cpu = Game.cpu.getUsed();
             creep.moveTo(flag, {visualizePathStyle:{}, reusePath: 50});
+            console.log(creep.name, '移动:', Game.cpu.getUsed()-cpu);
         }
     }
 }
@@ -53,6 +54,10 @@ const transport = function (creep: Creep) {
     if (creep.mode == 0 && creep.store.getFreeCapacity() == 0){
         creep.mode = 1;
     }else if (creep.mode == 1 && creep.store.getUsedCapacity() == 0){
+        if (creep.ticksToLive! < 400){
+            creep.role = '回收';
+            return;
+        }
         creep.mode = 0;
     }
     if (creep.mode == 0){
@@ -106,7 +111,8 @@ const transport = function (creep: Creep) {
 }
 
 const find_target = function (creep:Creep) {
-    const drop_resource = creep.room.find(FIND_DROPPED_RESOURCES, { filter: res=> res.amount>200 });
+    // , { filter: res=> res.amount>200 }
+    const drop_resource = creep.room.find(FIND_DROPPED_RESOURCES);
     if (drop_resource.length > 0){
         return creep.pos.findClosestByRange(drop_resource);
     }
