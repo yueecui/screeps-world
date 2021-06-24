@@ -53,7 +53,9 @@ export default function () {
         }
 
         // 分配任务
-        this.assignTask();
+        if (Game.rooms.sim){
+            this.assignTask();
+        }
     }
 
     Room.prototype.errorCheck = function(){

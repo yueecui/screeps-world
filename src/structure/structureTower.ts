@@ -33,9 +33,12 @@ export default function () {
         }
 
         // 检查能量
-        if (this.room.layout == LAYOUT_SADAHARU){
-            this.checkStatus();
+        if (Game.rooms.sim){
+            if (this.room.layout == LAYOUT_SADAHARU){
+                this.checkStatus();
+            }
         }
+
     }
 
     StructureTower.prototype.checkStatus = function () {

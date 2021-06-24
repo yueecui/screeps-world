@@ -12,13 +12,15 @@ const MAP_POS: Record<string, [number,number]> = {
 }
 
 export default function (creep: Creep) {
+    if (Game.rooms.sim){
+        creep.doTask();
+        return;
+    }
     if (creep.memory.room != undefined){
         otherRoom(creep);
     }else{
-        creep.doTask();
-        return;
-        // updateStatus(creep);
-        // execute(creep);
+        updateStatus(creep);
+        execute(creep);
     }
 }
 
