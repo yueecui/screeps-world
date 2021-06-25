@@ -80,7 +80,7 @@ export default function () {
             this.say(Game.time%2==0? ICON_SEARCH_1:ICON_SEARCH_2);
             return false;
         }
-        const task = Memory.rooms[this.workRoom].taskDoing[this.taskQueue[0]];
+        const task = this.getTaskInfo(this.taskQueue[0]);
         if (task == undefined){
             this.taskQueue.splice(0, 1);
             return this.doTask();
@@ -92,6 +92,20 @@ export default function () {
         }
 
         return false;
+    }
+
+    // ------------------------------------------------------
+    // 根据任务ID获取任务信息
+    // ------------------------------------------------------
+    Creep.prototype.getTaskInfo = function (task_id) {
+        if (!task_id) return undefined;
+        if (Memory.rooms[this.workRoom]
+            && Memory.rooms[this.workRoom].task
+            && Memory.rooms[this.workRoom].task.doing){
+                return Memory.rooms[this.workRoom].task.doing[task_id];
+            }else{
+                return undefined;
+            }
     }
 
     // ------------------------------------------------------

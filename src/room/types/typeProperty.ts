@@ -25,6 +25,14 @@ interface Room {
     controllerLink: StructureLink|null
     sourceLinks: StructureLink[]
     carriers: Creep[]
+    task: {
+        high: Task<TASK_ANY>[],
+        medium: Task<TASK_ANY>[],
+        low: Task<TASK_ANY>[],
+        doing: {[key:string]: Task<TASK_ANY>},
+        status: {[key:string]: TaskId}
+    }
+    // 以下为过期测试
     tasks: Task<TASK_ANY>[]
     taskDoing: {[key:string]: Task<TASK_ANY>}
     taskStatus: {[key:string]: TaskId}

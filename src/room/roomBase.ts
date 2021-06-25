@@ -180,6 +180,14 @@ export default function () {
             creepConfig: this.memory.creepConfig ?? {
                 stay: {},
             },
+            // 以下为测试2
+            task: {
+                high: [],
+                medium: [],
+                low: [],
+                doing: {},
+                status: {}
+            },
             // 以下为测试
             tasks: this.memory.tasks ?? [],
             taskDoing: this.memory.taskDoing ?? {},

@@ -2,9 +2,9 @@ interface Room {
     /** 本tick本room已经发布的任务数量，从1开始 */
     taskIndex: number;
     /** 创建运输任务 */
-    createTask<T extends TASK_ANY>(task_info: Task<T>, priority?: TASK_PRIORITY_ANY, force?: boolean): boolean;
+    createTask<T extends TASK_ANY>(task: Task<T>, unshift?: boolean): boolean;
     /** 判断运输任务是否已经添加 */
-    hasTask(task_info: Task<TASK_ANY>): boolean;
+    hasTask(task: Task<TASK_ANY>): boolean;
 
     /** 分配运输任务 */
     assignTask(): void;
@@ -15,11 +15,17 @@ interface Room {
     getCommonSource(task: Task<TASK_ANY>): (StructureStorage|StructureTerminal|StructureContainer|StructureLink)[];
 }
 
-
-
 // 先存到Memory里
 // 后面稳定再改到global里
 interface RoomMemory {
+    /** 任务 */
+    task: {
+        high: Task<TASK_ANY>[],
+        medium: Task<TASK_ANY>[],
+        low: Task<TASK_ANY>[],
+        doing: {[key:string]: Task<TASK_ANY>},
+        status: {[key:string]: TaskId}
+    }
     /** 未处理的运输任务队列 */
     tasks: Task<TASK_ANY>[]
     /** 进行中的运输任务队列 */
@@ -37,6 +43,8 @@ interface Task<T extends TASK_ANY>{
     object: TaskObjectId<T>
     /** 搬运货物信息，计算时会从来源处扣除 */
     cargo: TaskCargo
+    /** 优先级 */
+    priority: TASK_PRIORITY_ANY
     /** ID，由创建时间和序号来生成 */
     id?: TaskId
     /** 任务创建时间 */
@@ -98,13 +106,22 @@ type TaskObjectId<T extends TASK_ANY>
     : never
 
 type TASK_PRIORITY_ANY =
-    | TASK_PRIORITY_HIGH
-    | TASK_PRIORITY_MIDDLE
     | TASK_PRIORITY_LOW
+    | TASK_PRIORITY_MEDIUM
+    | TASK_PRIORITY_HIGH
 
-type TASK_PRIORITY_HIGH = 0
-type TASK_PRIORITY_MIDDLE = 1
-type TASK_PRIORITY_LOW = 2
+type TASK_PRIORITY_LOW = 1
+type TASK_PRIORITY_MEDIUM = 2
+type TASK_PRIORITY_HIGH = 3
+
+type TASK_PRIORITY_NAME_ANY =
+    | TASK_PRIORITY_LOW_NAME
+    | TASK_PRIORITY_MEDIUM_NAME
+    | TASK_PRIORITY_HIGH_NAME
+
+type TASK_PRIORITY_LOW_NAME = 'low'
+type TASK_PRIORITY_MEDIUM_NAME = 'medium'
+type TASK_PRIORITY_HIGH_NAME = 'high'
 
 type cargoOrder = {
     id: Id<AnyStoreStructure>

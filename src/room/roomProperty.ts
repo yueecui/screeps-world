@@ -194,6 +194,20 @@ export default function () {
         configurable: true
     });
 
+    Object.defineProperty(Room.prototype, 'task', {
+        get: function () {
+            if (this.memory.task === undefined) this.memory.task = {};
+            if (this.memory.task.high === undefined) this.memory.task.high = [];
+            if (this.memory.task.medium === undefined) this.memory.task.medium = [];
+            if (this.memory.task.low === undefined) this.memory.task.low = [];
+            if (this.memory.task.doing === undefined) this.memory.task.doing = {};
+            if (this.memory.task.status === undefined) this.memory.task.status = {};
+            return this.memory.task;
+        },
+        enumerable: false,
+        configurable: true
+    });
+
     Object.defineProperty(Room.prototype, 'tasks', {
         get: function () {
             if (this.memory.tasks === undefined){

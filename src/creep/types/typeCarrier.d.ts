@@ -8,6 +8,8 @@ interface Creep {
     acceptTask(task: Task<TASK_ANY>): TaskCargo;
     /** 执行任务，返回值为是否执行了操作 */
     doTask(): boolean;
+    /** 获取任务信息 */
+    getTaskInfo(task_id: TaskId): Task<TASK_ANY>|undefined;
     /** 任务完成后的处理 */
     completeTask(task: Task<TASK_ANY>): void;
     /** 删除掉任务的处理 */

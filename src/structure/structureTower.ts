@@ -1,5 +1,5 @@
 import { TOWER_ENERGY_NEED_ADD } from "@/common/config";
-import { LAYOUT_SADAHARU, TASK_PRIORITY_LOW, TASK_TOWER_ENERGY } from "@/common/constant";
+import { LAYOUT_SADAHARU, TASK_PRIORITY_LOW, TASK_PRIORITY_MEDIUM, TASK_TOWER_ENERGY } from "@/common/constant";
 
 // const TOWER_POWER_ATTACK = 600;
 // const TOWER_FALLOFF = 30;
@@ -45,6 +45,7 @@ export default function () {
         if (this.store[RESOURCE_ENERGY] >= TOWER_ENERGY_NEED_ADD) return;
         this.room.createTask({
             type: TASK_TOWER_ENERGY,
+            priority: TASK_PRIORITY_MEDIUM,
             object: this.id,
             cargo: {
                 [RESOURCE_ENERGY]: Math.min(TOWER_CAPACITY, this.store.getFreeCapacity(RESOURCE_ENERGY))
