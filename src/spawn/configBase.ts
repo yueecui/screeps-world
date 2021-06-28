@@ -160,6 +160,7 @@ const role_GM: SpawnConfig = {
     needSpawn: (room) => {
         // 房间里的矿物有container并且有矿物时
         // 没有建extracter时，container不会计数
+        if (room.storage && room.storage.store.getFreeCapacity() < 200000) return false;
         return room.mineral && room.mineral.container != null && Game.getObjectById((room.mineral.id))!.mineralAmount > 0;
     },
     body: BodyGenerator.MineralHarvester

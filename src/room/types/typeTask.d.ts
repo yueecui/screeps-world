@@ -8,6 +8,11 @@ interface Room {
 
     /** 分配运输任务 */
     assignTask(): void;
+    /** 拆分运输任务 */
+    splitTask(task: Task<TASK_ANY>, remain_capacity: number): void;
+    /** 按容量分配任务 */
+    assignTaskbyCapacity(task_queue: Task<TASK_ANY>[], start_pos: RoomPosition, capacity: number): void;
+
     /** 将运输任务发送给蚂蚁 */
     sendTask(task: Task<TASK_ANY>, creep: Creep): TaskCargo;
 
@@ -41,7 +46,7 @@ interface Task<T extends TASK_ANY>{
     type: T
     /** 任务目标ID */
     object: TaskObjectId<T>
-    /** 搬运货物信息，计算时会从来源处扣除 */
+    /** 搬运货物信息 */
     cargo: TaskCargo
     /** 优先级 */
     priority: TASK_PRIORITY_ANY
@@ -59,7 +64,7 @@ interface Task<T extends TASK_ANY>{
     // 执行时参数
     /** 状态编号 */
     state?: TASK_STATUS_ANY
-    /** 预定的物资 */
+    /** 预定的物资，计算时会从来源处扣除 */
     order?: cargoOrder[]
 }
 

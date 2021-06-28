@@ -54,13 +54,30 @@ export default function () {
     // 优先执行优先级高队列的任务，高队列的任务可以强制取消其他队列的任务来优先执行
     Room.prototype.assignTask = function() {
         if (this.carriers.length == 0) return;
-        for (const priority of [TASK_PRIORITY_LOW_NAME, TASK_PRIORITY_MEDIUM_NAME, TASK_PRIORITY_HIGH_NAME]){
-            // LAST:最后做到这
+        for (const priority of [TASK_PRIORITY_HIGH_NAME, TASK_PRIORITY_MEDIUM_NAME, TASK_PRIORITY_LOW_NAME]){
             while (this.task[priority].length > 0){
-                const carriers_available = this.carriers.filter(creep => creep.taskQueue.length == 0);
-                if (carriers_available.length == 0) return;
+                let carriers_available = this.carriers.filter(creep => creep.taskQueue.length == 0);
+                // 在没有可用运输者时，高优先级任务会挤掉中低优先级的任务
+                if (priority == TASK_PRIORITY_HIGH_NAME && carriers_available.length == 0){
+                    carriers_available = this.carriers.filter(creep => creep.currentTaskPriority != TASK_PRIORITY_HIGH);
+                }
+                if (carriers_available.length == 0) break; //  如果已经没有可用的运输者则跳出
+                const task = this.task[priority][0];
+                // LAST:最后做到这
+                // assignTaskbyCapacity
+                // 第一轮筛选
+                // TODO：还需要做距离筛选、寿命筛选
+                for (const carrier of carriers_available){
+                    if (carrier.hasEnoughCapacity(task)){
+                        this.sendTask(task, carrier);
+                        break;
+                    }
+                }
             }
         }
+
+
+
         while (this.tasks.length > 0){
             const carriers_available = this.carriers.filter(creep => creep.taskQueue.length == 0);
             if (carriers_available.length == 0) return;
@@ -83,6 +100,81 @@ export default function () {
                 cargo: this.sendTask(task, carriers_available[0])
             }, true);
         }
+    }
+
+
+    // 拆分订单
+    Room.prototype.splitTask = function (task, remain_capacity) {
+        const accept_cargo: TaskCargo = {};
+        const remain_cargo: TaskCargo = {};
+        for (const name in task.cargo){
+            const amount = task.cargo[name as ResourceConstant]!;
+            if (remain_capacity == 0){
+                remain_cargo[name as ResourceConstant] = amount;
+            }else if (remain_capacity >= amount){
+                accept_cargo[name as ResourceConstant] = amount;
+                remain_capacity -= amount;
+            }else{
+                accept_cargo[name as ResourceConstant] = remain_capacity;
+                remain_cargo[name as ResourceConstant] = amount - remain_capacity;
+                remain_capacity = 0;
+            }
+        }
+
+        if (_.sum(remain_cargo) > 0){
+            this.createTask({
+                type: task.type,
+                priority: task.priority,
+                object: task.object,
+                cargo: remain_cargo,
+            }, true);
+        }
+        task.cargo = accept_cargo;
+    }
+
+    // 根据目标运输者的容量获取任务
+    Room.prototype.assignTaskbyCapacity = function(task_queue: Task<TASK_ANY>[], start_pos: RoomPosition, capacity: number){
+        interface taskPosGroup extends _HasRoomPosition{
+            task: Task<TASK_ANY>
+        }
+
+        // 将所有任务的位置都提取出来
+        const task_pos_group: taskPosGroup[] = [];
+        for (const task of task_queue){
+            let task_pos: RoomPosition;
+            switch (task.type){
+                case TASK_TOWER_ENERGY:
+                    const structure = Game.getObjectById(task.object as Id<AnyStructure>);
+                    if (structure) task_pos = structure.pos; else continue;
+                    break;
+                default:
+                    console.error(`没有处理的任务类型！`);
+                    continue;
+            }
+            task_pos_group.push({
+                pos: task_pos,
+                task: task,
+            });
+        }
+
+        let remain_capacity = capacity;
+        let find_pos = start_pos;
+        const assigned_task_id: string[] = [];
+        while(remain_capacity > 0 && task_pos_group.length > 0){
+            const find = find_pos.findClosestByRange(task_pos_group)!;
+            const cargo_capacity = _.sum(find.task.cargo);
+            if (remain_capacity >= cargo_capacity){
+                remain_capacity -= cargo_capacity;
+            }else{
+                // 拆分订单
+                this.splitTask(find.task, remain_capacity);
+                remain_capacity = 0;
+            }
+            assigned_task_id.push(find!.task.id!);
+            _.pull(task_pos_group, find);
+            find_pos = find.pos;
+        }
+        return assigned_task_id
     }
 
     Room.prototype.sendTask = function (task, creep) {
