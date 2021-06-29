@@ -16,6 +16,18 @@ export default function(creep: Creep) {
     }
 }
 
+// 临时处理
+const temp = function (creep: Creep) {
+    if (creep.room.name == 'W35N57'){
+        const storage = creep.room.storage;
+        if (!storage) return false;
+        const terminal = creep.room.terminal;
+        if (!terminal) return false;
+
+    }
+    return false;
+}
+
 // 主脑工作
 const masterMindWork = function(creep: Creep){
     let target: AnyStoreStructure|undefined = creep.room.storage;
@@ -23,6 +35,8 @@ const masterMindWork = function(creep: Creep){
     if (!target) return;
     const storage_link = creep.room.storageLink;
     if (!storage_link) return;
+
+    if (temp(creep)) return;
 
     // link简易版
     // controller link需要能量就往storage link放能量，否则往外拿存到storage里

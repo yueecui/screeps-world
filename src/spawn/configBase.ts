@@ -457,16 +457,18 @@ const role_TT: SpawnConfig = {
             role: '手动',
         }
     },
-    amount: function(room) {
-        if (room.code =='R2' && room.terminal && room.terminal?.store.getUsedCapacity() > 0){
-            return 1;
+    amount: function(spawn_room) {
+        let amount = spawn_room.getSpawnAmount(this.baseName);
+        if (amount > -1) return amount;
+        if (spawn_room.code =='R1' && spawn_room.terminal){
+            return 2;
         }
         return 0;
     },
-    isLive: (room, creep) => {
+    isLive: (spawn_room, creep) => {
         return true;
     },
-    needSpawn: (room) => {
+    needSpawn: (spawn_room) => {
         // 随时需要
         return true;
     },
@@ -503,10 +505,10 @@ export const SPAWN_BASE_PRIORITY_MID: Map<string, SpawnConfig> = new Map([
 // 低优先级
 export const SPAWN_BASE_PRIORITY_LOW: Map<string, SpawnConfig> = new Map([
     // 手动脚本角色
-    ['MA', role_MA],
+    // ['MA', role_MA],
     // ['MB', role_MB],
     // ['MC', role_MC],
-    ['MT', role_MT],
+    // ['MT', role_MT],
 
     // 优先建造的建筑者
     ['BB', role_BB],
@@ -514,7 +516,7 @@ export const SPAWN_BASE_PRIORITY_LOW: Map<string, SpawnConfig> = new Map([
     ['BR', role_BR],
 
     // 临时搬运者
-    // ['TT', role_TT],
+    ['TT', role_TT],
 
     // 升级者
     ['UP', role_UP],

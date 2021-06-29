@@ -180,10 +180,13 @@ export const BodyGenerator = {
         const group_amount = 5;
         const body: BodyPartConstant[] = []
         for (let i=0;i<group_amount;i++){
-            body.push(ATTACK, ATTACK);
+            body.push(TOUGH, TOUGH);
         }
         for (let i=0;i<group_amount;i++){
-            body.push(MOVE);
+            body.push(RANGED_ATTACK, RANGED_ATTACK);
+        }
+        for (let i=0;i<group_amount;i++){
+            body.push(MOVE, MOVE);
         }
         return body
     },

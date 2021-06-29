@@ -61,6 +61,14 @@ const execute = function(creep: Creep){
         }
     }
     const obtain_energy = (creep: Creep) => {
+        if (creep.room.name == 'W35N57'){
+            creep.obtainEnergy({
+                storage: true,
+                terminal: true,
+                // priority: PRIORITY_STORAGE
+            });
+            return;
+        }
         if (creep.room.storage){
             creep.obtainEnergy({
                 storage: true,

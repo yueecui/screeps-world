@@ -151,7 +151,7 @@ export default function () {
                 else if (this.room.sources[this.memory.node].link != null && this.store[RESOURCE_ENERGY] >= 100){
                     const link = Game.getObjectById(this.room.sources[this.memory.node].link!);
                     if (link){
-                        this.transfer(link, RESOURCE_ENERGY, 100);
+                        this.transfer(link, RESOURCE_ENERGY, Math.min(100, link.store.getFreeCapacity(RESOURCE_ENERGY)));
                     }else this.room.memory.flagPurge = TRUE;
                 }
             }else if (target instanceof Mineral){
