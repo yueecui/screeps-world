@@ -7,7 +7,11 @@ interface Room {
     hasTask(task: Task<TASK_ANY>): boolean;
 
     /** 分配运输任务 */
-    assignTask(): void;
+    assignTaskMain(): void;
+    /** 分配高优先级的纯能量任务 */
+    assignEnergyTask(task_queue: Task<TASK_ANY>[]): boolean;
+    /** 分配中低优先级的混合任务 */
+    assignComplexTask(task_queue: Task<TASK_ANY>[]): boolean;
     /** 拆分运输任务 */
     splitTask(task: Task<TASK_ANY>, remain_capacity: number): void;
     /** 按容量分配任务 */

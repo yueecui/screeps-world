@@ -26,9 +26,6 @@ interface RoomMemory {
      */
     energyPlan: EnergyPlan[];
 
-    /** 使用的布局类型 */
-    layout?: LAYOUT_ANY;
-
     /** 房间数据，这部分数据删掉后会完全自动重置 */
     data: {
         sources: sourceInfo[],

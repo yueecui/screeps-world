@@ -88,7 +88,7 @@ export default function () {
         // 根据任务类型执行不同操作
         switch (task.type){
             case TASK_TOWER_ENERGY:
-                return this.doTaskTowerEnergy(task as TaskComplex<TASK_TOWER_ENERGY>);
+                return this.doTaskTowerEnergy(task as Task<TASK_TOWER_ENERGY>);
         }
 
         return false;

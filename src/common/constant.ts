@@ -1,10 +1,6 @@
 export const FALSE: FALSE = 0;
 export const TRUE: TRUE = 1;
 
-// ROOM
-export const LAYOUT_FREE: LAYOUT_FREE = 0
-export const LAYOUT_SADAHARU: LAYOUT_SADAHARU = 1
-
 // 运输任务类型
 export const TASK_NORMAL_SPAWN_ENERGY: TASK_NORMAL_SPAWN_ENERGY = 1
 export const TASK_HARU_SPAWN_ENERGY: TASK_HARU_SPAWN_ENERGY = 2

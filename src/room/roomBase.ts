@@ -1,6 +1,6 @@
 import { TASK_WAITING,
     CONTAINER_TYPE_NONE, CONTAINER_TYPE_CONTROLLER, CONTAINER_TYPE_SOURCE, CONTAINER_TYPE_MINERAL,
-    LINK_TYPE_NONE, LINK_TYPE_STORAGE, LINK_TYPE_CONTROLLER, LINK_TYPE_SOURCE, FALSE, TRUE, LAYOUT_FREE, LAYOUT_SADAHARU } from "@/common/constant";
+    LINK_TYPE_NONE, LINK_TYPE_STORAGE, LINK_TYPE_CONTROLLER, LINK_TYPE_SOURCE, FALSE, TRUE } from "@/common/constant";
 import { SadaData } from "./class/sadaData";
 
 interface findPosParam{
@@ -54,11 +54,14 @@ export default function () {
 
         // 分配任务
         if (Game.rooms.sim){
+            // 检查container，是否需要发布任务
             for (const container_info of this.containers){
                 const container = Game.getObjectById(container_info.id);
                 container ? container.work() : this.memory.flagPurge = TRUE;
             }
-            this.assignTask();
+
+            // 分配任务
+            this.assignTaskMain();
         }
     }
 
@@ -111,11 +114,9 @@ export default function () {
         if (this.my){
             // 初始化定春布局数据
             const cache = global.cache.rooms[this.name];
-            if (this.memory.layout == LAYOUT_SADAHARU){
-                const sada_config = Memory.sadaharuConfigs[this.name];
-                if (sada_config){
-                    cache.sadaData = new SadaData(this, sada_config);
-                }
+            const sada_config = Memory.sadaharuConfigs[this.name];
+            if (sada_config){
+                cache.sadaData = new SadaData(this, sada_config);
             }
             // 生成能量顺序
             this.generateEnergyOrder();
@@ -149,7 +150,6 @@ export default function () {
         const new_memory: RoomMemory = {
             flagPurge: this.memory.flagPurge ?? TRUE,
             lastSpawnTime: this.memory.lastSpawnTime ?? 0,
-            layout: this.memory.layout ?? LAYOUT_FREE,
             data: this.memory.data ?? {
                 sources: [],
                 mineral: null,

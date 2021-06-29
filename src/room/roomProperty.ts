@@ -1,4 +1,4 @@
-import { FALSE, TRUE, LAYOUT_FREE, LAYOUT_SADAHARU, LINK_TYPE_CONTROLLER, LINK_TYPE_NONE, LINK_TYPE_SOURCE, LINK_TYPE_STORAGE } from "@/common/constant";
+import { FALSE, TRUE, LINK_TYPE_CONTROLLER, LINK_TYPE_NONE, LINK_TYPE_SOURCE, LINK_TYPE_STORAGE } from "@/common/constant";
 
 export default function () {
     // 定义各个属性
@@ -241,18 +241,8 @@ export default function () {
         configurable: true
     });
 
-    Object.defineProperty(Room.prototype, 'layout', {
-        get: function () {
-            if (this.memory.layout == undefined) return LAYOUT_FREE;
-            return this.memory.layout;
-        },
-        enumerable: false,
-        configurable: true
-    });
-
     Object.defineProperty(Room.prototype, 'sada', {
         get: function () {
-            if (this.memory.layout != LAYOUT_SADAHARU) return null;
             return global.cache.rooms[this.name].sadaData;
         },
         enumerable: false,

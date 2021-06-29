@@ -516,7 +516,7 @@ export const SPAWN_BASE_PRIORITY_LOW: Map<string, SpawnConfig> = new Map([
     ['BR', role_BR],
 
     // 临时搬运者
-    ['TT', role_TT],
+    // ['TT', role_TT],
 
     // 升级者
     ['UP', role_UP],

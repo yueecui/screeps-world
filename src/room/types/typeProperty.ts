@@ -38,8 +38,6 @@ interface Room {
     taskStatus: {[key:string]: TaskId}
 
 
-    // 布局类型
-    layout: LAYOUT_ANY
     /** 房间的定春布局数据，缓存到global中 */
     sada: SadaData|null
     /** 孵化时使用的能量顺序 */

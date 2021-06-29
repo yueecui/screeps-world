@@ -86,13 +86,3 @@ interface Room {
    hasUnqueueTaskTower(): boolean;
 }
 
-
-type LAYOUT_ANY =
-    | LAYOUT_FREE
-    | LAYOUT_SADAHARU
-
-type LAYOUT_FREE = 0
-type LAYOUT_SADAHARU = 1
-
-
-
