@@ -4,8 +4,7 @@ interface Creep {
     hasEnoughCapacity(task: Task<TASK_ANY>): boolean;
     /** 预定货物 */
     hasEnoughCargo(task: Task<TASK_ANY>): boolean;
-    /** 接受发过来的新任务 */
-    acceptTask(task: Task<TASK_ANY>): TaskCargo;
+
     /** 执行任务，返回值为是否执行了操作 */
     doTask(): boolean;
     /** 获取任务信息 */

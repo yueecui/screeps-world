@@ -2,23 +2,23 @@ interface Room {
     /** 本tick本room已经发布的任务数量，从1开始 */
     taskIndex: number;
     /** 创建运输任务 */
-    createTask<T extends TASK_ANY>(task: Task<T>, unshift?: boolean): boolean;
+    createTask<T extends TASK_ANY>(task: Task<T>, force?: boolean): boolean;
     /** 判断运输任务是否已经添加 */
     hasTask(task: Task<TASK_ANY>): boolean;
 
     /** 分配运输任务 */
     assignTaskMain(): void;
     /** 分配高优先级的纯能量任务 */
-    assignEnergyTask(task_queue: Task<TASK_ANY>[]): boolean;
+    assignEnergyTask(task_queue: Task<TASK_ANY>[]): void;
     /** 分配中低优先级的混合任务 */
-    assignComplexTask(task_queue: Task<TASK_ANY>[]): boolean;
+    assignComplexTask(task_queue: Task<TASK_ANY>[]): void;
     /** 拆分运输任务 */
     splitTask(task: Task<TASK_ANY>, remain_capacity: number): void;
     /** 按容量分配任务 */
-    assignTaskbyCapacity(task_queue: Task<TASK_ANY>[], start_pos: RoomPosition, capacity: number): void;
+    assignTaskbyCapacity(task_queue: Task<TASK_ANY>[], start_pos: RoomPosition, capacity: number): string[];
 
     /** 将运输任务发送给蚂蚁 */
-    sendTask(task: Task<TASK_ANY>, creep: Creep): TaskCargo;
+    sendTask(creep: Creep, task_queue: Task<TASK_ANY>[], task_id_array: string[]): void;
 
     /** 根据房间等级等情况，获得通用源 */
     getCommonSource(task: Task<TASK_ANY>): (StructureStorage|StructureTerminal|StructureContainer|StructureLink)[];

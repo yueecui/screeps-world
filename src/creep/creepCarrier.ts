@@ -28,39 +28,6 @@ export default function () {
     };
 
     // ------------------------------------------------------
-    // 接受发布过来的新任务
-    // 只接受自己容量够的部分，其他的部分作为返回值发送回去，供拆分
-    // ------------------------------------------------------
-    Creep.prototype.acceptTask = function (task) {
-        let accept_cargo: TaskCargo = {};
-        let remain_cargo: TaskCargo = {};
-        let remain_capacity = this.store.getCapacity();
-
-        for (const name in task.cargo){
-            let amount = task.cargo[name as ResourceConstant]!;
-            if (remain_capacity > 0){
-                if (remain_capacity > amount){
-                    accept_cargo[name as ResourceConstant] = amount;
-                    remain_capacity = remain_capacity - amount;
-                    amount = 0;
-                }else{
-                    accept_cargo[name as ResourceConstant] = remain_capacity;
-                    amount = amount - remain_capacity;
-                    remain_capacity = 0;
-                }
-            }
-            if (amount > 0){
-                remain_cargo[name as ResourceConstant] = amount
-            }
-        }
-        task.cargo = accept_cargo;
-        // 分配来的搬运任务排到最后
-        this.taskQueue.push(task.id!);
-
-        return remain_cargo;
-    }
-
-    // ------------------------------------------------------
     // 检查是否现在持有足够的货物
     // ------------------------------------------------------
     Creep.prototype.hasEnoughCargo = function(task) {
