@@ -26,9 +26,17 @@ interface Room {
     sourceLinks: StructureLink[]
     carriers: Creep[]
     task: {
-        high: Task<TASK_ANY>[],
-        medium: Task<TASK_ANY>[],
-        low: Task<TASK_ANY>[],
+        // 孵化任务
+        spawn: Task<TASK_ANY>[],
+        // 从集群（或能量container）往外运送
+        give: Task<TASK_ANY>[],
+        // 从外往集群运送
+        take: Task<TASK_ANY>[],
+        // 往返运送（如LAB）
+        both: Task<TASK_ANY>[],
+        // 集群任务（由MM执行）
+        center: Task<TASK_ANY>[],
+
         doing: {[key:string]: Task<TASK_ANY>},
         status: {[key:string]: TaskId}
     }

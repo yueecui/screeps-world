@@ -5,13 +5,16 @@
 // 拣墓碑
 // 拣废墟
 
-import { TRUE, CONTAINER_TYPE_NONE, CONTAINER_TYPE_SOURCE, TASK_PRIORITY_HIGH, TASK_PRIORITY_LOW, TASK_PRIORITY_MEDIUM, TASK_TOWER_ENERGY, TASK_PRIORITY_LOW_NAME, TASK_PRIORITY_MEDIUM_NAME, TASK_PRIORITY_HIGH_NAME } from "@/common/constant";
+import { TRUE, CONTAINER_TYPE_NONE, CONTAINER_TYPE_SOURCE, TASK_TOWER_ENERGY, TASK_CATEGORY_CENTER, TASK_CATEGORY_CENTER_NAME, TASK_CATEGORY_BOTH, TASK_CATEGORY_BOTH_NAME, TASK_CATEGORY_SPAWN, TASK_CATEGORY_SPAWN_NAME, TASK_CATEGORY_GIVE as TASK_CATEGORY_GIVE, TASK_CATEGORY_GIVE_NAME as TASK_CATEGORY_GIVE_NAME, TASK_CATEGORY_TAKE, TASK_CATEGORY_TAKE_NAME
+} from "@/common/constant";
 
 
-const TASK_PRIORITY_NAME_MAP: Record<TASK_PRIORITY_ANY, TASK_PRIORITY_NAME_ANY> = {
-    [TASK_PRIORITY_LOW]: TASK_PRIORITY_LOW_NAME,
-    [TASK_PRIORITY_MEDIUM]: TASK_PRIORITY_MEDIUM_NAME,
-    [TASK_PRIORITY_HIGH]: TASK_PRIORITY_HIGH_NAME,
+const TASK_CATEGORY_NAME_MAP: {[K in TASK_CATEGORY_ANY]?: TASK_CATEGORY_NAME_ANY} = {
+    [TASK_CATEGORY_SPAWN]: TASK_CATEGORY_SPAWN_NAME,
+    [TASK_CATEGORY_GIVE]: TASK_CATEGORY_GIVE_NAME,
+    [TASK_CATEGORY_TAKE]: TASK_CATEGORY_TAKE_NAME,
+    [TASK_CATEGORY_BOTH]: TASK_CATEGORY_BOTH_NAME,
+    [TASK_CATEGORY_CENTER]: TASK_CATEGORY_CENTER_NAME,
 }
 
 export default function () {
@@ -26,10 +29,11 @@ export default function () {
         task.createTime = Game.time;
 
         // 推入任务流
-        let queue_name = TASK_PRIORITY_NAME_MAP[task.priority];
+        let queue_name = TASK_CATEGORY_NAME_MAP[task.category];
+        if (!queue_name) return false;
         force ? this.task[queue_name].unshift(task) : this.task[queue_name].push(task);
 
-        // 标记任务已发布
+        // 新发布任务时标记任务已发布
         if (!force){
             switch (task.type){
                 case TASK_TOWER_ENERGY:
@@ -50,70 +54,43 @@ export default function () {
     }
 
     // 分配任务
-    // 任务分成高中低三条队列
-    // 高队列只有能量搬运任务，主要是孵化任务
-    // 中和低队列是混合任务
-    // 优先执行优先级高队列的任务，高队列的任务可以强制取消其他队列的任务来优先执行
     Room.prototype.assignTaskMain = function() {
-        if (this.carriers.length == 0) return;
-        for (const priority of [TASK_PRIORITY_HIGH_NAME, TASK_PRIORITY_MEDIUM_NAME, TASK_PRIORITY_LOW_NAME]){
-            if (priority == TASK_PRIORITY_HIGH_NAME){
-                this.assignEnergyTask(this.task[priority]);
-            }else{
-                this.assignComplexTask(this.task[priority]);
-            }
+        if (this.carriers.length > 0){
+            this.assignTaskGive(this.task[TASK_CATEGORY_GIVE_NAME]);
         }
+        // center任务不分配，仅由MM执行
     }
 
     // 高优先级的纯能量运送任务
-    Room.prototype.assignEnergyTask = function(task_queue) {
-        let carriers_available = this.carriers.filter(creep => creep.taskQueue.length == 0);
-        // 在没有可用运输者时，高优先级任务会挤掉中低优先级的任务
-        if (carriers_available.length == 0) carriers_available = this.carriers.filter(creep => creep.currentTaskPriority != TASK_PRIORITY_HIGH);
-        // 还是没有的话则返回
-        if (carriers_available.length == 0) return false;
+    // Room.prototype.assignEnergyTask = function(task_queue) {
+    //     let carriers_available = this.carriers.filter(creep => creep.taskQueue.length == 0);
+    //     // 在没有可用运输者时，高优先级任务会挤掉中低优先级的任务
+    //     if (carriers_available.length == 0) carriers_available = this.carriers.filter(creep => creep.currentTaskPriority != TASK_PRIORITY_HIGH);
+    //     // 还是没有的话则返回
+    //     if (carriers_available.length == 0) return false;
 
-        return true;
-    }
+    //     return true;
+    // }
 
     // 中低优先级的混合任务
-    Room.prototype.assignComplexTask = function(task_queue) {
+    Room.prototype.assignTaskGive = function(task_queue) {
         const carriers_available = this.carriers.filter(creep => creep.taskQueue.length == 0);
         if (carriers_available.length == 0) return;
         // 容量大的优先排任务，减少CPU消耗
         carriers_available.sort((a, b) => b.store.getCapacity() - a.store.getCapacity());
         for (const carrier of carriers_available){
             const room = Game.rooms[carrier.workRoom];
-            let task_id_array: string[];
+            let task_id_array: string[]|undefined = undefined;
             if (room && room.storage){
                 task_id_array = this.assignTaskbyCapacity(task_queue, room.storage.pos, carrier.store.getCapacity());
-            }else{
+            }
+            if (task_id_array == undefined){
                 task_id_array = this.assignTaskbyCapacity(task_queue, carrier.pos, carrier.store.getCapacity());
             }
             this.sendTask(carrier, task_queue, task_id_array);
             if (task_queue.length == 0) return;
         }
-        // // 第一轮筛选
-        // const task = this.tasks[0];
-        // // TODO：还需要做距离筛选、寿命筛选
-        // for (const carrier of carriers_available){
-        //     if (carrier.hasEnoughCapacity(task)){
-        //         this.sendTask(task, carrier);
-        //         break;
-        //     }
-        // }
-        // if (task.acceptTime) return true;
-        // // 第一轮没找到合适目标（没有容量足够的目标） 则拆分订单
-        // // TODO：还需要更精细的筛选规则
-        // this.createTask({
-        //     type: task.type,
-        //     priority: task.priority,
-        //     object: task.object,
-        //     cargo: this.sendTask(task, carriers_available[0])
-        // }, true);
-        // return true;
     }
-
 
     // 拆分订单
     Room.prototype.splitTask = function (task, remain_capacity) {
@@ -136,7 +113,7 @@ export default function () {
         if (_.sum(remain_cargo) > 0){
             this.createTask({
                 type: task.type,
-                priority: task.priority,
+                category: task.category,
                 object: task.object,
                 cargo: remain_cargo,
             }, true);

@@ -1,4 +1,4 @@
-import { TASK_PRIORITY_LOW } from "@/common/constant";
+import { TASK_CATEGORY_UNKNOWN } from "@/common/constant";
 
 export default function () {
     // 工蚁
@@ -158,12 +158,12 @@ export default function () {
         configurable: true
     });
 
-    Object.defineProperty(Creep.prototype, 'currentTaskPriority', {
+    Object.defineProperty(Creep.prototype, 'currentTaskCategory', {
         get: function () {
             if (this.memory.taskQueue == undefined) this.memory.taskQueue = [];
-            if (this.memory.taskQueue.length == 0) return TASK_PRIORITY_LOW;
+            if (this.memory.taskQueue.length == 0) return TASK_CATEGORY_UNKNOWN;
             const task = this.getTaskInfo(this.taskQueue[0]);
-            return task ? task.priority : TASK_PRIORITY_LOW;
+            return task ? task.category : TASK_CATEGORY_UNKNOWN;
         },
         enumerable: false,
         configurable: true

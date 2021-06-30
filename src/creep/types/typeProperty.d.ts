@@ -27,7 +27,7 @@ interface Creep {
     energyTarget: Id<AnyStoreStructure> | null;
 
     taskQueue: TaskId[];
-    currentTaskPriority: TASK_PRIORITY_ANY  // 计算属性
+    currentTaskCategory: TASK_CATEGORY_ANY  // 计算属性
 
     /** 计算属性 */
     stayPos: RoomPosition | null;

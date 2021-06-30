@@ -9,10 +9,10 @@ interface Room {
     /** 分配运输任务 */
     assignTaskMain(): void;
     /** 分配高优先级的纯能量任务 */
-    assignEnergyTask(task_queue: Task<TASK_ANY>[]): void;
-    /** 分配中低优先级的混合任务 */
-    assignComplexTask(task_queue: Task<TASK_ANY>[]): void;
-    /** 拆分运输任务 */
+    // assignEnergyTask(task_queue: Task<TASK_ANY>[]): void;
+    /** 分配从集群往外送的任务 */
+    assignTaskGive(task_queue: Task<TASK_ANY>[]): void;
+    /** 根据容量拆分任务 */
     splitTask(task: Task<TASK_ANY>, remain_capacity: number): void;
     /** 按容量分配任务 */
     assignTaskbyCapacity(task_queue: Task<TASK_ANY>[], start_pos: RoomPosition, capacity: number): string[];
@@ -29,9 +29,16 @@ interface Room {
 interface RoomMemory {
     /** 任务 */
     task: {
-        high: Task<TASK_ANY>[],
-        medium: Task<TASK_ANY>[],
-        low: Task<TASK_ANY>[],
+        // 孵化任务
+        spawn: Task<TASK_ANY>[],
+        // 从集群（或能量container）往外运送
+        give: Task<TASK_ANY>[],
+        // 从外往集群运送
+        take: Task<TASK_ANY>[],
+        // 往返运送（如LAB）
+        both: Task<TASK_ANY>[],
+        // 集群任务（由MM执行）
+        center: Task<TASK_ANY>[],
         doing: {[key:string]: Task<TASK_ANY>},
         status: {[key:string]: TaskId}
     }
@@ -46,14 +53,14 @@ interface RoomMemory {
 /** 运输任务 */
 interface Task<T extends TASK_ANY>{
     // 创建时参数
-    /** 任务类型 */
+    /** 任务基础类型 */
     type: T
     /** 任务目标ID */
     object: TaskObjectId<T>
     /** 搬运货物信息 */
     cargo: TaskCargo
-    /** 优先级 */
-    priority: TASK_PRIORITY_ANY
+    /** 任务所属分类 */
+    category: TASK_CATEGORY_ANY
     /** ID，由创建时间和序号来生成 */
     id?: TaskId
     /** 任务创建时间 */
@@ -114,23 +121,33 @@ type TaskObjectId<T extends TASK_ANY>
     ? Id<Ruin>
     : never
 
-type TASK_PRIORITY_ANY =
-    | TASK_PRIORITY_LOW
-    | TASK_PRIORITY_MEDIUM
-    | TASK_PRIORITY_HIGH
+type TASK_CATEGORY_ANY =
+    | TASK_CATEGORY_UNKNOWN
+    | TASK_CATEGORY_SPAWN
+    | TASK_CATEGORY_GIVE
+    | TASK_CATEGORY_TAKE
+    | TASK_CATEGORY_BOTH
+    | TASK_CATEGORY_CENTER
 
-type TASK_PRIORITY_LOW = 1
-type TASK_PRIORITY_MEDIUM = 2
-type TASK_PRIORITY_HIGH = 3
+type TASK_CATEGORY_UNKNOWN = 0
+type TASK_CATEGORY_SPAWN = 1
+type TASK_CATEGORY_GIVE = 2
+type TASK_CATEGORY_TAKE = 3
+type TASK_CATEGORY_BOTH = 4
+type TASK_CATEGORY_CENTER = 5
 
-type TASK_PRIORITY_NAME_ANY =
-    | TASK_PRIORITY_LOW_NAME
-    | TASK_PRIORITY_MEDIUM_NAME
-    | TASK_PRIORITY_HIGH_NAME
+type TASK_CATEGORY_NAME_ANY =
+    | TASK_CATEGORY_SPAWN_NAME
+    | TASK_CATEGORY_GIVE_NAME
+    | TASK_CATEGORY_TAKE_NAME
+    | TASK_CATEGORY_BOTH_NAME
+    | TASK_CATEGORY_CENTER_NAME
 
-type TASK_PRIORITY_LOW_NAME = 'low'
-type TASK_PRIORITY_MEDIUM_NAME = 'medium'
-type TASK_PRIORITY_HIGH_NAME = 'high'
+type TASK_CATEGORY_SPAWN_NAME = 'spawn'
+type TASK_CATEGORY_GIVE_NAME = 'give'
+type TASK_CATEGORY_TAKE_NAME = 'take'
+type TASK_CATEGORY_BOTH_NAME = 'both'
+type TASK_CATEGORY_CENTER_NAME = 'center'
 
 type cargoOrder = {
     id: Id<AnyStoreStructure>

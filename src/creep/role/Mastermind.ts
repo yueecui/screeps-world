@@ -55,6 +55,11 @@ const masterMindWork = function(creep: Creep){
         if (storage_link.store[RESOURCE_ENERGY] > 0 && creep.store.getFreeCapacity() > 0){
             creep.withdraw(storage_link, RESOURCE_ENERGY);
         }else if (creep.store.getUsedCapacity() > 0){
+            // if (creep.room.name == 'W35N57'){
+            //     if (creep.room.storage!.store[RESOURCE_ENERGY] > 200000 && creep.room.terminal!.store.getFreeCapacity() >= creep.store[RESOURCE_ENERGY]){
+            //         target = creep.room.terminal!;
+            //     }
+            // }
             for (const name in creep.store){
                 creep.transfer(target, name as ResourceConstant);
                 break;

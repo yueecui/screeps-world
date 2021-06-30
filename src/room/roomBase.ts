@@ -182,9 +182,12 @@ export default function () {
             },
             // 以下为测试2
             task: {
-                high: [],
-                medium: [],
-                low: [],
+                spawn: [],
+                give: [],
+                take: [],
+                both: [],
+                center: [],
+
                 doing: {},
                 status: {}
             },
