@@ -127,9 +127,9 @@ export const BodyGenerator = {
         return body
     },
     Upgrader: function(room: Room){
-        if (room.controller!.level == 8){
-            return [WORK, CARRY, MOVE];
-        }
+        // if (room.controller!.level == 8){
+        //     return [WORK, CARRY, MOVE];
+        // }
         const cap = room.energyCapacityAvailable;
         let work_amount;
         let carry_amount = 2;

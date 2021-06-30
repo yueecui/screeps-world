@@ -293,9 +293,9 @@ const role_UP: SpawnConfig = {
     },
     needSpawn: (room) => {
         // 8级时只定期去补时间
-        if (room.controller!.level == 8 && room.controller!.ticksToDowngrade > 100000){
-            return false;
-        }
+        // if (room.controller!.level == 8 && room.controller!.ticksToDowngrade > 100000){
+        //     return false;
+        // }
         return true;
     },
     body: BodyGenerator.Upgrader

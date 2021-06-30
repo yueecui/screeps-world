@@ -5,7 +5,7 @@ interface Creep {
     /** 预定货物 */
     hasEnoughCargo(task: Task<TASK_ANY>): boolean;
 
-    /** 执行任务，返回值为是否执行了操作 */
+    /** 执行任务，从自己的任务队列中获取任务执行，返回值为是否执行了操作 */
     doTask(): boolean;
     /** 获取任务信息 */
     getTaskInfo(task_id: TaskId): Task<TASK_ANY>|undefined;
@@ -13,6 +13,10 @@ interface Creep {
     completeTask(task: Task<TASK_ANY>): void;
     /** 删除掉任务的处理 */
     removeTask(task: Task<TASK_ANY>, recreate?: boolean): void;
+
+    /** 执行任务：从center队列中获取任务来执行，返回值为是否执行了操作 */
+    doTaskMastermind(): boolean;
+
     /** 预定货物 */
     orderCargo(task: Task<TASK_ANY>, room: Room): boolean;
     /** 取得货物 */
@@ -22,7 +26,10 @@ interface Creep {
     /** 执行任务：给塔补充能量 */
     doTaskTowerEnergy(task: Task<TASK_TOWER_ENERGY>): boolean;
 
-
+    /** 执行任务：集群LINK取出能量 */
+    doTaskCenterLinkTake(task: Task<TASK_TOWER_ENERGY>): boolean;
+    /** 执行任务：集群LINK存入能量 */
+    doTaskCenterLinkGive(task: Task<TASK_TOWER_ENERGY>): boolean;
 
     /**
      * 检查房间的孵化能量是否足够，

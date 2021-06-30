@@ -110,6 +110,22 @@ export default function () {
         _.pull(this.taskQueue, task.id);
     }
 
+    // ------------------------------------------------------
+    // 执行任务：从房间的center队列中获得任务
+    // ------------------------------------------------------
+    Creep.prototype.doTaskMastermind = function () {
+        const task = this.room.task.center[0];
+        if (!task) return false;
+
+        // 根据任务类型执行不同操作
+        switch (task.type){
+            case TASK_TOWER_ENERGY:
+                return this.doTaskTowerEnergy(task as Task<TASK_TOWER_ENERGY>);
+        }
+
+        return false;
+    }
+
 
     // ------------------------------------------------------
     // 预定货物
@@ -244,7 +260,6 @@ export default function () {
                 return true;
         }
     }
-
 
     // ------------------------------------------------------
     // 孵化能量搬运
