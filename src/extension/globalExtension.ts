@@ -15,7 +15,8 @@ export default function () {
     }
     // 初始化全局缓存
     global.cache = {
-        rooms: {}
+        rooms: {},
+        links: {}
     }
 
     global.update = function () {

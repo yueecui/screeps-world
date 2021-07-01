@@ -139,6 +139,8 @@ export default function () {
                     this._storageLink = Game.getObjectById(info.id);
                     if (this._storageLink == null){
                         this.memory.flagPurge = TRUE;
+                    }else{
+                        this._storageLink.info = info;
                     }
                 }
             }
@@ -158,6 +160,8 @@ export default function () {
                     this._controllerLink = Game.getObjectById(info.id);
                     if (this._controllerLink == null){
                         this.memory.flagPurge = TRUE;
+                    }else{
+                        this._controllerLink.info = info;
                     }
                 }
             }
@@ -173,7 +177,10 @@ export default function () {
                 this._sourceLinks = [] ;
                 for (const info of _.filter(this.links as linkInfo[], (info)=>{ return info.type == LINK_TYPE_SOURCE || info.type == LINK_TYPE_NONE })){
                     const link = Game.getObjectById(info.id);
-                    if (link) this._sourceLinks.push(link);
+                    if (link) {
+                        link.info = info;
+                        this._sourceLinks.push(link);
+                    }
                     else this.memory.flagPurge = TRUE;
                 }
             }

@@ -110,6 +110,7 @@ type CONTAINER_TYPE_MINERAL = 3;    // 临接mineral的container，存量变多�
 interface linkInfo{
     id: Id<StructureLink>;
     type: ANY_LINK_TYPE;
+    target?: Id<StructureLink>;  // 当link等待能量时，记录需要发送的目标，一旦有能量就进行发送
 }
 
 type ANY_LINK_TYPE =
