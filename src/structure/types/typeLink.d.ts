@@ -11,6 +11,6 @@ interface StructureLink{
     centerSendToTarget(): void;
 
     // 创建搬运任务
-    createCenterTask(amount: number, is_input: boolean): void;
-
+    createCenterTask(amount: number, task_type: TASK_CENTER_LINK_INPUT|TASK_CENTER_LINK_OUTPUT): void;
+    cancelCanterTask(): void;
 }

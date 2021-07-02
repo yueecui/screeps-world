@@ -11,6 +11,9 @@ import {
     TASK_STATUS_DELIVER,
     TASK_STATUS_INIT,
     TASK_STATUS_OBTAIN,
+    TASK_CENTER_LINK_INPUT,
+    TASK_CENTER_LINK_OUTPUT,
+    TASK_CATEGORY_CENTER,
 } from '@/common/constant';
 import { ICON_PAUSE, ICON_QUESTION_MARK_1, ICON_SEARCH_1, ICON_SEARCH_2 } from '@/common/emoji';
 
@@ -54,6 +57,7 @@ export default function () {
         }
         // 根据任务类型执行不同操作
         switch (task.type){
+            // 【任务类型检查位置】
             case TASK_TOWER_ENERGY:
                 return this.doTaskTowerEnergy(task as Task<TASK_TOWER_ENERGY>);
         }
@@ -86,24 +90,22 @@ export default function () {
     // 取消任务
     // 任务直接删除掉
     // ------------------------------------------------------
-    Creep.prototype.removeTask = function (task, recreate=false) {
+    Creep.prototype.removeTask = function (task) {
         // 因为不一定有视野，所以直接操作Memory
         const room_memory = Memory.rooms[this.workRoom];
-        delete room_memory.taskDoing[task.id!];
-
-        // 是否重新添加任务到队列
-        if (recreate) {
-            delete task.acceptTime;
-            delete task.creep;
-            delete task.state;
-            delete task.order;
-            room_memory.tasks.push(task);
+        if (task.category == TASK_CATEGORY_CENTER){
+            _.pull(room_memory.task.center, task);
         }else{
-            switch(task.type){
-                case TASK_TOWER_ENERGY:
-                    delete room_memory.taskStatus[task.object];
-                    break;
-            }
+            delete room_memory.task.doing[task.id!];
+        }
+
+        switch(task.type){
+            // 【任务类型检查位置】
+            case TASK_TOWER_ENERGY:
+            case TASK_CENTER_LINK_INPUT:
+            case TASK_CENTER_LINK_OUTPUT:
+                delete room_memory.task.status[task.object];
+                break;
         }
 
         // 移除掉任务队伍队列
@@ -115,24 +117,26 @@ export default function () {
     // ------------------------------------------------------
     Creep.prototype.doTaskMastermind = function () {
         const task = this.room.task.center[0];
-        if (!task) return false;
+        if (!task) return this.doTaskMastermindIdle();
 
         // 根据任务类型执行不同操作
         switch (task.type){
-            case TASK_TOWER_ENERGY:
-                return this.doTaskTowerEnergy(task as Task<TASK_TOWER_ENERGY>);
+            // 【任务类型检查位置】
+            case TASK_CENTER_LINK_INPUT:
+                return this.doTaskCenterLinkInput(task as Task<TASK_CENTER_LINK_INPUT>);
+            case TASK_CENTER_LINK_OUTPUT:
+                return this.doTaskCenterLinkOutput(task as Task<TASK_CENTER_LINK_OUTPUT>);
         }
 
         return false;
     }
-
 
     // ------------------------------------------------------
     // 预定货物
     // ------------------------------------------------------
     Creep.prototype.orderCargo = function(task, room) {
         if (room == undefined) return false;
-        const cargo_sources = room.getCommonSource(task);  // TODO:必要的时候可能需要从LINK取能量
+        const cargo_sources = room.getStoreSources(task);  // TODO:必要的时候可能需要从LINK取能量
         if (cargo_sources.length == 0) return false;
         if (task.order == undefined) task.order = [];
 
@@ -259,6 +263,84 @@ export default function () {
                 }
                 return true;
         }
+    }
+
+    // ------------------------------------------------------
+    // 执行任务：给中心LINK补充能量
+    // ------------------------------------------------------
+    Creep.prototype.doTaskCenterLinkInput = function (task) {
+        const link = Game.getObjectById(task.object);
+        const amount = link ? link.store.getFreeCapacity(RESOURCE_ENERGY) : 0;
+        if (amount == 0){
+            this.removeTask(task);
+            return false;
+        }
+        if (this.store[RESOURCE_ENERGY] >= amount){
+            if (this.transfer(link!, RESOURCE_ENERGY) == OK){
+                return true;
+            }
+        }else{
+            const sources = this.room.getStoreSources(task);
+            for (const source of sources){
+                if (this.pos.getRangeTo(source) == 1 && source.store[RESOURCE_ENERGY] >= amount){
+                    if (this.withdraw(source, RESOURCE_ENERGY, amount) == OK){
+                        this.completeTask(task);
+                        return true;
+                    }
+                }
+            }
+        }
+        return false;
+    }
+
+    // ------------------------------------------------------
+    // 执行任务：从中心LINK取出能量
+    // ------------------------------------------------------
+    Creep.prototype.doTaskCenterLinkOutput = function (task) {
+        const link = Game.getObjectById(task.object);
+        const amount = link ? link.store[RESOURCE_ENERGY] : 0;
+        if (amount == 0){
+            this.removeTask(task);
+            return false;
+        }
+        if (this.store.getFreeCapacity(RESOURCE_ENERGY) >= amount){
+            if (this.withdraw(link!, RESOURCE_ENERGY) == OK){
+                this.completeTask(task);
+                return true;
+            }
+        }else{
+            const storages = this.room.getStoreStorages();
+            for (const name in this.store){
+                for (const storage of storages){
+                    if (this.pos.getRangeTo(storage) == 1 && storage.store.getFreeCapacity() > 0){
+                        if (this.transfer(storage, name as ResourceConstant) == OK){
+                            return true;
+                        }
+                    }
+                }
+            }
+        }
+
+        return false;
+    }
+
+    // ------------------------------------------------------
+    // 执行任务：主脑空闲时自动存东西
+    // ------------------------------------------------------
+    Creep.prototype.doTaskMastermindIdle = function () {
+        if (this.store.getUsedCapacity() == 0) return false;
+        const storages = this.room.getStoreStorages();
+        for (const name in this.store){
+            for (const storage of storages){
+                if (this.pos.getRangeTo(storage) == 1 && storage.store.getFreeCapacity() > 0){
+                    if (this.transfer(storage, name as ResourceConstant) == OK){
+                        return true;
+                    }
+                }
+            }
+        }
+
+        return false;
     }
 
     // ------------------------------------------------------

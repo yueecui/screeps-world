@@ -1,4 +1,4 @@
-import { TRUE, CONTAINER_TYPE_NONE, CONTAINER_TYPE_SOURCE, TASK_TOWER_ENERGY, TASK_CATEGORY_CENTER, TASK_CATEGORY_CENTER_NAME, TASK_CATEGORY_BOTH, TASK_CATEGORY_BOTH_NAME, TASK_CATEGORY_SPAWN, TASK_CATEGORY_SPAWN_NAME, TASK_CATEGORY_GIVE as TASK_CATEGORY_GIVE, TASK_CATEGORY_GIVE_NAME as TASK_CATEGORY_GIVE_NAME, TASK_CATEGORY_TAKE, TASK_CATEGORY_TAKE_NAME
+import { TRUE, CONTAINER_TYPE_NONE, CONTAINER_TYPE_SOURCE, TASK_TOWER_ENERGY, TASK_CATEGORY_CENTER, TASK_CATEGORY_CENTER_NAME, TASK_CATEGORY_BOTH, TASK_CATEGORY_BOTH_NAME, TASK_CATEGORY_SPAWN, TASK_CATEGORY_SPAWN_NAME, TASK_CATEGORY_GIVE as TASK_CATEGORY_GIVE, TASK_CATEGORY_GIVE_NAME as TASK_CATEGORY_GIVE_NAME, TASK_CATEGORY_TAKE, TASK_CATEGORY_TAKE_NAME, TASK_CENTER_LINK_INPUT, TASK_CENTER_LINK_OUTPUT
 } from "@/common/constant";
 
 
@@ -29,7 +29,10 @@ export default function () {
         // 新发布任务时标记任务已发布
         if (!force){
             switch (task.type){
+                // 【任务类型检查位置】
                 case TASK_TOWER_ENERGY:
+                case TASK_CENTER_LINK_INPUT:
+                case TASK_CENTER_LINK_OUTPUT:
                     this.task.status[task.object] = task.id;break;
             }
         }
@@ -39,7 +42,10 @@ export default function () {
 
     Room.prototype.hasTask = function(task){
         switch (task.type){
+            // 【任务类型检查位置】
             case TASK_TOWER_ENERGY:
+            case TASK_CENTER_LINK_INPUT:
+            case TASK_CENTER_LINK_OUTPUT:
                 return this.task.status[task.object] != undefined;
         }
         console.log(`Room.hasTask遇到意料外的任务类型：${task.type}`)
@@ -125,6 +131,7 @@ export default function () {
         for (const task of task_queue){
             let task_pos: RoomPosition;
             switch (task.type){
+                // 【任务类型检查位置】
                 case TASK_TOWER_ENERGY:
                     const structure = Game.getObjectById(task.object as Id<AnyStructure>);
                     if (structure) task_pos = structure.pos; else continue;
@@ -174,7 +181,7 @@ export default function () {
         creep.taskQueue.push(...task_id_array);
     }
 
-    Room.prototype.getCommonSource = function(task) {
+    Room.prototype.getStoreSources = function(task) {
         if (!this.my) return []
         const onlyEnergy = RESOURCE_ENERGY in task.cargo && Object.keys(task.cargo).length == 1;
 
@@ -199,6 +206,16 @@ export default function () {
                 }
             }
         }
+        return result;
+    }
+
+    Room.prototype.getStoreStorages = function() {
+        if (!this.my) return []
+
+        const result = [];
+        if (this.storage) result.push(this.storage);
+        if (this.terminal) result.push(this.terminal);
+
         return result;
     }
 }

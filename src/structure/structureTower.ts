@@ -33,9 +33,7 @@ export default function () {
         }
 
         // 检查能量
-        if (Game.rooms.sim){
-            this.checkStatus();
-        }
+        this.checkStatus();
 
     }
 

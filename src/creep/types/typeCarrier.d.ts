@@ -25,11 +25,12 @@ interface Creep {
 
     /** 执行任务：给塔补充能量 */
     doTaskTowerEnergy(task: Task<TASK_TOWER_ENERGY>): boolean;
-
-    /** 执行任务：集群LINK取出能量 */
-    doTaskCenterLinkTake(task: Task<TASK_TOWER_ENERGY>): boolean;
     /** 执行任务：集群LINK存入能量 */
-    doTaskCenterLinkGive(task: Task<TASK_TOWER_ENERGY>): boolean;
+    doTaskCenterLinkInput(task: Task<TASK_CENTER_LINK_INPUT>): boolean;
+    /** 执行任务：集群LINK取出能量 */
+    doTaskCenterLinkOutput(task: Task<TASK_CENTER_LINK_OUTPUT>): boolean;
+    /** 执行任务：主脑空闲时自动存东西 */
+    doTaskMastermindIdle(): boolean;
 
     /**
      * 检查房间的孵化能量是否足够，

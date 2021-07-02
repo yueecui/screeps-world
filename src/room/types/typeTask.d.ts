@@ -21,7 +21,9 @@ interface Room {
     sendTask(creep: Creep, task_queue: Task<TASK_ANY>[], task_id_array: string[]): void;
 
     /** 根据房间等级等情况，获得通用源 */
-    getCommonSource(task: Task<TASK_ANY>): (StructureStorage|StructureTerminal|StructureContainer|StructureLink)[];
+    getStoreSources(task: Task<TASK_ANY>): (StructureStorage|StructureTerminal|StructureContainer|StructureLink)[];
+    /** 获得可存入内容的建筑 */
+    getStoreStorages(): (StructureStorage|StructureTerminal|StructureContainer)[];
 }
 
 // 先存到Memory里
@@ -93,8 +95,8 @@ type TASK_ANY =
     |TASK_STORE_MINERAL
     |TASK_RECYCLE_TOMBSTONE
     |TASK_RECYCLE_RUIN
-    |TASK_CENTER_LINK_TAKE
-    |TASK_CENTER_LINK_GIVE
+    |TASK_CENTER_LINK_INPUT
+    |TASK_CENTER_LINK_OUTPUT
 
 type TASK_HARU_SPAWN_ENERGY = 10
 type TASK_NORMAL_SPAWN_ENERGY = 11
@@ -104,8 +106,8 @@ type TASK_STORE_SOURCE = 30
 type TASK_STORE_MINERAL = 31
 type TASK_RECYCLE_TOMBSTONE = 32
 type TASK_RECYCLE_RUIN = 33
-type TASK_CENTER_LINK_TAKE = 50
-type TASK_CENTER_LINK_GIVE = 51
+type TASK_CENTER_LINK_INPUT = 50
+type TASK_CENTER_LINK_OUTPUT = 51
 
 type TaskObjectId<T extends TASK_ANY>
     = T extends TASK_NORMAL_SPAWN_ENERGY | TASK_HARU_SPAWN_ENERGY | TASK_CONTROLLER_ENERGY
@@ -118,6 +120,8 @@ type TaskObjectId<T extends TASK_ANY>
     ? Id<Tombstone>
     : T extends TASK_RECYCLE_RUIN
     ? Id<Ruin>
+    : T extends TASK_CENTER_LINK_INPUT | TASK_CENTER_LINK_OUTPUT
+    ? Id<StructureLink>
     : never
 
 type TASK_CATEGORY_ANY =

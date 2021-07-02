@@ -497,7 +497,7 @@ export const SPAWN_BASE_PRIORITY_MID: Map<string, SpawnConfig> = new Map([
     // 优先搬运升级能量的搬运者
     ['TU', role_TU],
     // ROOM内矿物采集者
-    ['GM', role_GM],
+    // ['GM', role_GM],
     // 中心操作者
     ['MM', role_MM],
 ]);

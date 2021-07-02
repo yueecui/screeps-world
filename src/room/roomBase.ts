@@ -18,7 +18,7 @@ export default function () {
         // 定期检查
         if (Game.time % 5 == 0){
             if (!this.isUnderAttack) this.checkEnemy();
-            this.checkTowerEnergy();
+            // this.checkTowerEnergy();
             // this.memory.lastSpawnTime = (this.energyAvailable < this.energyCapacityAvailable || this.energyAvailable == 300) ? 1 : 0;
         }
         if (this.memory.flagPurge || Game.time % 20 == 0){
@@ -38,8 +38,7 @@ export default function () {
         // 每tick任务
         if (this.isUnderAttack) this.checkEnemy();      // 受到攻击的情况下每回合检测敌人
         this.checkSpawnEnergy();                        // 只有刷新时间不为0时才执行
-        this.linkRun();                                 // 运转所有link
-        this.updateVisual();                            // 刷新界面显示
+        // this.linkRun();                                 // 运转所有link
 
         // 如果有配置外矿的话，外矿有视野就检查外矿
         for (const name of this.memory.roomConfig.outside){
@@ -50,6 +49,12 @@ export default function () {
         for (const tower_id of this.towers){
             const tower = Game.getObjectById(tower_id);
             tower ? tower.work() : this.memory.flagPurge = TRUE;
+        }
+
+        // 检查link
+        for (const link_info of this.links){
+            const link = Game.getObjectById(link_info.id);
+            link ? link.work() : this.memory.flagPurge = TRUE;
         }
 
         // 分配任务
@@ -63,6 +68,9 @@ export default function () {
             // 分配任务
             this.assignTaskMain();
         }
+
+        // 刷新界面显示
+        this.updateVisual();
     }
 
     Room.prototype.errorCheck = function(){

@@ -12,7 +12,8 @@ export default function(creep: Creep) {
         }
     }else{
         creep.recycleNearby(); // 回收周围的能量
-        masterMindWork(creep);
+        creep.doTaskMastermind();
+        // masterMindWork(creep);
     }
 }
 

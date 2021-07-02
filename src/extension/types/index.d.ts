@@ -32,7 +32,6 @@ declare namespace NodeJS {
         // 各类缓存
         cache: {
             rooms: Record<string, RoomCache>
-            links: Record<string, BOOL_ANY>  // 标记link是否为忙碌，忙碌的link表示当前tick已经有接受能量
         }
     }
 }
@@ -52,6 +51,10 @@ interface Game{
     allLivedCreeps: Record<string, LivedCreeps>
     /** 本回合开始孵化的虫子，避免重复孵化 */
     spawningInTick: string[]
+    /** 每tick状态记录 */
+    status: {
+        links: Record<string, BOOL_ANY>  // 标记link是否为忙碌，忙碌的link表示当前tick已经有接受能量
+    }
 }
 
 interface Memory{

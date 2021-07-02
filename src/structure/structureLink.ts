@@ -1,10 +1,10 @@
-import { LINK_TYPE_CONTROLLER, LINK_TYPE_NONE, LINK_TYPE_SOURCE, LINK_TYPE_STORAGE, TRUE } from "@/common/constant";
+import { LINK_TYPE_CONTROLLER, LINK_TYPE_NONE, LINK_TYPE_SOURCE, LINK_TYPE_STORAGE, TASK_CATEGORY_CENTER, TASK_CENTER_LINK_INPUT, TASK_CENTER_LINK_OUTPUT, TRUE } from "@/common/constant";
 
 export default function () {
     Object.defineProperty(StructureLink.prototype, 'info', {
         get: function () {
             if (this._info === undefined){
-                const info = _.find(this.links as linkInfo[], { id: this.id });
+                const info = _.find(this.room.links as linkInfo[], { id: this.id });
                 if (info == undefined){
                     this._info = null;
                     this.room.memory.flagPurge = TRUE;
@@ -22,7 +22,6 @@ export default function () {
     });
 
     StructureLink.prototype.work = function(){
-        // global.cache.links
         if (!this.info) return;
         switch(this.info.type){
             case LINK_TYPE_NONE:
@@ -40,6 +39,10 @@ export default function () {
                 if (this.info.target){
                     this.centerSendToTarget();
                 }
+                // 没有目标时，请求将自己的能量搬运走
+                else if (this.store[RESOURCE_ENERGY] > 0){
+                    this.createCenterTask(this.store[RESOURCE_ENERGY], TASK_CENTER_LINK_OUTPUT);
+                }
                 break;
         }
     }
@@ -48,10 +51,10 @@ export default function () {
         const storage_link = this.room.storageLink;
         if (!storage_link) return;
         // 如果目标本tick已经有接收能量了，则跳过
-        if (global.cache.links[storage_link.id] == TRUE) return;
+        if (Game.status.links[storage_link.id] == TRUE) return;
 
         if (this.transferEnergy(storage_link) == OK){
-            global.cache.links[storage_link.id] = TRUE;
+            Game.status.links[storage_link.id] = TRUE;
         }
     }
 
@@ -69,22 +72,29 @@ export default function () {
 
     StructureLink.prototype.centerSendToTarget = function(){
         const target = Game.getObjectById(this.info.target!);
-        // 目标已有足够的能力，停止任务
+        // 目标已有足够的能量，停止任务
         if (!target || target.store[RESOURCE_ENERGY] >= 776){
             delete this.info.target;
             return;
         }
+        // 自己能量满就发送，不足就请求补充能量
         if (this.store.getFreeCapacity(RESOURCE_ENERGY) == 0){
             if (this.transferEnergy(target) == OK){
                 delete this.info.target;
-                return;
             }
         }else{
-            this.createCenterTask(this.store.getFreeCapacity(RESOURCE_ENERGY), true);
+            this.createCenterTask(this.store.getFreeCapacity(RESOURCE_ENERGY), TASK_CENTER_LINK_INPUT);
         }
     }
 
-    StructureLink.prototype.createCenterTask = function(amount, is_input){
-        // 最后到这
+    StructureLink.prototype.createCenterTask = function(amount, task_type){
+        this.room.createTask({
+            type: task_type,
+            category: TASK_CATEGORY_CENTER,
+            object: this.id,
+            cargo: {
+                [RESOURCE_ENERGY]: amount
+            }
+        });
     }
 }
