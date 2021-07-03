@@ -1,5 +1,6 @@
-import { Sadaharu } from "./sadaharuLayout";
-import { ConsoleCommandRoom } from './cmdRoom';
+import { Sadaharu } from "@/module/sadaharuLayout";
+import { ConsoleCommandRoom } from '@/module/cmdRoom';
+import roomResource from '@/module/helper_roomResource';
 
 export default function () {
     // 初始化
@@ -14,7 +15,7 @@ export default function () {
     }
     // 初始化全局缓存
     global.cache = {
-        rooms: {}
+        rooms: {},
     }
 
     global.update = function () {
@@ -32,4 +33,7 @@ export default function () {
         }
     }
     G.haru = new Sadaharu();
+
+    // 扩展帮助指令
+    roomResource();
 }

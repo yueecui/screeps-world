@@ -1,6 +1,5 @@
 import Mount from '@/mount';
-// 对原型进行扩展
-Mount();
+Mount();  // 对原型进行扩展
 
 import PeriodicTask from '@/module/periodicTask';
 import SpawnManager from '@/spawn/spawnManager';
@@ -19,6 +18,7 @@ module.exports.loop = () => {
     }
 
     // 运转所有小虫
+    // 需要在room后面运行，因为room会生成任务
     for(const name in Game.creeps) {
         Game.creeps[name].run();
     }

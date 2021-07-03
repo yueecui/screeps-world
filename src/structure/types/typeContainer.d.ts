@@ -1,0 +1,3 @@
+interface StructureContainer{
+    work(): void;
+}

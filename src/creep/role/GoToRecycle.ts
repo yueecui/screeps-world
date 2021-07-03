@@ -6,8 +6,8 @@ export default function (creep: Creep) {
     creep.recycleNearby(); // 回收周围的能量
     creep.say('♻️');
 
-    if (creep.room.name != creep.belongRoom){
-        const pos = new RoomPosition(25, 25, creep.belongRoom);
+    if (creep.room.name != creep.bornRoom){
+        const pos = new RoomPosition(25, 25, creep.bornRoom);
         creep.moveTo(pos);
         return;
     }

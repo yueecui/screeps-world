@@ -70,6 +70,7 @@ class HaruData{
     config: HaruConfig
     mainPos: RoomPosition|null = null
     mainMember: (Id<StructureSpawn|StructureExtension>)[] = []
+    middleMember: Id<StructureExtension>[] = []
     subPos: RoomPosition|null = null
     subMember: Id<StructureExtension>[] = []
     energyMax: number = 0
@@ -82,7 +83,6 @@ class HaruData{
 
     private init = () => {
         this.mainPos = new RoomPosition(this.config[0], this.config[1], this.room.name);
-        let found;
         let offset = {
             struct1: [0, 0],
             struct2: [0, 0],
@@ -115,16 +115,29 @@ class HaruData{
                     sub: [1, 1]
                 };break;
         }
-
-        found = find_structure(this.config[0]+offset.struct1[0], this.config[1]+offset.struct1[1], this.room);
-        if (found && (found instanceof StructureSpawn || found instanceof StructureExtension)) { this.mainMember.push(found.id); }
-        found = find_structure(this.config[0]+offset.struct2[0], this.config[1]+offset.struct2[1], this.room);
-        if (found && (found instanceof StructureSpawn || found instanceof StructureExtension)) { this.mainMember.push(found.id); }
+        // 查找main（第一个）
+        {
+            const found = find_structure(this.config[0]+offset.struct1[0], this.config[1]+offset.struct1[1], this.room);
+            if (found && (found instanceof StructureSpawn || found instanceof StructureExtension)) { this.mainMember.push(found.id); }
+        }
+        // 查找main（第二个）
+        {
+            const found = find_structure(this.config[0]+offset.struct2[0], this.config[1]+offset.struct2[1], this.room);
+            if (found && (found instanceof StructureSpawn || found instanceof StructureExtension)) { this.mainMember.push(found.id); }
+        }
+        // 查找sub和middle
         this.subPos = new RoomPosition(this.config[0]+offset.sub[0], this.config[1]+offset.sub[1], this.room.name);
-        this.subMember = _.map(this.subPos.findInRange(FIND_MY_STRUCTURES, 1, { filter: (struct) => { return struct.isActive() && struct.structureType == STRUCTURE_EXTENSION; }}) as StructureExtension[], (struct)=>{ return struct.id;});
+        const found = this.subPos.findInRange(FIND_MY_STRUCTURES, 1, { filter: (struct) => { return struct.isActive() && struct.structureType == STRUCTURE_EXTENSION;}}) as StructureExtension[];
+        for (const extension of found){
+            if (extension.pos.getRangeTo(this.mainPos) == 1){
+                this.middleMember.push(extension.id);
+            }else{
+                this.subMember.push(extension.id);
+            }
+        }
 
         // 统计能量
-        for (const id of [...this.mainMember, ...this.subMember]){
+        for (const id of [...this.mainMember, ...this.middleMember, ...this.subMember]){
             const obj = Game.getObjectById(id as Id<StructureExtension|StructureSpawn>);
             if (obj instanceof StructureSpawn){
                 this.energyMax += 300;
@@ -135,8 +148,9 @@ class HaruData{
     }
 
     get energy(){
+        // 因为可能会变，不缓存
         let energy = 0;
-        for (const id of [...this.mainMember, ...this.subMember]){
+        for (const id of [...this.mainMember, ...this.middleMember, ...this.subMember]){
             const struct = Game.getObjectById(id as Id<StructureSpawn|StructureExtension>);
             if (struct){
                 energy += struct.store[RESOURCE_ENERGY];

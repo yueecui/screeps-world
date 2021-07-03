@@ -10,9 +10,7 @@ export default function (creep: Creep) {
         const found = creep.room.find(FIND_HOSTILE_CREEPS);
         if (found.length){
             const target = found[0]
-            if (creep.pos.isNearTo(target)){
-                creep.attack(target);
-            }else{
+            if (creep.rangedAttack(target) == ERR_NOT_IN_RANGE){
                 creep.moveTo(target);
             }
             return;
@@ -23,9 +21,7 @@ export default function (creep: Creep) {
         const found = creep.room.find(FIND_HOSTILE_STRUCTURES);
         if (found.length){
             const target = found[0]
-            if (creep.pos.isNearTo(target)){
-                creep.attack(target);
-            }else{
+            if (creep.rangedAttack(target) == ERR_NOT_IN_RANGE){
                 creep.moveTo(target);
             }
             return;

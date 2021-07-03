@@ -1,20 +1,9 @@
 /**
  * 一个房间内运作必备的虫子的配置
  */
-
-import { SPAWN_TYPE_IN_ROOM, MODE_BUILDER, MODE_CONTROLLER, MODE_HARVEST_ENERGY, MODE_HARVEST_MINERAL, MODE_HELP, MODE_REPAIRER, MODE_SPAWN } from "@/module/constant";
-
-import { generateBodyTransporter,
-    generateBodyTransporterHelp,
-    generateBodyEnergyHarvester,
-    generateBodyMineralHarvester,
-    generateBodyMastermind,
-    generateBodyBuilder,
-    generateBodyUpgrader,
-    generateBodyOutsideDefender,
-    } from './bodyGenerator'
-
-import { CONSTRUCTION_SITES_PROGRESS_TO_NEED_BUILDER } from '@/module/config'
+ import { SPAWN_TYPE_IN_ROOM, MODE_BUILDER, MODE_HARVEST_ENERGY, MODE_HARVEST_MINERAL, MODE_HELP, MODE_REPAIRER, MODE_SPAWN, TRUE, FALSE, MODE_OUTSIDE, MODE_CONTROLLER } from "@/common/constant";
+import { CONSTRUCTION_SITES_PROGRESS_TO_NEED_BUILDER } from '@/common/config';
+import { BodyGenerator } from './bodyGenerator';
 
 /** 全灭后救灾的蚂蚁 */
 const role_HELP: SpawnConfig = {
@@ -36,7 +25,7 @@ const role_HELP: SpawnConfig = {
     needSpawn: (room) => {
         return room.countBaseNameCreeps('HELP', 'TS', 'TU') == 0 && room.energyAvailable >= 300;
     },
-    body: generateBodyTransporterHelp
+    body: BodyGenerator.TransporterHelp
 }
 
 
@@ -63,7 +52,7 @@ const role_TS: SpawnConfig = {
         // 随时需要
         return true;
     },
-    body: generateBodyTransporter
+    body: BodyGenerator.Transporter
 }
 
 /** 优先搬运升级能量的搬运者 */
@@ -89,7 +78,7 @@ const role_TU: SpawnConfig = {
         // 随时需要
         return true;
     },
-    body: generateBodyTransporter
+    body: BodyGenerator.Transporter
 }
 
 /** ROOM内能量采集者，A和B对应2个采集点 */
@@ -117,7 +106,7 @@ const role_GA: SpawnConfig = {
         return true;
     },
     body: (room) =>{
-        return generateBodyEnergyHarvester(room, 0);
+        return BodyGenerator.EnergyHarvester(room, 0);
     }
 }
 
@@ -145,7 +134,7 @@ const role_GB: SpawnConfig = {
         return true;
     },
     body: (room) =>{
-        return generateBodyEnergyHarvester(room, 1);
+        return BodyGenerator.EnergyHarvester(room, 1);
     }
 }
 
@@ -171,9 +160,10 @@ const role_GM: SpawnConfig = {
     needSpawn: (room) => {
         // 房间里的矿物有container并且有矿物时
         // 没有建extracter时，container不会计数
-        return room.mineral.container != null && Game.getObjectById((room.mineral.id))!.mineralAmount > 0;
+        if (room.storage && room.storage.store.getFreeCapacity() < 200000) return false;
+        return room.mineral && room.mineral.container != null && Game.getObjectById((room.mineral.id))!.mineralAmount > 0;
     },
-    body: generateBodyMineralHarvester
+    body: BodyGenerator.MineralHarvester
 }
 
 /** 中心操作者 */
@@ -199,7 +189,7 @@ const role_MM: SpawnConfig = {
         // 临时
         return room.links.length >= 2;
     },
-    body: generateBodyMastermind
+    body: BodyGenerator.Mastermind
 }
 
 /** 优先建造的建筑者 */
@@ -236,7 +226,7 @@ const role_BB: SpawnConfig = {
         }
         return false;
     },
-    body: generateBodyBuilder
+    body: BodyGenerator.Builder
 }
 
 /** 优先修理的建筑者 */
@@ -263,7 +253,7 @@ const role_BR: SpawnConfig = {
         // 后面应该改成不需要修时不刷新
         return true;
     },
-    body: generateBodyBuilder
+    body: BodyGenerator.Builder
 }
 
 /** 升级者 */
@@ -286,6 +276,8 @@ const role_UP: SpawnConfig = {
             return 1;
         }else if (controller.level == 2 || controller.level == 3){
             return 5;
+        }else if (controller.level == 8){
+            return 1;
         }else if (room.storage){
             const energy = room.storage.store[RESOURCE_ENERGY];
             if (energy > 400000){
@@ -303,12 +295,12 @@ const role_UP: SpawnConfig = {
     },
     needSpawn: (room) => {
         // 8级时只定期去补时间
-        if (room.controller!.level == 8 && room.controller!.ticksToDowngrade > 100000){
-            return false;
-        }
+        // if (room.controller!.level == 8 && room.controller!.ticksToDowngrade > 100000){
+        //     return false;
+        // }
         return true;
     },
-    body: generateBodyUpgrader
+    body: BodyGenerator.Upgrader
 }
 
 /** 测试用 */
@@ -318,26 +310,31 @@ const role_MA: SpawnConfig = {
     advance: false,
     memory: (spawn_room, work_room_name) => {
         return {
-            room: 'W46N49',
-            mode: 1,
-            node: 0,
+            room: 'W49N52',
             role: '手动'
         }
     },
     amount: function(spawn_room, work_room_name) {
         let amount = spawn_room.getSpawnAmount(this.baseName);
         if (amount > -1) return amount;
-        return 0;
+        return 1;
     },
     isLive: (spawn_room, creep) => {
         return true;
     },
     needSpawn: (spawn_room, work_room_name) => {
-        if (spawn_room.code != 'R3') return false;
-        return true;
+        return spawn_room.code == 'R4';
     },
-    body: (spawn_room) => {
-        return [CLAIM, MOVE]
+    body: function(room: Room){
+        const group_amount = 9;
+        const body: BodyPartConstant[] = []
+        for (let i=0;i<group_amount;i++){
+            body.push(WORK, WORK);
+        }
+        for (let i=0;i<group_amount;i++){
+            body.push(MOVE);
+        }
+        return body
     }
 }
 
@@ -364,9 +361,9 @@ const role_MB: SpawnConfig = {
         return true;
     },
     needSpawn: (spawn_room, work_room_name) => {
-        return true;
+        return spawn_room.code == 'R4';
     },
-    body: generateBodyBuilder
+    body: BodyGenerator.Builder
 }
 
 /** 帮忙建筑工 */
@@ -392,9 +389,35 @@ const role_MC: SpawnConfig = {
         return true;
     },
     needSpawn: (spawn_room, work_room_name) => {
+        return spawn_room.code == 'R4';
+    },
+    body: BodyGenerator.Builder
+}
+
+/** 手工控制的搬运工 */
+const role_MT: SpawnConfig = {
+    type: SPAWN_TYPE_IN_ROOM,
+    baseName: 'MT',
+    advance: true,
+    memory: (spawn_room, work_room_name) => {
+        return {
+            room: 'W49N52',
+            mode: 0,
+            role: '手动'
+        }
+    },
+    amount: function(spawn_room) {
+        let amount = spawn_room.getSpawnAmount(this.baseName);
+        if (amount > -1) return amount;
+        return 1;
+    },
+    isLive: (spawn_room, creep) => {
         return true;
     },
-    body: generateBodyBuilder
+    needSpawn: (spawn_room) => {
+        return spawn_room.code == 'R4';
+    },
+    body: BodyGenerator.Transporter
 }
 
 /** 斥候 */
@@ -436,20 +459,22 @@ const role_TT: SpawnConfig = {
             role: '手动',
         }
     },
-    amount: function(room) {
-        if (room.code =='R2' && room.terminal && room.terminal?.store.getUsedCapacity() > 0){
-            return 1;
+    amount: function(spawn_room) {
+        let amount = spawn_room.getSpawnAmount(this.baseName);
+        if (amount > -1) return amount;
+        if (spawn_room.code =='R1' && spawn_room.terminal){
+            return 2;
         }
         return 0;
     },
-    isLive: (room, creep) => {
+    isLive: (spawn_room, creep) => {
         return true;
     },
-    needSpawn: (room) => {
+    needSpawn: (spawn_room) => {
         // 随时需要
         return true;
     },
-    body: generateBodyTransporter
+    body: BodyGenerator.Transporter
 }
 
 
@@ -474,7 +499,7 @@ export const SPAWN_BASE_PRIORITY_MID: Map<string, SpawnConfig> = new Map([
     // 优先搬运升级能量的搬运者
     ['TU', role_TU],
     // ROOM内矿物采集者
-    ['GM', role_GM],
+    // ['GM', role_GM],
     // 中心操作者
     ['MM', role_MM],
 ]);
@@ -483,10 +508,9 @@ export const SPAWN_BASE_PRIORITY_MID: Map<string, SpawnConfig> = new Map([
 export const SPAWN_BASE_PRIORITY_LOW: Map<string, SpawnConfig> = new Map([
     // 手动脚本角色
     // ['MA', role_MA],
-    // 手动脚本角色
-    ['MB', role_MB],
-    // 手动脚本角色
-    ['MC', role_MC],
+    // ['MB', role_MB],
+    // ['MC', role_MC],
+    // ['MT', role_MT],
 
     // 优先建造的建筑者
     ['BB', role_BB],

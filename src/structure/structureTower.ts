@@ -1,9 +1,10 @@
-import { LAYOUT_SADAHARU } from "@/module/constant";
+import { TOWER_ENERGY_NEED_ADD } from "@/common/config";
+import { TASK_CATEGORY_GIVE, TASK_TOWER_ENERGY } from "@/common/constant";
 
-const TOWER_POWER_ATTACK = 600;
-const TOWER_FALLOFF = 30;
-const TOWER_OPTIMAL_RANGE = 5;
-const TOWER_FALLOFF_RANGE = 20;
+// const TOWER_POWER_ATTACK = 600;
+// const TOWER_FALLOFF = 30;
+// const TOWER_OPTIMAL_RANGE = 5;
+// const TOWER_FALLOFF_RANGE = 20;
 
 export default function () {
     StructureTower.prototype.work = function(){
@@ -30,9 +31,25 @@ export default function () {
         if (found.length){
             this.repair(found[0]);
         }
+
+        // 检查能量
+        this.checkStatus();
+
     }
 
-    StructureTower.prototype.calcDamage = function (target: Creep): number {
+    StructureTower.prototype.checkStatus = function () {
+        if (this.store[RESOURCE_ENERGY] >= TOWER_ENERGY_NEED_ADD) return;
+        this.room.createTask({
+            type: TASK_TOWER_ENERGY,
+            category: TASK_CATEGORY_GIVE,
+            object: this.id,
+            cargo: {
+                [RESOURCE_ENERGY]: Math.min(TOWER_CAPACITY, this.store.getFreeCapacity(RESOURCE_ENERGY))
+            }
+        });
+    }
+
+    StructureTower.prototype.calcDamage = function (target){
         let range = this.pos.getRangeTo(target);
         let amount = TOWER_POWER_ATTACK;
         if(range > TOWER_OPTIMAL_RANGE) {

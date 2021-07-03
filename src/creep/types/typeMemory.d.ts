@@ -12,9 +12,12 @@ interface CreepMemory {
     /** Creep所属的房间 */
     belong?: string
 
-
     /** Creep工作的目标room */
     room: string
+    /** 接受的任务队列 */
+    taskQueue: TaskId[]
+
+
     /** Creep当前的工作目标 */
     t: Id<any> | null
     /** Creep当前的获取能量的目标 */
@@ -28,19 +31,6 @@ interface CreepMemory {
     /** 指定站着的位置 */
     stay?: [number, number]
 
-
-    /**
-     * 【过期】Creep的职责(Role)
-     */
-    r: ANY_ROLE_NAME;
-    /**
-     * 【过期】Creep的能量持有状态，只有具备CARRY模块的才有该属性
-     */
-    e: ENERGY_STATUS;
-    /**
-     * 【过期】Creep的工作状态
-     */
-    w: WORK_STATUS;
     /**
      * 指定站着的位置
      */

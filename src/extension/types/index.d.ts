@@ -46,12 +46,15 @@ interface RoomCache{
     /** 孵化时使用的能量顺序 */
     energyOrder?: (Id<StructureExtension|StructureSpawn>)[]
 }
-
 interface Game{
     /** 当前所有活着的工蚁统计，每轮刷新 */
     allLivedCreeps: Record<string, LivedCreeps>
     /** 本回合开始孵化的虫子，避免重复孵化 */
     spawningInTick: string[]
+    /** 每tick状态记录 */
+    status: {
+        links: Record<string, BOOL_ANY>  // 标记link是否为忙碌，忙碌的link表示当前tick已经有接受能量
+    }
 }
 
 interface Memory{
@@ -63,11 +66,11 @@ interface Memory{
     sadaharuConfigs: Record<string, SadaharuConfig>
 }
 
-type BOOLEAN_ANY =
-    | BOOLEAN_FALSE
-    | BOOLEAN_TRUE
+type BOOL_ANY =
+    | FALSE
+    | TRUE
 
-type BOOLEAN_FALSE = 0
-type BOOLEAN_TRUE = 1
+type FALSE = 0
+type TRUE = 1
 
 type LivedCreeps = Record<string, number[]>;

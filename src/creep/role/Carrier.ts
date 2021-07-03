@@ -1,8 +1,8 @@
 import {
     ENERGY_NEED, ENERGY_ENOUGH,
     WORK_IDLE, WORK_TRANSPORTER_SPAWN, WORK_TRANSPORTER_TOWER, WORK_TRANSPORTER_STORAGE_ENERGY, WORK_TRANSPORTER_CONTROLLER,
-    MODE_SPAWN, MODE_CONTROLLER, WORK_TRANSPORTER_STORAGE_MINERAL, WORK_TRANSPORTER_TOMBSTONE, BOOLEAN_TRUE
-} from '@/module/constant';
+    MODE_SPAWN, MODE_CONTROLLER, WORK_TRANSPORTER_STORAGE_MINERAL, WORK_TRANSPORTER_TOMBSTONE, TRUE
+} from '@/common/constant';
 
 const IDLE_POS = { x: 28, y: 27 }
 
@@ -12,6 +12,10 @@ const MAP_POS: Record<string, [number,number]> = {
 }
 
 export default function (creep: Creep) {
+    if (Game.rooms.sim){
+        creep.doTask();
+        return;
+    }
     if (creep.memory.room != undefined){
         otherRoom(creep);
     }else{
@@ -131,7 +135,7 @@ const otherRoom = function(creep: Creep){
                     containers.push(container);
                 }
             }else{
-                creep.room.memory.flagPurge = BOOLEAN_TRUE;
+                creep.room.memory.flagPurge = TRUE;
             }
         }
         containers.sort((a, b) => { return b.store[RESOURCE_ENERGY] - a.store[RESOURCE_ENERGY]; })

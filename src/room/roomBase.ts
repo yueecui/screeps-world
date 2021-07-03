@@ -1,6 +1,6 @@
 import { TASK_WAITING,
     CONTAINER_TYPE_NONE, CONTAINER_TYPE_CONTROLLER, CONTAINER_TYPE_SOURCE, CONTAINER_TYPE_MINERAL,
-    LINK_TYPE_NONE, LINK_TYPE_STORAGE, LINK_TYPE_CONTROLLER, LINK_TYPE_SOURCE, BOOLEAN_FALSE, BOOLEAN_TRUE, LAYOUT_FREE, LAYOUT_SADAHARU } from "@/module/constant";
+    LINK_TYPE_NONE, LINK_TYPE_STORAGE, LINK_TYPE_CONTROLLER, LINK_TYPE_SOURCE, FALSE, TRUE } from "@/common/constant";
 import { SadaData } from "./class/sadaData";
 
 interface findPosParam{
@@ -18,7 +18,7 @@ export default function () {
         // 定期检查
         if (Game.time % 5 == 0){
             if (!this.isUnderAttack) this.checkEnemy();
-            this.checkTowerEnergy();
+            // this.checkTowerEnergy();
             // this.memory.lastSpawnTime = (this.energyAvailable < this.energyCapacityAvailable || this.energyAvailable == 300) ? 1 : 0;
         }
         if (this.memory.flagPurge || Game.time % 20 == 0){
@@ -32,46 +32,45 @@ export default function () {
 
         if (this.memory.flagPurge){
             console.log(`[${Game.time}] Room ${this.name} 强制刷新缓存完成`);
-            this.memory.flagPurge = BOOLEAN_FALSE;
+            this.memory.flagPurge = FALSE;
         }
 
         // 每tick任务
         if (this.isUnderAttack) this.checkEnemy();      // 受到攻击的情况下每回合检测敌人
         this.checkSpawnEnergy();                        // 只有刷新时间不为0时才执行
-        this.linkRun();                                 // 运转所有link
-        this.updateVisual();                            // 刷新界面显示
+        // this.linkRun();                                 // 运转所有link
 
         // 如果有配置外矿的话，外矿有视野就检查外矿
         for (const name of this.memory.roomConfig.outside){
             if (Game.rooms[name]) Game.rooms[name].run();
         }
 
-        // 临时检查塔
+        // 检查塔
         for (const tower_id of this.towers){
             const tower = Game.getObjectById(tower_id);
-            if (tower){
-                const closestHostile = tower.pos.findClosestByRange(FIND_HOSTILE_CREEPS);
-                if(closestHostile) {
-                    tower.attack(closestHostile);
-                    continue
-                }
-
-                const my_creep = tower.room.find(FIND_MY_CREEPS, {filter: (creep) => {
-                    return creep.hits < creep.hitsMax;
-                }});
-                if (my_creep.length){
-                    tower.heal(my_creep[0]);
-                    continue;
-                }
-
-                const found = this.find(FIND_MY_STRUCTURES, {filter: (struct) => {
-                    return struct.structureType == STRUCTURE_RAMPART && struct.hits < 300;
-                }})
-                if (found.length){
-                    tower.repair(found[0]);
-                }
-            }
+            tower ? tower.work() : this.memory.flagPurge = TRUE;
         }
+
+        // 检查link
+        for (const link_info of this.links){
+            const link = Game.getObjectById(link_info.id);
+            link ? link.work() : this.memory.flagPurge = TRUE;
+        }
+
+        // 分配任务
+        if (Game.rooms.sim){
+            // 检查container，是否需要发布任务
+            for (const container_info of this.containers){
+                const container = Game.getObjectById(container_info.id);
+                container ? container.work() : this.memory.flagPurge = TRUE;
+            }
+
+            // 分配任务
+            this.assignTaskMain();
+        }
+
+        // 刷新界面显示
+        this.updateVisual();
     }
 
     Room.prototype.errorCheck = function(){
@@ -123,11 +122,9 @@ export default function () {
         if (this.my){
             // 初始化定春布局数据
             const cache = global.cache.rooms[this.name];
-            if (this.memory.layout == LAYOUT_SADAHARU){
-                const sada_config = Memory.sadaharuConfigs[this.name];
-                if (sada_config){
-                    cache.sadaData = new SadaData(this, sada_config);
-                }
+            const sada_config = Memory.sadaharuConfigs[this.name];
+            if (sada_config){
+                cache.sadaData = new SadaData(this, sada_config);
             }
             // 生成能量顺序
             this.generateEnergyOrder();
@@ -159,9 +156,8 @@ export default function () {
 
     Room.prototype.initMemory = function(){
         const new_memory: RoomMemory = {
-            flagPurge: this.memory.flagPurge ?? BOOLEAN_TRUE,
+            flagPurge: this.memory.flagPurge ?? TRUE,
             lastSpawnTime: this.memory.lastSpawnTime ?? 0,
-            layout: this.memory.layout ?? LAYOUT_FREE,
             data: this.memory.data ?? {
                 sources: [],
                 mineral: null,
@@ -178,7 +174,7 @@ export default function () {
                 }
             },
             status: this.memory.status ?? {
-                underAttack: BOOLEAN_FALSE,
+                underAttack: FALSE,
             },
             roomConfig: this.memory.roomConfig ?? {
                 code: this.name,
@@ -192,8 +188,21 @@ export default function () {
             creepConfig: this.memory.creepConfig ?? {
                 stay: {},
             },
+            // 以下为测试2
+            task: {
+                spawn: [],
+                give: [],
+                take: [],
+                both: [],
+                center: [],
+
+                doing: {},
+                status: {}
+            },
             // 以下为测试
             tasks: this.memory.tasks ?? [],
+            taskDoing: this.memory.taskDoing ?? {},
+            taskStatus: this.memory.taskStatus ?? {},
             // 以下即将过期
             taskSpawn: this.memory.taskSpawn ?? {},
             taskTowers: this.memory.taskTowers ?? {},
@@ -250,7 +259,7 @@ export default function () {
                 container_info.type = ((container_id: Id<StructureContainer>) => {
                     const container = Game.getObjectById(container_id)!;
                     // 判断是否为mineral的container
-                    if (this.mineral.container == null
+                    if (this.mineral && this.mineral.container == null
                         && container.pos.getRangeTo(Game.getObjectById(this.mineral.id)!) <= 2){
                             const found = Game.getObjectById(this.mineral.id)!.pos.lookFor(LOOK_STRUCTURES);
                             if (found[0] && found[0].structureType == STRUCTURE_EXTRACTOR){
@@ -391,15 +400,15 @@ export default function () {
 
     Room.prototype.checkEnemy = function(){
         if (this.find(FIND_HOSTILE_CREEPS).length > 0){
-            this.memory.status.underAttack = BOOLEAN_TRUE;
+            this.memory.status.underAttack = TRUE;
         }else{
-            this.memory.status.underAttack = BOOLEAN_FALSE;
+            this.memory.status.underAttack = FALSE;
         }
         if (!this.isUnderAttack){
             if (this.find(FIND_HOSTILE_STRUCTURES).length > 0){
-                this.memory.status.hasInvaderCore = BOOLEAN_TRUE;
+                this.memory.status.hasInvaderCore = TRUE;
             }else{
-                this.memory.status.hasInvaderCore = BOOLEAN_FALSE;
+                this.memory.status.hasInvaderCore = FALSE;
             }
         }
     }

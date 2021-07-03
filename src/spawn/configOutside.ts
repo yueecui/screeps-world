@@ -2,14 +2,9 @@
  * 房间外矿虫子配置
  */
 
-import { SPAWN_TYPE_OUTSIDE, MODE_BUILDER, MODE_CONTROLLER, MODE_HARVEST_ENERGY, MODE_HARVEST_MINERAL, MODE_HELP, MODE_REPAIRER, MODE_SPAWN, BOOLEAN_TRUE, BOOLEAN_FALSE, MODE_OUTSIDE } from "@/module/constant";
+import { SPAWN_TYPE_OUTSIDE, MODE_BUILDER, MODE_HARVEST_ENERGY, MODE_HARVEST_MINERAL, MODE_HELP, MODE_REPAIRER, MODE_SPAWN, TRUE, FALSE, MODE_OUTSIDE } from "@/common/constant";
+import { BodyGenerator } from './bodyGenerator';
 
-import { generateBodyOutsideDefender,
-    generateBodyOutsideReserver,
-    generateBodyBuilder,
-    generateBodyOutsideEnergyHarvester,
-    generateBodyOutsideTransporter,
-    } from './bodyGenerator'
 
 /** 外矿防御者 */
 const role_DE: SpawnConfig = {
@@ -36,12 +31,12 @@ const role_DE: SpawnConfig = {
         // 需要目标房间遭到攻击
         // 由于不一定有视野，所以通过Memory判断
         if (work_room_name && Memory.rooms[work_room_name]){
-            return Memory.rooms[work_room_name].status.underAttack == BOOLEAN_TRUE
-                || Memory.rooms[work_room_name].status.hasInvaderCore == BOOLEAN_TRUE;
+            return Memory.rooms[work_room_name].status.underAttack == TRUE
+                || Memory.rooms[work_room_name].status.hasInvaderCore == TRUE;
         }
         return false;
     },
-    body: generateBodyOutsideDefender
+    body: BodyGenerator.OutsideDefender
 }
 
 /** 斥候 */
@@ -99,12 +94,13 @@ const role_ENG: SpawnConfig = {
         // 1.目标房间没有控制器
         // 2.已被其他人占领
         // 3.处于攻击状态
-        if (!room.controller
+        if (!room
+            || !room.controller
             || room.controller.owner != undefined
             || room.isUnderAttack) return false;
         return true;
     },
-    body: generateBodyOutsideReserver
+    body: BodyGenerator.OutsideReserver
 }
 
 /** 外矿的建造的建设者 */
@@ -138,7 +134,8 @@ const role_BB: SpawnConfig = {
         // 2.已被其他人占领
         // 3.房间不是我预定的
         // 4.处于攻击状态
-        if (!room.controller
+        if (!room
+            || !room.controller
             || room.controller.owner != undefined
             || !room.myReserve
             || room.isUnderAttack) return false;
@@ -146,7 +143,7 @@ const role_BB: SpawnConfig = {
         const found = room.find(FIND_MY_CONSTRUCTION_SITES);
         return found.length > 0 ? true : false;
     },
-    body: generateBodyBuilder
+    body: BodyGenerator.Builder
 }
 
 /** 外矿能量采集者A */
@@ -183,7 +180,8 @@ const role_GA: SpawnConfig = {
         // 4.处于攻击状态
         // 5.采集点0没有container
         // 6.房间还有修建者
-        if (!room.controller
+        if (!room
+            || !room.controller
             || room.controller.owner != undefined
             || !room.myReserve
             || room.isUnderAttack
@@ -192,7 +190,7 @@ const role_GA: SpawnConfig = {
         return true;
     },
     body: (room) =>{
-        return generateBodyOutsideEnergyHarvester(room);
+        return BodyGenerator.OutsideEnergyHarvester(room);
     }
 }
 
@@ -236,7 +234,8 @@ const role_GB: SpawnConfig = {
         // 4.处于攻击状态
         // 5.采集点1没有container
         // 6.房间还有修建者
-        if (!room.controller
+        if (!room
+            || !room.controller
             || room.controller.owner != undefined
             || !room.myReserve
             || room.isUnderAttack
@@ -245,7 +244,7 @@ const role_GB: SpawnConfig = {
         return true;
     },
     body: (room) =>{
-        return generateBodyOutsideEnergyHarvester(room);
+        return BodyGenerator.OutsideEnergyHarvester(room);
     }
 }
 
@@ -282,7 +281,8 @@ const role_TO: SpawnConfig = {
         // 4.处于攻击状态
         // 5.房间里没有采集者
         // 6.房间里还有修建者
-        if (!room.controller
+        if (!room
+            || !room.controller
             || room.controller.owner != undefined
             || !room.myReserve
             || room.isUnderAttack
@@ -291,7 +291,7 @@ const role_TO: SpawnConfig = {
 
         return true;
     },
-    body: generateBodyOutsideTransporter
+    body: BodyGenerator.OutsideTransporter
 }
 
 // 高优先级

@@ -1,7 +1,7 @@
 import creepExtension from './creep/creep';
 import roomExtension from './room/room';
 import structureExtension from './structure/structure';
-import globalExtension from './module/globalExtension';
+import globalExtension from './extension/globalExtension';
 
 export default function(){
     roomExtension();

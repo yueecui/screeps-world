@@ -1,5 +1,37 @@
 // 运输相关方法接口扩展
 interface Creep {
+    /** 检查是否拥有可以完成任务的存储量 */
+    hasEnoughCapacity(task: Task<TASK_ANY>): boolean;
+    /** 预定货物 */
+    hasEnoughCargo(task: Task<TASK_ANY>): boolean;
+
+    /** 执行任务，从自己的任务队列中获取任务执行，返回值为是否执行了操作 */
+    doTask(): boolean;
+    /** 获取任务信息 */
+    getTaskInfo(task_id: TaskId): Task<TASK_ANY>|undefined;
+    /** 任务完成后的处理 */
+    completeTask(task: Task<TASK_ANY>): void;
+    /** 删除掉任务的处理 */
+    removeTask(task: Task<TASK_ANY>, recreate?: boolean): void;
+
+    /** 执行任务：从center队列中获取任务来执行，返回值为是否执行了操作 */
+    doTaskMastermind(): boolean;
+
+    /** 预定货物 */
+    orderCargo(task: Task<TASK_ANY>, room: Room): boolean;
+    /** 取得货物 */
+    obtainCargo(task: Task<TASK_ANY>): boolean;
+
+
+    /** 执行任务：给塔补充能量 */
+    doTaskTowerEnergy(task: Task<TASK_TOWER_ENERGY>): boolean;
+    /** 执行任务：集群LINK存入能量 */
+    doTaskCenterLinkInput(task: Task<TASK_CENTER_LINK_INPUT>): boolean;
+    /** 执行任务：集群LINK取出能量 */
+    doTaskCenterLinkOutput(task: Task<TASK_CENTER_LINK_OUTPUT>): boolean;
+    /** 执行任务：主脑空闲时自动存东西 */
+    doTaskMastermindIdle(): boolean;
+
     /**
      * 检查房间的孵化能量是否足够，
      * 不足的情况下会设工作状态为 WORK_TRANSPORTER_SPAWN

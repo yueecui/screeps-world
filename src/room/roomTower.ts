@@ -1,4 +1,4 @@
-import { BOOLEAN_TRUE, TASK_WAITING } from "@/module/constant";
+import { TRUE, TASK_WAITING } from "@/common/constant";
 
 export default function () {
 
@@ -12,7 +12,7 @@ export default function () {
         if (this.towers.length > 0){
             let towers = _.map(this.towers, (id)=> {return Game.getObjectById(id)});
             towers = _.filter(towers, (tower) => {
-                if (tower == null) { this.memory.flagPurge = BOOLEAN_TRUE;return false; }
+                if (tower == null) { this.memory.flagPurge = TRUE;return false; }
                 return tower.store.getFreeCapacity(RESOURCE_ENERGY) > 0;
             });
             this.memory.taskTowers = {};

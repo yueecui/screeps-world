@@ -1,4 +1,4 @@
-import { BOOLEAN_FALSE, BOOLEAN_TRUE, LAYOUT_FREE, LAYOUT_SADAHARU, LINK_TYPE_CONTROLLER, LINK_TYPE_NONE, LINK_TYPE_SOURCE, LINK_TYPE_STORAGE } from "@/module/constant";
+import { FALSE, TRUE, LINK_TYPE_CONTROLLER, LINK_TYPE_NONE, LINK_TYPE_SOURCE, LINK_TYPE_STORAGE } from "@/common/constant";
 
 export default function () {
     // 定义各个属性
@@ -138,7 +138,9 @@ export default function () {
                 }else{
                     this._storageLink = Game.getObjectById(info.id);
                     if (this._storageLink == null){
-                        this.memory.flagPurge = BOOLEAN_TRUE;
+                        this.memory.flagPurge = TRUE;
+                    }else{
+                        this._storageLink.info = info;
                     }
                 }
             }
@@ -157,7 +159,9 @@ export default function () {
                 }else{
                     this._controllerLink = Game.getObjectById(info.id);
                     if (this._controllerLink == null){
-                        this.memory.flagPurge = BOOLEAN_TRUE;
+                        this.memory.flagPurge = TRUE;
+                    }else{
+                        this._controllerLink.info = info;
                     }
                 }
             }
@@ -173,8 +177,11 @@ export default function () {
                 this._sourceLinks = [] ;
                 for (const info of _.filter(this.links as linkInfo[], (info)=>{ return info.type == LINK_TYPE_SOURCE || info.type == LINK_TYPE_NONE })){
                     const link = Game.getObjectById(info.id);
-                    if (link) this._sourceLinks.push(link);
-                    else this.memory.flagPurge = BOOLEAN_TRUE;
+                    if (link) {
+                        link.info = info;
+                        this._sourceLinks.push(link);
+                    }
+                    else this.memory.flagPurge = TRUE;
                 }
             }
             return this._sourceLinks;
@@ -183,10 +190,59 @@ export default function () {
         configurable: true
     });
 
-    Object.defineProperty(Room.prototype, 'layout', {
+    Object.defineProperty(Room.prototype, 'carriers', {
         get: function () {
-            if (this.memory.layout == undefined) return LAYOUT_FREE;
-            return this.memory.layout;
+            if (this._carries === undefined){
+                this._carries = _.filter(Game.creeps, creep => !creep.spawning && creep.workRoom == this.name && creep.role == '运输');
+            }
+            return this._carries;
+        },
+        enumerable: false,
+        configurable: true
+    });
+
+    Object.defineProperty(Room.prototype, 'task', {
+        get: function () {
+            if (this.memory.task === undefined) this.memory.task = {};
+            if (this.memory.task.high === undefined) this.memory.task.high = [];
+            if (this.memory.task.medium === undefined) this.memory.task.medium = [];
+            if (this.memory.task.low === undefined) this.memory.task.low = [];
+            if (this.memory.task.doing === undefined) this.memory.task.doing = {};
+            if (this.memory.task.status === undefined) this.memory.task.status = {};
+            return this.memory.task;
+        },
+        enumerable: false,
+        configurable: true
+    });
+
+    Object.defineProperty(Room.prototype, 'tasks', {
+        get: function () {
+            if (this.memory.tasks === undefined){
+                this.memory.tasks = [];
+            }
+            return this.memory.tasks;
+        },
+        enumerable: false,
+        configurable: true
+    });
+
+    Object.defineProperty(Room.prototype, 'taskDoing', {
+        get: function () {
+            if (this.memory.taskDoing === undefined){
+                this.memory.taskDoing = {};
+            }
+            return this.memory.taskDoing;
+        },
+        enumerable: false,
+        configurable: true
+    });
+
+    Object.defineProperty(Room.prototype, 'taskStatus', {
+        get: function () {
+            if (this.memory.taskStatus === undefined){
+                this.memory.taskStatus = {};
+            }
+            return this.memory.taskStatus;
         },
         enumerable: false,
         configurable: true
@@ -194,7 +250,6 @@ export default function () {
 
     Object.defineProperty(Room.prototype, 'sada', {
         get: function () {
-            if (this.memory.layout != LAYOUT_SADAHARU) return null;
             return global.cache.rooms[this.name].sadaData;
         },
         enumerable: false,
@@ -212,7 +267,7 @@ export default function () {
 
     Object.defineProperty(Room.prototype, 'isUnderAttack', {
         get: function () {
-            return this.memory.status.underAttack == BOOLEAN_TRUE;
+            return this.memory.status.underAttack == TRUE;
         },
         enumerable: false,
         configurable: true
@@ -221,7 +276,7 @@ export default function () {
     Object.defineProperty(Room.prototype, 'hasInvaderCore', {
         get: function () {
             if (this.myReserve){
-                return this.memory.status.hasInvaderCore == BOOLEAN_TRUE;
+                return this.memory.status.hasInvaderCore == TRUE;
             }else{
                 return false;
             }
@@ -233,13 +288,13 @@ export default function () {
     Object.defineProperty(Room.prototype, 'controllerLinkNeedEnergy', {
         get: function () {
             if (this.my){
-                return this.memory.status.controllerLinkNeedEnergy == BOOLEAN_TRUE;
+                return this.memory.status.controllerLinkNeedEnergy == TRUE;
             }else{
                 return false;
             }
         },
         set: function (new_value: boolean) {
-            this.memory.status.controllerLinkNeedEnergy = new_value ? BOOLEAN_TRUE : BOOLEAN_FALSE;
+            this.memory.status.controllerLinkNeedEnergy = new_value ? TRUE : FALSE;
         },
         enumerable: false,
         configurable: true

@@ -2,7 +2,7 @@ interface RoomMemory {
     /**
      * 强制清除缓存的标记
      */
-    flagPurge: BOOLEAN_ANY;
+    flagPurge: BOOL_ANY;
     /**
      * 本房间最后一次孵化的时间
      *
@@ -26,9 +26,6 @@ interface RoomMemory {
      */
     energyPlan: EnergyPlan[];
 
-    /** 使用的布局类型 */
-    layout?: LAYOUT_ANY;
-
     /** 房间数据，这部分数据删掉后会完全自动重置 */
     data: {
         sources: sourceInfo[],
@@ -42,11 +39,11 @@ interface RoomMemory {
     /** 当前房间的状态，用于判断 */
     status: {
         /** 房间里有敌人 */
-        underAttack: BOOLEAN_ANY;
+        underAttack: BOOL_ANY;
         /** 仅限预定房间，有敌方的core在抢预定 */
-        hasInvaderCore?: BOOLEAN_ANY;
+        hasInvaderCore?: BOOL_ANY;
         /** 控制器的LINK是否需要能量 */
-        controllerLinkNeedEnergy?: BOOLEAN_ANY;
+        controllerLinkNeedEnergy?: BOOL_ANY;
     }
     /** 房间配置，这部分数据均为手工配置的数据，删了的话需要重新配置 */
     roomConfig: {
@@ -113,6 +110,7 @@ type CONTAINER_TYPE_MINERAL = 3;    // 临接mineral的container，存量变多�
 interface linkInfo{
     id: Id<StructureLink>;
     type: ANY_LINK_TYPE;
+    target?: Id<StructureLink>;  // 当link等待能量时，记录需要发送的目标，一旦有能量就进行发送
 }
 
 type ANY_LINK_TYPE =

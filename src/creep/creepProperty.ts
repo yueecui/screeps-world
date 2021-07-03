@@ -1,3 +1,5 @@
+import { TASK_CATEGORY_UNKNOWN } from "@/common/constant";
+
 export default function () {
     // 工蚁
     Creep.prototype._roomCode = '';
@@ -53,20 +55,21 @@ export default function () {
         configurable: true
     });
 
-    Object.defineProperty(Creep.prototype, 'bornRoom', {
+
+    Object.defineProperty(Creep.prototype, 'workRoom', {
         get: function () {
-            return this.memory.born ? this.memory.born : '??';
+            return this.memory.room ? this.memory.room : this.memory.born;
+        },
+        set: function(new_value: string){
+            this.memory.room = new_value;
         },
         enumerable: false,
         configurable: true
     });
 
-    Object.defineProperty(Creep.prototype, 'belongRoom', {
+    Object.defineProperty(Creep.prototype, 'bornRoom', {
         get: function () {
-            return this.memory.belong ? this.memory.belong : this.memory.born;
-        },
-        set: function(new_value: string){
-            this.memory.belong = new_value;
+            return this.memory.born ? this.memory.born : '??';
         },
         enumerable: false,
         configurable: true
@@ -146,12 +149,32 @@ export default function () {
         configurable: true
     });
 
+    Object.defineProperty(Creep.prototype, 'taskQueue', {
+        get: function () {
+            if (this.memory.taskQueue == undefined) this.memory.taskQueue = [];
+            return this.memory.taskQueue;
+        },
+        enumerable: false,
+        configurable: true
+    });
+
+    Object.defineProperty(Creep.prototype, 'currentTaskCategory', {
+        get: function () {
+            if (this.memory.taskQueue == undefined) this.memory.taskQueue = [];
+            if (this.memory.taskQueue.length == 0) return TASK_CATEGORY_UNKNOWN;
+            const task = this.getTaskInfo(this.taskQueue[0]);
+            return task ? task.category : TASK_CATEGORY_UNKNOWN;
+        },
+        enumerable: false,
+        configurable: true
+    });
+
     Object.defineProperty(Creep.prototype, 'stayPos', {
         get: function () {
             if (this._stayPos === undefined){
                 let stay;
-                if (Memory.rooms[this.belongRoom].creepConfig.stay[this.baseName]){
-                    stay = Memory.rooms[this.belongRoom].creepConfig.stay[this.baseName];
+                if (Memory.rooms[this.workRoom].creepConfig.stay[this.baseName]){
+                    stay = Memory.rooms[this.workRoom].creepConfig.stay[this.baseName];
                 }else if (this.memory.stay){
                     stay = this.memory.stay;
                 }

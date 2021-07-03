@@ -1,4 +1,4 @@
-import { TASK_WAITING } from "@/module/constant";
+import { TASK_WAITING } from "@/common/constant";
 
 export default function () {
 
