@@ -276,6 +276,8 @@ const role_UP: SpawnConfig = {
             return 1;
         }else if (controller.level == 2 || controller.level == 3){
             return 5;
+        }else if (controller.level == 8){
+            return 1;
         }else if (room.storage){
             const energy = room.storage.store[RESOURCE_ENERGY];
             if (energy > 400000){
