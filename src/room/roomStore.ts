@@ -82,38 +82,4 @@ export default function () {
 
     };
 
-    // 运转所有link
-    Room.prototype.linkRun = function(){
-        // controller边上的检查是否需要补充能量
-        if (!this.controllerLinkNeedEnergy && this.controllerLink && this.controllerLink.store[RESOURCE_ENERGY] <= 24){
-            this.controllerLinkNeedEnergy = true;
-        }
-        // source和none检查是否有能量可以发送
-        for (const link of this.sourceLinks){
-            if (link.cooldown == 0
-                && link.store.getFreeCapacity(RESOURCE_ENERGY) == 0){
-                    if (this.controllerLinkNeedEnergy && this.controllerLink){
-                        if (link.transferEnergy(this.controllerLink) == OK){
-                            this.controllerLinkNeedEnergy = false;
-                            continue;
-                        }
-                    }
-                    if (this.storageLink && this.storageLink.store.getFreeCapacity(RESOURCE_ENERGY) >= 776){
-                        if (link.transferEnergy(this.storageLink) == OK){
-                            continue;
-                        }
-                    }
-            }
-        }
-        // storage检查是否有能量可以发送
-        if (this.controllerLinkNeedEnergy
-            && this.storageLink
-            && this.storageLink.cooldown == 0
-            && this.storageLink.store.getFreeCapacity(RESOURCE_ENERGY) == 0
-            && this.controllerLink){
-                if (this.storageLink.transferEnergy(this.controllerLink) == OK){
-                    this.controllerLinkNeedEnergy = false;
-                }
-        }
-    }
 }

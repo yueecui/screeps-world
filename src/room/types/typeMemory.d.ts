@@ -15,11 +15,6 @@ interface RoomMemory {
     taskSpawn: Record<string, taskInfo>;
 
     /**
-     * 当前还需要补充能量的塔
-     */
-    taskTowers: Record<string, taskInfo>;
-
-    /**
      * 目前运输的能量计划
      *
      * 用于辅助计算能量存储建筑可用能量
@@ -42,8 +37,6 @@ interface RoomMemory {
         underAttack: BOOL_ANY;
         /** 仅限预定房间，有敌方的core在抢预定 */
         hasInvaderCore?: BOOL_ANY;
-        /** 控制器的LINK是否需要能量 */
-        controllerLinkNeedEnergy?: BOOL_ANY;
     }
     /** 房间配置，这部分数据均为手工配置的数据，删了的话需要重新配置 */
     roomConfig: {

@@ -18,12 +18,11 @@ export default function () {
         // 定期检查
         if (Game.time % 5 == 0){
             if (!this.isUnderAttack) this.checkEnemy();
-            // this.checkTowerEnergy();
             // this.memory.lastSpawnTime = (this.energyAvailable < this.energyCapacityAvailable || this.energyAvailable == 300) ? 1 : 0;
         }
         if (this.memory.flagPurge || Game.time % 20 == 0){
 
-            // 以下为旧模式任务
+            // 【旧】以下为旧模式任务
             // 强制刷新孵化能量任务队列
             this.memory.lastSpawnTime = 1
             this.updateRoomStructureStatus();   // 重新缓存特定建筑信息（例如塔）
@@ -35,47 +34,27 @@ export default function () {
             this.memory.flagPurge = FALSE;
         }
 
-        // 每tick任务
+        // 【旧】每tick任务
         if (this.isUnderAttack) this.checkEnemy();      // 受到攻击的情况下每回合检测敌人
         this.checkSpawnEnergy();                        // 只有刷新时间不为0时才执行
-        // this.linkRun();                                 // 运转所有link
+
+
+        // 每tick任务
+        this.workStructures();  // 运转所有建筑
+        this.assignTaskMain();  // 分配任务
+
+        // 刷新界面显示
+        this.updateVisual();
 
         // 如果有配置外矿的话，外矿有视野就检查外矿
         for (const name of this.memory.roomConfig.outside){
             if (Game.rooms[name]) Game.rooms[name].run();
         }
-
-        // 检查塔
-        for (const tower_id of this.towers){
-            const tower = Game.getObjectById(tower_id);
-            tower ? tower.work() : this.memory.flagPurge = TRUE;
-        }
-
-        // 检查link
-        for (const link_info of this.links){
-            const link = Game.getObjectById(link_info.id);
-            link ? link.work() : this.memory.flagPurge = TRUE;
-        }
-
-        // 分配任务
-        if (Game.rooms.sim){
-            // 检查container，是否需要发布任务
-            for (const container_info of this.containers){
-                const container = Game.getObjectById(container_info.id);
-                container ? container.work() : this.memory.flagPurge = TRUE;
-            }
-
-            // 分配任务
-            this.assignTaskMain();
-        }
-
-        // 刷新界面显示
-        this.updateVisual();
     }
 
     Room.prototype.errorCheck = function(){
         // 检查任务分配是否有蚂蚁死了
-        for (const tasks of [this.memory.taskSpawn, this.memory.taskTowers]){
+        for (const tasks of [this.memory.taskSpawn]){
             for (const id in tasks){
                 const task_info = tasks[id];
                 // 检查任务接受者是否还存活
@@ -199,17 +178,25 @@ export default function () {
                 doing: {},
                 status: {}
             },
-            // 以下为测试
-            tasks: this.memory.tasks ?? [],
-            taskDoing: this.memory.taskDoing ?? {},
-            taskStatus: this.memory.taskStatus ?? {},
             // 以下即将过期
             taskSpawn: this.memory.taskSpawn ?? {},
-            taskTowers: this.memory.taskTowers ?? {},
             energyPlan: this.memory.energyPlan ?? [],
         }
 
         this.memory = new_memory;
+    }
+
+    Room.prototype.workStructures = function() {
+        // 检查各个建筑（使用info）
+        for (let info of [...this.links, ...this.containers]){
+            const structure = Game.getObjectById(info.id as Id<StructureLink|StructureContainer>);
+            structure ? structure.work() : this.memory.flagPurge = TRUE;
+        }
+        // 检查各个建筑（使用id）
+        for (const id of [...this.towers]){
+            const structure = Game.getObjectById(id);
+            structure ? structure.work() : this.memory.flagPurge = TRUE;
+        }
     }
 
 

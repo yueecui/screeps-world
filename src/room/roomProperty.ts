@@ -284,19 +284,4 @@ export default function () {
         enumerable: false,
         configurable: true
     });
-
-    Object.defineProperty(Room.prototype, 'controllerLinkNeedEnergy', {
-        get: function () {
-            if (this.my){
-                return this.memory.status.controllerLinkNeedEnergy == TRUE;
-            }else{
-                return false;
-            }
-        },
-        set: function (new_value: boolean) {
-            this.memory.status.controllerLinkNeedEnergy = new_value ? TRUE : FALSE;
-        },
-        enumerable: false,
-        configurable: true
-    });
 }

@@ -1,7 +1,6 @@
 import {
     ENERGY_NEED, ENERGY_ENOUGH,
-    WORK_IDLE, WORK_TRANSPORTER_SPAWN, WORK_TRANSPORTER_TOWER, WORK_TRANSPORTER_STORAGE_ENERGY, WORK_TRANSPORTER_TOMBSTONE,
-    TASK_WAITING, TASK_ACCEPTED,
+    WORK_IDLE, WORK_TRANSPORTER_SPAWN, WORK_TRANSPORTER_STORAGE_ENERGY, WORK_TRANSPORTER_TOMBSTONE,
     CONTAINER_TYPE_SOURCE,
     WORK_TRANSPORTER_CONTROLLER,
     PRIORITY_CONTAINER,
@@ -249,7 +248,7 @@ export default function () {
                 }
                 if (this.pos.isNearTo(target)){
                     for (const name in task.cargo){
-                        const result = this.transfer(target, name as ResourceConstant, task.cargo[name as ResourceConstant]);
+                        const result = this.transfer(target, name as ResourceConstant, Math.min(target.store.getFreeCapacity(name as ResourceConstant) ?? 0, task.cargo[name as ResourceConstant]!));
                         if (result == OK){
                             delete task.cargo[name as ResourceConstant];
                             if (Object.keys(task.cargo).length == 0){
@@ -405,68 +404,6 @@ export default function () {
                 }
             }
 
-        }
-    }
-
-    // ------------------------------------------------------
-    // 塔能量搬运
-    // ------------------------------------------------------
-
-    // 检查是否需要设置工作状态为搬运孵化能量
-    Creep.prototype.checkWorkTransporterTower = function(){
-        if (this.work != WORK_TRANSPORTER_TOWER
-            && this.room.hasUnqueueTaskTower()){
-            // 设定工作状态
-            this.clearQueue();
-            this.target = null;
-            this.work = WORK_TRANSPORTER_TOWER;
-            this.acceptTaskSpawn();
-            return true;
-        }
-        return false;
-    }
-
-    // 执行WORK_TRANSPORTER_TOWER
-    Creep.prototype.doWorkTransporterTower = function(){
-        if (this.energy == ENERGY_NEED){
-            this.obtainEnergy({
-                container: [CONTAINER_TYPE_SOURCE],
-                storage: true,
-            });
-        }else{
-            // 没有找到下个目标的情况下，返回false，并且把工作置为IDLE
-            if (!this.setNextTarget()){
-                this.work = WORK_IDLE;
-                return;
-            }
-            const target = Game.getObjectById(this.target!) as StructureTower;
-            // 目标如果不存在（被拆除）或是目标已经满了
-            // 就跳过该目标
-            if (target == null || target.store.getFreeCapacity(RESOURCE_ENERGY) == 0){
-                delete this.room.memory.taskTowers[this.memory.t!];
-                this.target = null;
-            }
-            if (this.store.getFreeCapacity() > 0 && (target.store.getFreeCapacity(RESOURCE_ENERGY) > this.store[RESOURCE_ENERGY])){
-                this.energy = ENERGY_NEED;
-                this.obtainEnergy({
-                    container: [CONTAINER_TYPE_SOURCE],
-                    storage: true,
-                });
-            }else{
-                const result = this.transfer(target, RESOURCE_ENERGY);
-                switch(result){
-                    case OK:
-                        // 如果容量能填满则任务完成，否则不能清除目标还得继续运能量来填
-                        if (this.store[RESOURCE_ENERGY] >= target.store.getFreeCapacity(RESOURCE_ENERGY)){
-                            delete this.room.memory.taskTowers[this.memory.t!];
-                            this.target = null;
-                        }
-                        break;
-                    case ERR_NOT_IN_RANGE:
-                        this.moveTo(target);
-                        break;
-                }
-            }
         }
     }
 

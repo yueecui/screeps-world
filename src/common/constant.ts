@@ -102,10 +102,6 @@ export const WORK_NORMAL: WORK_NORMAL = 2;
  */
 export const WORK_TRANSPORTER_SPAWN: WORK_TRANSPORTER_SPAWN = 21;
 /**
- * 当前Creep正在担任运输者职责，补充塔的能量
- */
-export const WORK_TRANSPORTER_TOWER: WORK_TRANSPORTER_TOWER = 22;
-/**
  * 当前Creep正在担任运输者职责，为控制器container补充能量
  */
 export const WORK_TRANSPORTER_CONTROLLER: WORK_TRANSPORTER_CONTROLLER = 23;

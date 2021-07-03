@@ -9,10 +9,12 @@ interface Room {
     errorCheck(): void;
     /** room数据初始化 */
     init(): void;
-    /** room memory 初始化 */
-    initMemory(): void;
     /** 生成孵化时使用能量的顺序 */
     generateEnergyOrder(): void;
+    /** room memory 初始化 */
+    initMemory(): void;
+    /** 运转房间里的各个建筑 */
+    workStructures(): void;
 
 
     /** 更新room中各个建筑的数据（定期任务） */
@@ -59,30 +61,5 @@ interface Room {
      * @return boolean 判断结果
      */
     hasUnqueueTaskSpawn(): boolean;
-
-    // -----------------------------------------------------
-    // Tower相关
-    // -----------------------------------------------------
-
-  /**
-   * 获取塔的最大能量
-   * @return number 容量，目前是固定1000
-   */
-   getTowerMaxCapacity(): number;
-   /**
-    * 检查房间内的tower是否需要补充能量
-    */
-   checkTowerEnergy(): void;
-
-   /**
-    * 获取所有还没有排入队列的需要补充孵化能量的建筑
-    * @return array 每个元素是一个建筑的实例
-    */
-   getUnqueueTaskTower(): StructureTower[];
-   /**
-    * 检查是否还有没进入队列的孵化能量建筑，协助creep判断是否需要进入搬运状态
-    * @return boolean 判断结果
-    */
-   hasUnqueueTaskTower(): boolean;
 }
 

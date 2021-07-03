@@ -1,6 +1,6 @@
 import {
     ENERGY_NEED, ENERGY_ENOUGH,
-    WORK_IDLE, WORK_TRANSPORTER_SPAWN, WORK_TRANSPORTER_TOWER, WORK_TRANSPORTER_STORAGE_ENERGY, WORK_TRANSPORTER_CONTROLLER,
+    WORK_IDLE, WORK_TRANSPORTER_SPAWN, WORK_TRANSPORTER_STORAGE_ENERGY, WORK_TRANSPORTER_CONTROLLER,
     MODE_SPAWN, MODE_CONTROLLER, WORK_TRANSPORTER_STORAGE_MINERAL, WORK_TRANSPORTER_TOMBSTONE, TRUE
 } from '@/common/constant';
 
@@ -12,10 +12,7 @@ const MAP_POS: Record<string, [number,number]> = {
 }
 
 export default function (creep: Creep) {
-    if (Game.rooms.sim){
-        creep.doTask();
-        return;
-    }
+    if (creep.doTask()) return;
     if (creep.memory.room != undefined){
         otherRoom(creep);
     }else{
@@ -39,7 +36,6 @@ const updateStatus = function(creep: Creep){
             if (creep.checkWorkTransporterSpawn()) return;
             if (creep.checkWorkTransporterStorage_Energy()) return;
             if (creep.checkWorkTransporterTombstone()) return;
-            if (creep.checkWorkTransporterTower()) return;
             // if (creep.checkWorkTransporterStorage_Mineral()) return;
         }
     }else {
@@ -48,7 +44,6 @@ const updateStatus = function(creep: Creep){
 
         // 空闲下才会执行的任务
         if (creep.work == WORK_IDLE){
-            if (creep.checkWorkTransporterTower()) return;
             if (creep.checkWorkTransporterStorage_Energy()) return;
             if (creep.checkWorkTransporterController()) return;
             // if (creep.checkWorkTransporterStorage_Mineral()) return;
@@ -65,9 +60,6 @@ const execute = function(creep: Creep){
     switch(creep.work){
         case WORK_TRANSPORTER_SPAWN:
             creep.doWorkTransporterSpawn();
-            break;
-        case WORK_TRANSPORTER_TOWER:
-            creep.doWorkTransporterTower();
             break;
         case WORK_TRANSPORTER_CONTROLLER:
             creep.doWorkTransporterController();

@@ -40,6 +40,4 @@ interface Room {
   getEmptyControllerContainers(): StructureContainer[];
 
 
-  /** 运转所有Link */
-  linkRun(): void;
 }

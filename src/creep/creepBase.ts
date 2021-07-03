@@ -10,9 +10,8 @@ import roleMastermind from '@/creep/role/Mastermind';
 import roleScout from '@/creep/role/Scout';
 
 import {
-    ENERGY_NEED,
-    WORK_TRANSPORTER_SPAWN, WORK_TRANSPORTER_TOWER, WORK_TRANSPORTER_STORAGE_ENERGY,
-    TASK_WAITING, TASK_ACCEPTED, MODE_NONE, WORK_IDLE,
+    WORK_TRANSPORTER_SPAWN,
+    TASK_WAITING, TASK_ACCEPTED,
 } from '@/common/constant';
 
 // 任务队列最大长度
@@ -105,9 +104,6 @@ export default function () {
                 case WORK_TRANSPORTER_SPAWN:
                     targets = this.room.getUnqueueTaskSpawn();
                     break;
-                case WORK_TRANSPORTER_TOWER:
-                    targets = this.room.getUnqueueTaskTower();
-                    break;
             }
             if (targets && targets.length > 0){
                 // TODO 距离选择部分还可以优化
@@ -138,14 +134,6 @@ export default function () {
                     case WORK_TRANSPORTER_SPAWN:
                         if (id in this.room.memory.taskSpawn){
                             this.room.memory.taskSpawn[id] = {
-                                cName: null,
-                                stat: TASK_WAITING,
-                            };
-                        }
-                        break;
-                    case WORK_TRANSPORTER_TOWER:
-                        if (id in this.room.memory.taskTowers){
-                            this.room.memory.taskTowers[id] = {
                                 cName: null,
                                 stat: TASK_WAITING,
                             };

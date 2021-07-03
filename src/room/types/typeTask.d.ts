@@ -44,12 +44,6 @@ interface RoomMemory {
         doing: {[key:string]: Task<TASK_ANY>},
         status: {[key:string]: TaskId}
     }
-    /** 未处理的运输任务队列 */
-    tasks: Task<TASK_ANY>[]
-    /** 进行中的运输任务队列 */
-    taskDoing: {[key:string]: Task<TASK_ANY>}
-    /** 发布运输任务的状态 */
-    taskStatus: {[key:string]: TaskId}
 }
 
 /** 运输任务 */
