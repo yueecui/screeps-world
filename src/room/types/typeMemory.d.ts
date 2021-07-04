@@ -65,6 +65,13 @@ interface RoomMemory {
         /** 各roll stay的位置配置 */
         stay: Record<string, [number, number]>
     }
+    /** 需要保存的任务配置 */
+    taskConfig?: {
+        terminal: {
+            mode: TERMINAL_MODE_ANY
+            target?: string
+        }
+    }
 }
 
 /** source的配置数据 */
@@ -85,10 +92,10 @@ interface mineralInfo{
 /** container的配置数据 */
  interface containerInfo{
     id: Id<StructureContainer>;
-    type: ANY_CONTAINER_TYPE;
+    type: CONTAINER_TYPE_ANY;
 }
 
-type ANY_CONTAINER_TYPE =
+type CONTAINER_TYPE_ANY =
         | CONTAINER_TYPE_NONE
         | CONTAINER_TYPE_SOURCE
         | CONTAINER_TYPE_CONTROLLER
@@ -102,11 +109,11 @@ type CONTAINER_TYPE_MINERAL = 3;    // 临接mineral的container，存量变多�
 /** link的配置数据 */
 interface linkInfo{
     id: Id<StructureLink>;
-    type: ANY_LINK_TYPE;
+    type: LINK_TYPE_ANY;
     target?: Id<StructureLink>;  // 当link等待能量时，记录需要发送的目标，一旦有能量就进行发送
 }
 
-type ANY_LINK_TYPE =
+type LINK_TYPE_ANY =
         | LINK_TYPE_NONE
         | LINK_TYPE_SOURCE
         | LINK_TYPE_CONTROLLER
@@ -132,6 +139,19 @@ interface storageInfo{
     link: Id<StructureLink> | null;
 }
 
+
+type TERMINAL_MODE_ANY =
+        | TERMINAL_MODE_NONE
+        | TERMINAL_MODE_ASSIST_UPGRADE
+
+/** 未设定类型 */
+type TERMINAL_MODE_NONE = 0;
+/** 协助其他ROOM进行升级 */
+type TERMINAL_MODE_ASSIST_UPGRADE = 1;
+
+
+// 【旧】以下为旧的
+
 /**
  * source缓存的状态（预计过期）
  */
@@ -148,6 +168,7 @@ interface storageInfo{
      */
     c: Id<StructureContainer> | null;
 }
+
 
 /**
  * 任务信息状态

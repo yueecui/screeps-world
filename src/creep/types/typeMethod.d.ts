@@ -21,6 +21,6 @@ interface Creep {
 
 interface obtainEnergyOpt{
   min_amount?: number,
-  container?: ANY_CONTAINER_TYPE[];
+  container?: CONTAINER_TYPE_ANY[];
   storage?: boolean;
 }
